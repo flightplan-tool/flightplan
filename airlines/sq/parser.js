@@ -1,7 +1,8 @@
 const fs = require('fs')
 const cheerio = require('cheerio')
 
-const { truthy } = require('../lib/utils')
+const { truthy } = require('../../lib/utils')
+const { isBlocked } = require('./helpers')
 
 // Regex patterns
 const reFlight = /FLIGHT\s+(\w+)\s/
@@ -10,20 +11,30 @@ const reAircraft = /Aircraft type:\s+\((.+)\)/
 function parser (html, query) {
   const { fromCity, toCity, cabinClass, departDate, returnDate, adults, children } = query
 
+  // Check if it was blocked
+  if (isBlocked(html)) {
+    return { error: 'Search was blocked' }
+  }
+
   // Load html into parser
   const $ = cheerio.load(html)
 
-  // Parse departures and returns tables
+  // Find the awards table
   const tables = $('#redemptionChooseFlightsForm > fieldset > div.flights__searchs')
-  departures = (tables.length === 0) ? []
-    : parseTable($, tables[0], {fromCity, toCity, date: departDate, cabinClass})
+  if (tables.length === 0) {
+    return { error: 'Award table not found' }
+  }
+
+  // Parse both departure and return awards
+  departures = parseTable($, tables[0], {fromCity, toCity, date: departDate, cabinClass})
   returns = (tables.length <= 1) ? []
     : parseTable($, tables[1], {fromCity: toCity, toCity: fromCity, date: returnDate, cabinClass})
 
   // Create final list of awards, and return it
   const awards = [...departures, ...returns]
   awards.forEach(x => { x.quantity = adults + children })
-  return awards
+
+  return { awards }
 }
 
 function parseTable ($, table, query) {

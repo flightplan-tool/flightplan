@@ -1,3 +1,7 @@
+# Data directories
+data/
+db/
+
 # Logs
 logs
 *.log

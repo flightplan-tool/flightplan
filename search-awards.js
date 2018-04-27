@@ -1,23 +1,24 @@
+const fs = require('fs')
 const minimist = require('minimist')
 const moment = require('moment')
 const prompt = require('syncprompt')
 const sqlite = require('sqlite')
 
 const credentials = require('./credentials')
-const SQEngine = require('./engines/sq')
+const SQEngine = require('./airlines/sq/engine')
 const consts = require('./lib/consts')
 const { migrate, insertRow, loadCookies, saveCookies } = require('./lib/db')
 
 const USAGE = `
-Usage: check-awards.js [OPTIONS]
+Usage: search-awards.js [OPTIONS]
 
   Search an airline website for award inventory, and save the results to disk.
 
-Options:                asdf
+Options:
   -f, --from CITY       IATA 3-letter code of the departure city
   -t, --to CITY         IATA 3-letter code of the arrival city
   -o, --oneway          Searches for one-way award inventory only (default is to search in both directions)
-  -c, --class           Cabin class (F=First, J=Business, Y=PremEcon, C=Economy)
+  -c, --class           Cabin class (F=First, C=Business, W=PremEcon, Y=Economy)
   -s, --start           Starting date of the search range (YYYY-MM-DD)
   -e, --end             Ending date of the search range (YYYY-MM-DD)
   -a, --adults          # of adults traveling (Defaults to 1)
@@ -118,7 +119,7 @@ const main = async () => {
     toCity = prompt('Arrival city (3-letter code)? ')
   }
   if (!cabinClass) {
-    cabinClass = prompt('Desired cabin class (F/J/Y/C)? ')
+    cabinClass = prompt('Desired cabin class (F/C/W/Y)? ')
   }
   if (!startDate) {
     startDate = prompt('Start date of search range (YYYY-MM-DD)? ')
@@ -131,8 +132,17 @@ const main = async () => {
   cabinClass = cabinClass.toUpperCase()
   startDate = moment(startDate)
   endDate = moment(endDate)
+  if (endDate.isBefore(startDate)) {
+    console.error(`Invalid date range for search: ${startDate.format('L')} -> ${endDate.format('L')}`)
+    return
+  }
 
   try {
+    // Create data path if necessary
+    if (!fs.existsSync(consts.DATA_PATH)) {
+      fs.mkdirSync(consts.DATA_PATH)
+    }
+
     // Create database if necessary
     await migrate()
 
@@ -143,7 +153,7 @@ const main = async () => {
     const cookies = await loadCookies(db)
 
     // Initialize search engine
-    engine = new SQEngine({...credentials, headless, cookies})
+    engine = new SQEngine({...credentials, headless, cookies, timeout: 5 * 60000})
     if (!await engine.initialize()) {
       throw new Error('Failed to initialize SQ engine!')
     }
@@ -179,6 +189,7 @@ const main = async () => {
       })
     }
     queries.forEach(q => {
+      q.engine = 'SQ'
       q.cabinClass = cabinClass
       q.adults = adults
       q.children = children
@@ -200,7 +211,6 @@ const main = async () => {
         if (await engine.search(query)) {
           // Write to database
           const row = {...query}
-          row.engine = 'SQ'
           row.departDate = row.departDate ? row.departDate.format('YYYY-MM-DD') : null
           row.returnDate = row.returnDate ? row.returnDate.format('YYYY-MM-DD') : null
           const fields = [

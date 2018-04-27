@@ -3,10 +3,11 @@ const path = require('path')
 const moment = require('moment')
 const puppeteer = require('puppeteer')
 
-const applyEvasions = require('../lib/evasions')
-const { randomInt } = require('../lib/utils')
+const applyEvasions = require('../../lib/evasions')
+const { randomInt, printRoute } = require('../../lib/utils')
+const { isBlocked } = require('./helpers')
 
-const REQUESTS_PER_HOUR = 198
+const REQUESTS_PER_HOUR = 126
 const THROTTLE_PERIOD = 30 * 60
 
 const URL_FLIGHT_SEARCH = 'https://www.singaporeair.com/en_UK/ppsclub-krisflyer/flightsearch/'
@@ -25,7 +26,8 @@ class Engine {
       // Launch the browser in headless mode and set up a page.
       this._browser = await puppeteer.launch({
         args: ['--use-gl'],
-        headless: this._options.headless
+        headless: this._options.headless,
+        timeout: this._options.timeout
       })
 
       // Navigate to the flight search page
@@ -167,7 +169,7 @@ class Engine {
     }
   }
 
-  async search (options) {
+  async search (query) {
     try {
       const {
         fromCity,
@@ -179,7 +181,7 @@ class Engine {
         children,
         htmlFile,
         screenshot
-      } = options
+      } = query
       const page = this._page
 
       // Validate from / to
@@ -209,14 +211,7 @@ class Engine {
       await this.throttle()
 
       // Print route(s) being searched
-      const strPax = [
-        adults === 0 ? undefined : (adults === 1) ? '1 Adult' : `${adults} Adults`,
-        children === 0 ? undefined : (children === 1) ? '1 Child' : `${children} Children`
-      ].filter(x => !!x).join(', ')
-      console.log(`SQ: DEPARTURE [${fromCity} -> ${toCity}] - ${departDate.format('L')} (${strPax})`)
-      if (returnDate) {
-        console.log(`SQ: ARRIVAL   [${toCity} -> ${fromCity}] - ${returnDate.format('L')}`)
-      }
+      printRoute(query)
 
       // Go to flight search page
       await page.goto(URL_FLIGHT_SEARCH, {waitUntil: 'networkidle2'})
@@ -303,7 +298,7 @@ class Engine {
       // Submit the form
       await page.waitFor(randomInt(500, 1000))
       await page.click('#form-book-travel-1 #city-travel-input-2')
-      await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 5 * 60000})
+      const response = await page.waitForNavigation({waitUntil: 'networkidle2'})
 
       // Screenshot page if requested
       if (screenshot) {
@@ -311,13 +306,23 @@ class Engine {
       }
 
       // Get the full HTML content and write it out
+      const html = await page.evaluate(() => document.body.innerHTML)
       if (htmlFile) {
-        const html = await page.evaluate(() => document.body.innerHTML)
-        const dir = path.dirname(htmlFile)
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir)
-        }
         fs.writeFileSync(htmlFile, html)
+      }
+
+      // Check response code
+      if (!response.ok()) {
+        console.log(`SQ: Received non-OK HTTP Status Code: ${response.status()}`)
+        return false
+      }
+
+      // Check if we were blocked
+      if (isBlocked(html)) {
+        const delay = randomInt(65, 320)
+        console.log(`SQ: Blocked by server, waiting for ${moment().add(delay, 's').fromNow(true)}`)
+        await page.waitFor(delay * 1000)
+        return false
       }
 
       // Success!
