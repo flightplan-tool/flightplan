@@ -1,5 +1,4 @@
 const minimist = require('minimist')
-const path = require('path')
 const moment = require('moment')
 const prompt = require('syncprompt')
 const sqlite = require('sqlite')
@@ -29,7 +28,7 @@ Options:                asdf
 function pathForQuery (query) {
   const { fromCity, toCity, departDate } = query
   const fields = [fromCity, toCity, departDate.format('YYYY-MM-DD'), (new Date()).getTime()]
-  return path.resolve(`${consts.DATA_PATH}/${fields.join('-')}`)
+  return `${consts.DATA_PATH}/${fields.join('-')}`
 }
 
 async function canSkip (query, db) {
