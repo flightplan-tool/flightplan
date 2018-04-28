@@ -30,8 +30,12 @@ class Engine {
       })
 
       // Navigate to the flight search page
-      this._page = await this.newPage(URL_FLIGHT_SEARCH)
-      await this._page.waitFor('#travel-radio-2', {visible: true})
+      this.page = await this.newPage(URL_FLIGHT_SEARCH)
+      const { page } = this
+
+      // Make sure we're in redeem flights mode (to see all the *A cities)
+      await page.waitFor('#travel-radio-2', {visible: true})
+      await page.click('#travel-radio-2')
 
       // Load from / to cities
       console.log('SQ: Loading cities...')
@@ -66,20 +70,27 @@ class Engine {
 
   async cityMap (selector) {
     try {
+      const { page } = this
       const cities = new Map()
 
+      // Wait for the selector to exist
+      await page.waitFor(selector)
+
       // Get list of cities
-      const cityCount = await this._page.evaluate((sel) => {
+      const cityCount = await page.evaluate((sel) => {
         return document.querySelectorAll(sel).length
       }, selector)
 
       for (let i = 1; i <= cityCount; i++) {
         const citySel = `${selector}:nth-child(${i})`
-        const [code, name] = await this._page.evaluate((sel) => {
+        const [value, name] = await page.evaluate((sel) => {
           const ele = document.querySelector(sel)
-          return [ele.getAttribute('value'), ele.text]
+          return [ele.getAttribute('data-text'), ele.text]
         }, citySel)
-        cities.set(code, name)
+        const code = /-\s+(\w+)\s*/.exec(value)
+        if (code) {
+          cities.set(code[1], name)
+        }
       }
 
       return cities
@@ -90,9 +101,10 @@ class Engine {
 
   async isLoggedIn () {
     try {
-      await this._page.waitFor(
+      const { page } = this
+      await page.waitFor(
         '#membership-1, a.login, li.logged-in', {visible: true, timeout: 10000})
-      return !!(await this._page.$('li.logged-in'))
+      return !!(await page.$('li.logged-in'))
     } catch (e) {
       return false
     }
@@ -101,7 +113,7 @@ class Engine {
   async login () {
     try {
       console.log('SQ: Logging in...')
-      const page = this._page
+      const { page } = this
       const { username, password } = this._options
 
       let attempts = 0
@@ -182,7 +194,7 @@ class Engine {
         htmlFile,
         screenshot
       } = query
-      const page = this._page
+      const { page } = this
 
       // Validate from / to
       if (!this._from.has(fromCity)) {
@@ -228,10 +240,10 @@ class Engine {
       await page.waitFor(500)
 
       // Set origin and destination
-      await this._page.evaluate((value) => {
+      await page.evaluate((value) => {
         document.getElementById('city1-1').value = value
       }, this._from.get(fromCity))
-      await this._page.evaluate((value) => {
+      await page.evaluate((value) => {
         document.getElementById('city1-2').value = value
       }, this._to.get(toCity))
       await page.waitFor(500)
@@ -334,7 +346,7 @@ class Engine {
 
   async select (selComboBox, selListItems, value) {
     try {
-      const page = this._page
+      const { page } = this
 
       // Click the combo box first, to open it up
       await page.click(selComboBox)
@@ -365,7 +377,7 @@ class Engine {
 
   async getCookies () {
     try {
-      return await this._page.cookies()
+      return await this.page.cookies()
     } catch (e) {
       return []
     }
@@ -391,7 +403,7 @@ class Engine {
         const delayMillis = this._start.diff()
         if (delayMillis > 0) {
           console.log(`*** Cool-down period, resuming ${this._start.fromNow()} ***`)
-          await this._page.waitFor(delayMillis)
+          await this.page.waitFor(delayMillis)
         }
         this._requests = 0
         this._start = moment()
