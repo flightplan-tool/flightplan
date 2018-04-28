@@ -26,8 +26,7 @@ class Engine {
       // Launch the browser in headless mode and set up a page.
       this._browser = await puppeteer.launch({
         args: ['--use-gl'],
-        headless: this._options.headless,
-        timeout: this._options.timeout
+        headless: this._options.headless
       })
 
       // Navigate to the flight search page
@@ -41,7 +40,7 @@ class Engine {
       console.log(`SQ: Found ${Math.max(this._from.size, this._to.size)} cities`)
 
       // Login
-      return this.login()
+      return await this.login()
     } catch (e) {
       throw e
     }
@@ -51,6 +50,7 @@ class Engine {
     try {
       const page = await this._browser.newPage()
       page.setViewport({width: randomInt(1150, 1450), height: randomInt(850, 1050)})
+      page.setDefaultNavigationTimeout(this._options.timeout)
       await applyEvasions(page)
       if (this._options.cookies) {
         await page.setCookie(...this._options.cookies)
@@ -364,7 +364,11 @@ class Engine {
   }
 
   async getCookies () {
-    return await this._page.cookies()
+    try {
+      return await this._page.cookies()
+    } catch (e) {
+      return []
+    }
   }
 
   async close () {
@@ -379,19 +383,23 @@ class Engine {
   }
 
   async throttle () {
-    const limit = REQUESTS_PER_HOUR / 3600 * THROTTLE_PERIOD
-    if (this._requests >= limit) {
-      // Sleep until end of period, to provide a cool-down period
-      this._start.add(THROTTLE_PERIOD, 's')
-      const delayMillis = this._start.diff()
-      if (delayMillis > 0) {
-        console.log(`*** Cool-down period, resuming ${this._start.fromNow()} ***`)
-        await this._page.waitFor(delayMillis)
+    try {
+      const limit = REQUESTS_PER_HOUR / 3600 * THROTTLE_PERIOD
+      if (this._requests >= limit) {
+        // Sleep until end of period, to provide a cool-down period
+        this._start.add(THROTTLE_PERIOD, 's')
+        const delayMillis = this._start.diff()
+        if (delayMillis > 0) {
+          console.log(`*** Cool-down period, resuming ${this._start.fromNow()} ***`)
+          await this._page.waitFor(delayMillis)
+        }
+        this._requests = 0
+        this._start = moment()
       }
-      this._requests = 0
-      this._start = moment()
+      this._requests++
+    } catch (e) {
+      throw e
     }
-    this._requests++
   }
 }
 

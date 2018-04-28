@@ -232,7 +232,7 @@ const main = async () => {
     // Save cookies to database
     await saveCookies(db, await engine.getCookies())
   } catch (e) {
-    throw e
+    console.error(e.stack)
   } finally {
     // Cleanup
     if (engine) {
