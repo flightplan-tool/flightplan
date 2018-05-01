@@ -1,0 +1,61 @@
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+}
+body {
+  background: #202020;
+  min-width: 1040px;
+  overflow: hidden;
+  margin: 0;
+}
+.container {
+  height: 100%;
+}
+
+#calendarView {
+  box-sizing: border-box;
+}
+
+/* Page layout */
+section {
+  width: 100%;
+  height: 100%;
+}
+
+section aside {
+  height: 100%;
+  float: left;
+  display: block;
+  margin-right: 2%;
+  width: 32%;
+}
+  
+section article {
+  height: 100%;
+  width: 66%;
+  float: left;
+  display: block;
+}
+
+.ui-view-calendar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Calendar layout */
+.calendar {
+  position: relative;
+  top: 50px;
+  right: 20px;
+}
+.calendar-chart-labels {
+  position: absolute;
+}
+.chart-rings-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

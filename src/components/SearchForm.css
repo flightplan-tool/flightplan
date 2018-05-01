@@ -1,0 +1,60 @@
+#calendarHeader {
+  padding: 20px 30px;
+  float: left;
+}
+
+#calendarHeader a, #calendarHeader a:visited {
+  color: #666;
+}
+
+#calendarHeader a:hover, #calendarHeader a:focus {
+  color: #ccc;
+}
+
+#calendarHeader a:focus {
+  color: #ccc;
+}
+
+.theme-2012 #calendarHeader hr {
+  display: none;
+}
+
+.theme-2012 #calendarHeader a, .theme-2012 #calendarHeader a:visited {
+  color: #666;
+}
+
+.theme-2012 #calendarHeader a:hover, .theme-2012 #calendarHeader a:focus {
+  color: #ccc;
+}
+
+.theme-2013 #calendarHeader hr {
+  display: none;
+}
+
+.theme-2013 #calendarHeader a, .theme-2013 #calendarHeader a:visited {
+  color: #666;
+}
+
+.theme-2013 #calendarHeader a:hover, .theme-2013 #calendarHeader a:focus {
+  color: #ccc;
+}
+
+.theme-2015 #calendarHeader h1 {
+  margin-bottom: 0;
+}
+.theme-2015 #calendarHeader hr {
+  border-top: 1px dotted #fff;
+  margin: 10px 0 20px 0;
+}
+
+.theme-2015 #calendarHeader p {
+  color: #3db657;
+}
+
+.theme-2015 #calendarHeader a, .theme-2015 #calendarHeader a:visited {
+  color: #3652a6;
+}
+
+.theme-2015 #calendarHeader a:hover, .theme-2015 #calendarHeader a:focus {
+  color: #4465c2;
+}

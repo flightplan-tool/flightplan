@@ -1,0 +1,38 @@
+[
+  {
+    "label": "New Year's Day",
+    "date": "2015-01-01T00:00:00.196Z"
+  },
+  {
+    "label": "Birthday of Martin Luther King, Jr.",
+    "date": "2015-02-16T00:00:00.196Z"
+  },
+  {
+    "label": "Washington’s Birthday",
+    "date": "2015-02-06T00:00:00.196Z"
+  },
+  {
+    "label": "Memorial Day",
+    "date": "2015-05-25T00:00:00.196Z"
+  },
+  {
+    "label": "Independence Day",
+    "date": "2015-07-04T00:00:00.196Z"
+  },
+  {
+    "label": "Labor Day",
+    "date": "2015-09-07T00:00:00.196Z"
+  },
+  {
+    "label": "Veterans Day",
+    "date": "2015-11-11T00:00:00.196Z"
+  },
+  {
+    "label": "Thanksgiving Day",
+    "date": "2015-11-26T00:00:00.196Z"
+  },
+  {
+    "label": "Christmas Day",
+    "date": "2015-12-25T00:00:00.196Z"
+  }
+]

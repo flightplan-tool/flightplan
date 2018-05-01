@@ -1,0 +1,22 @@
+.chart-stamp {
+  /* Positioning */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.theme-2015 .chart-stamp {
+  width: 350px;
+  height: 350px;
+}
+
+.theme-2013 .chart-stamp {
+  width: 200px;
+  height: 200px;
+}
+
+.theme-2012 .chart-stamp {
+  width: 100px;
+  height: 100px;
+}
