@@ -1,18 +1,25 @@
 {
+  "name": "flightplan-tool",
+  "version": "0.0.1",
+  "description": "Search for award inventory using Node.js and Headless Chrome!",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "repository": "https://github.com/jd20/flightplan-tool",
+  "author": "JD",
+  "license": "MIT",
+  "private": false,
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.3",
     "minimist": "^1.2.0",
     "moment": "^2.22.1",
     "puppeteer": "^1.3.0",
     "sqlite": "^2.9.1",
     "syncprompt": "^2.0.0"
   },
-  "name": "flightplan-tool",
-  "version": "0.0.1",
-  "description": "Search for award inventory using Node.js and Headless Chrome!",
-  "main": "index.js",
-  "repository": "https://github.com/jd20/flightplan-tool",
-  "author": "JD",
-  "license": "MIT",
-  "private": false
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
 }

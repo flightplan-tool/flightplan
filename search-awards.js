@@ -152,12 +152,6 @@ const main = async () => {
     // Load cookies from database
     const cookies = await loadCookies(db)
 
-    // Initialize search engine
-    engine = new SQEngine({...credentials, headless, cookies, timeout: 5 * 60000})
-    if (!await engine.initialize()) {
-      throw new Error('Failed to initialize SQ engine!')
-    }
-
     // Generate queries
     const queries = []
     const days = endDate.diff(startDate, 'd') + 1
@@ -199,11 +193,21 @@ const main = async () => {
     let skipped = 0
     console.log(`Searching ${days} days of award inventory (${startDate.format('L')} - ${endDate.format('L')})`)
     for (const query of queries) {
+      // Check if the query's results are already stored
       if (await canSkip(query, db)) {
         skipped++
         continue
       }
 
+      // Lazy load the search engine
+      if (!engine) {
+        engine = new SQEngine({...credentials, headless, cookies, timeout: 5 * 60000})
+        if (!await engine.initialize()) {
+          throw new Error('Failed to initialize SQ engine!')
+        }
+      }
+
+      // Run the search query
       try {
         const basePath = pathForQuery(query)
         query.htmlFile = basePath + '.html'
@@ -230,7 +234,9 @@ const main = async () => {
     console.log('Search complete!')
 
     // Save cookies to database
-    await saveCookies(db, await engine.getCookies())
+    if (engine) {
+      await saveCookies(db, await engine.getCookies())
+    }
   } catch (e) {
     console.error(e.stack)
   } finally {

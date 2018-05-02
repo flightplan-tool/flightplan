@@ -7,7 +7,7 @@ const applyEvasions = require('../../lib/evasions')
 const { randomInt, printRoute } = require('../../lib/utils')
 const { isBlocked } = require('./helpers')
 
-const REQUESTS_PER_HOUR = 126
+const REQUESTS_PER_HOUR = 85
 const THROTTLE_PERIOD = 30 * 60
 
 const URL_FLIGHT_SEARCH = 'https://www.singaporeair.com/en_UK/ppsclub-krisflyer/flightsearch/'
@@ -250,8 +250,10 @@ class Engine {
 
       // Select Round-Trip or One-Way radio button
       if (returnDate) {
+        await page.waitFor('#city1-radio-4', {visible: true})
         await page.click('#city1-radio-4')
       } else {
+        await page.waitFor('#city1-radio-5', {visible: true})
         await page.click('#city1-radio-5')
       }
       await page.waitFor(500)
