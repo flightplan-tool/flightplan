@@ -1,12 +1,8 @@
 .calendar-chart-ring {
-  position: absolute;
   z-index: 5;
 }
 
 .calendar-chart-ring svg {
-  position: absolute;
-  top: 0;
-  left: 0;
   z-index: 5;
 }
 

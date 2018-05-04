@@ -1,6 +1,16 @@
-import moment from 'moment'
-
-import { MONTH_LABELS } from './constants'
+function strcmp () {
+  for (let i = 0; i < arguments.length - 1; i += 2) {
+    const a = arguments[i], b = arguments[i + 1]
+    if (a !== b) {
+      if (a < b) {
+        return -1
+      } else {
+        return 1
+      }
+    }
+  }
+  return 0
+}
 
 /**
  * Helper method to darken or lighten color
@@ -29,39 +39,15 @@ function getDateISO (date) {
   return new Date(date)
 }
 
-function getMonthIndexFromDate (date) {
-  return parseInt(moment(date).format('M'), 10) - 1
-}
-
-function getDayIndexFromDate (date) {
-  return parseInt(moment(date).format('D'), 10) - 1
-}
-
 function getMonthIndex (month) {
   var index = parseInt(month.replace(/^0+/, ''), 10) - 1
 
   return index
 }
 
-function getMonthSlug (month) {
-  return String((month < 10) ? '0' + month : month)
-}
-
-function getDaySlug (day) {
-  return String((day < 10) ? '0' + day : day)
-}
-
-function getMonthLabel (monthIndex) {
-  return MONTH_LABELS[monthIndex]
-}
-
 export {
+  strcmp,
   shadeColor,
   getDateISO,
-  getMonthIndexFromDate,
-  getDayIndexFromDate,
-  getMonthIndex,
-  getMonthSlug,
-  getDaySlug,
-  getMonthLabel
+  getMonthIndex
 }

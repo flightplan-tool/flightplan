@@ -1,146 +1,270 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import moment from 'moment'
+import DatePicker from 'react-datepicker'
+import Select from 'react-select'
+
+import CheckBox from './controls/CheckBox'
+import RadioButton from './controls/RadioButton'
+import {
+  FARE_CODE_NAMES,
+  CABIN_ORDER
+} from '../lib/constants'
 
 import './SearchForm.css'
+import 'react-datepicker/dist/react-datepicker.css'
 
 @inject('searchStore')
 @observer
 class SearchForm extends Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      fromCity: 'HKG',
-      toCity: 'SIN',
-      passengers: 1,
-      direction: 'oneway',
-      showWaitlisted: true,
-      startDate: moment().format('YYYY-MM-DD'),
-      endDate: moment().add(1, 'y').format('YYYY-MM-DD'),
-      airlines: {}
-    }
-
-    this.handleInputChange = this.handleInputChange.bind(this)
-  }
-
-  handleInputChange ({ target }) {
-    const value = target.type === 'checkbox' ? target.checked : target.value
-    const name = target.name
-
-    console.log("handing input change:", this.state)
+  render () {
     const { searchStore } = this.props
-    this.setState(
-      { [name]: value },
-      () => { searchStore.search(this.state) }
+    const passengerOptions = [...Array(10).keys()].map(x => ({ value: x + 1, label: (x + 1).toString() }))
+
+    return (
+      <form className='searchForm'>
+        <h1>Search</h1>
+        <fieldset className='cities'>
+          <div className='grid'>
+            <label style={{ gridArea: 'fromLabel' }}>From</label>
+            <input
+              name='fromCity'
+              type='text'
+              value={searchStore.fromCity}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => { searchStore.update({ fromCity: e.target.value }) }}
+              style={{ gridArea: 'fromCity' }}
+            />
+            <label style={{ gridArea: 'toLabel' }}>To</label>
+            <input
+              name='toCity'
+              type='text'
+              value={searchStore.toCity}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => { searchStore.update({ toCity: e.target.value }) }}
+              style={{ gridArea: 'toCity' }}
+            />
+            <RadioButton
+              label='One-Way'
+              checked={ searchStore.direction === 'oneway' }
+              onChange={(e) => { searchStore.update({ direction: e.target.checked ? 'oneway' : 'roundtrip' }) }}
+              style={{ gridArea: 'oneWay' }}
+            />
+            <RadioButton
+              label='Round-Trip'
+              checked={ searchStore.direction === 'roundtrip' }
+              onChange={(e) => { searchStore.update({ direction: e.target.checked ? 'roundtrip' : 'oneway' }) }}
+              style={{ gridArea: 'roundTrip' }}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset className='dates'>
+          <div className='grid'>
+            <label style={{ gridArea: 'startLabel' }}>Start Date</label>
+            <DatePicker
+              name='fromCity'
+              selected={searchStore.startDate}
+              minDate={moment()}
+              maxDate={moment().add(1, 'y')}
+              monthsShown={2}
+              onChange={(val) => searchStore.update({ startDate: val })}
+              style={{ gridArea: 'startDate' }}
+            />
+            <label style={{ gridArea: 'endLabel' }}>End Date</label>
+            <DatePicker
+              name='toCity'
+              selected={searchStore.endDate}
+              minDate={searchStore.startDate}
+              maxDate={moment().add(1, 'y')}
+              monthsShown={2}
+              onChange={(val) => searchStore.update({ endDate: val })}
+              style={{ gridArea: 'endDate' }}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset className='classes'>
+          <h4>Cabin Classes</h4>
+
+          <div className='grid'>
+            <CheckBox
+              label='First'
+              checked={searchStore.getClass('F')}
+              onChange={(e) => { searchStore.toggleClass('F') }}
+              style={{ gridArea: 'firstClass' }}
+            />
+
+            <CheckBox
+              label='Business'
+              checked={searchStore.getClass('C')}
+              onChange={(e) => { searchStore.toggleClass('C') }}
+              style={{ gridArea: 'businessClass' }}
+            />
+
+            <CheckBox
+              label='Prem. Economy'
+              checked={searchStore.getClass('W')}
+              onChange={(e) => { searchStore.toggleClass('W') }}
+              style={{ gridArea: 'premEconClass' }}
+            />
+
+            <CheckBox
+              label='Economy'
+              checked={searchStore.getClass('Y')}
+              onChange={(e) => { searchStore.toggleClass('Y') }}
+              style={{ gridArea: 'econClass' }}
+            />
+
+            <CheckBox
+              label='Include Waitlisted Awards'
+              checked={searchStore.showWaitlisted}
+              onChange={(e) => { searchStore.update({ showWaitlisted: e.target.checked }) }}
+              style={{ gridArea: 'showWaitlisted' }}
+            />
+
+            <CheckBox
+              label='Include Non-Saver Awards'
+              checked={searchStore.showNonSaver}
+              onChange={(e) => { searchStore.update({ showNonSaver: e.target.checked }) }}
+              style={{ gridArea: 'showNonSaver' }}
+            />
+
+            <label style={{ gridArea: 'passengersLabel' }}>Passengers</label>
+            <div style={{ gridArea: 'passengers' }}>
+              <Select
+                name='passengers'
+                defaultValue={passengerOptions.find(x => x.value === searchStore.passengers)}
+                onChange={(e) => { searchStore.update({ passengers: e.value }) }}
+                options={passengerOptions}
+                styles={{
+                  control: (base, state) => ({
+                    ...base,
+                    fontSize: '13px',
+                    height: '25px',
+                    width: '105px',
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    fontSize: '13px'
+                  }),
+                  menu: (base, state) => ({
+                    ...base,
+                    width: '105px'
+                  }),
+                }}
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        {this.renderAirlines()}        
+        {this.renderFlights()}
+        {this.renderResultCount()}
+      </form>
     )
   }
 
-  render () {
-    const {
-      fromCity,
-      toCity,
-      passengers,
-      oneWay,
-      showWaitlisted,
-      startDate,
-      endDate,
-      airlines
-    } = this.state
+  renderAirlines () {
+    const { searchStore } = this.props
+    const elements = searchStore.airlines.map(airline => (
+      <CheckBox
+        key={airline.code}
+        label={airline.name}
+        checked={searchStore.getAirline(airline)}
+        onChange={() => { searchStore.toggleAirline(airline) }}
+      />
+    ))
+    
+    if (elements.length === 0) {
+      return null
+    }
 
     return (
-      <header className='theme-calendar section clearfix' id='calendarHeader'>
-        <section className='section'>
-          <h1>Search</h1>
-          <hr />
-          <form>
-            <label>
-              From:
-              <input
-                name='fromCity'
-                type='text'
-                value={fromCity}
-                onChange={this.handleInputChange}
-              />
-            </label>
-            <br />
+      <fieldset className='airlines'>
+        <h2>Airlines</h2>
+        {elements}  
+      </fieldset>
+    )
+  }
 
-            <label>
-              To:
-              <input
-                name='toCity'
-                type='text'
-                value={toCity}
-                onChange={this.handleInputChange}
-              />
-            </label>
-            <br />
+  renderFlights () {
+    const { searchStore } = this.props
+    const elements = searchStore.flights.map(flight => (
+      <CheckBox
+        key={JSON.stringify(flight, ['flight', 'aircraft'])}
+        checked={searchStore.getFlight(flight)}
+        onChange={() => { searchStore.toggleFlight(flight) }}
+      >
+        {flight.flight}: <em>{flight.aircraft}</em>
+      </CheckBox>
+    ))
+    
+    if (elements.length === 0) {
+      return null
+    }
 
-            <label>
-              Passengers:
-              <input
-                name='passengers'
-                type='number'
-                value={passengers}
-                onChange={this.handleInputChange}
-              />
-            </label>
-            <br />
+    return (
+      <fieldset className='flights'>
+        <h2>Flights</h2>
+        {elements}  
+      </fieldset>
+    )
+  }
 
-            <div>
-              <input type='radio' id='oneWay' name='direction' value='oneway' />
-              <label htmlFor='oneWay'>One-way</label>
+  renderResultCount () {
+    const { awards } = this.props.searchStore
 
-              <input type='radio' id='roundTrip' name='direction' value='roundtrip' />
-              <label htmlFor='roundTrip'>Round-trip</label>
-            </div>
+    let total = 0
+    const counts = new Map()
+    for (const award of awards) {
+      // Get counts for airline
+      const { airline, fareCodes } = award
+      if (!counts.has(airline)) {
+        counts.set(airline, new Map())
+      }
+      const subCounts = counts.get(airline)
 
-            <label>
-              <input
-                name='showWaitlisted'
-                type='checkbox'
-                checked={showWaitlisted}
-                onChange={this.handleInputChange}
-              />
-              Show waitlisted awards
-            </label>
-            <br />
+      // Update for each fare code
+      for (const code of fareCodes.split(' ')) {
+        const count = subCounts.has(code) ? subCounts.get(code) : 0
+        subCounts.set(code, count + 1)
+        total++
+      }
+    }
 
-            <p>Search range</p>
-            <label>
-              Start:
-              <input
-                name='startDate'
-                type='date'
-                value={startDate}
-                onChange={this.handleInputChange}
-              />
-            </label>
-            <label>
-              End:
-              <input
-                name='endDate'
-                type='date'
-                value={endDate}
-                onChange={this.handleInputChange}
-              />
-            </label>
+    // Convert count map to an array
+    const entries = []
+    for (const airline of [...counts.keys()].sort()) {
+      const subCounts = counts.get(airline)
+      let baseCodes = [...subCounts.keys()].map(x => x.slice(0, -1))
+      baseCodes = [...new Set(baseCodes).values()].sort((a, b) => (
+        CABIN_ORDER.indexOf(a) - CABIN_ORDER.indexOf(b)
+      ))
+      for (const baseCode of baseCodes) {
+        for (const code of [baseCode + '+', baseCode + '@']) {
+          if (subCounts.has(code)) {
+            let codeLbl = FARE_CODE_NAMES[code.slice(0, -1)]
+            codeLbl += code.includes('@') ? ' Waitlisted' : ''
+            codeLbl += ` (${code})`
 
-            <p>Airlines</p>
-            <label>
-              <input
-                name='sq'
-                type='checkbox'
-                checked={airlines.sq}
-                onChange={this.handleInputChange}
-              />
-              Singapore Airlines
-            </label>
-            <br />
+            entries.push(
+              <p key={airline + '|' + code}>
+                {airline + ' ' + codeLbl}:{' '}
+                <em>{subCounts.get(code)}</em>
+              </p>
+            )
+          }
+        }
+      }
+    }
 
-          </form>
-        </section>
-      </header>
+    return (
+      <fieldset className='resultCount'>
+        <h2>Results</h2>
+        <p>Total Awards: <em>{total}</em></p>
+        {entries}
+      </fieldset>
     )
   }
 }

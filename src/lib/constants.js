@@ -1,29 +1,22 @@
-const MONTH_LABELS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
-]
+const AIRLINE_NAMES = {
+  SQ: 'Singapore Airlines'
+}
 
-const DAYS_OF_WEEK = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday'
-]
+const CABIN_ORDER = ['FS', 'FA', 'CS', 'CA', 'WS', 'WA', 'YS', 'YA']
+
+const FARE_CODE_NAMES = {
+  FS: 'First Saver',
+  FA: 'First Advantage',
+  CS: 'Business Saver',
+  CA: 'Business Advantage',
+  WS: 'Prem. Econ. Saver',
+  WA: 'Prem. Econ. Advantage',
+  YS: 'Economy Saver',
+  YA: 'Economy Advantage'
+}
 
 export {
-  MONTH_LABELS,
-  DAYS_OF_WEEK
+  AIRLINE_NAMES,
+  FARE_CODE_NAMES,
+  CABIN_ORDER
 }

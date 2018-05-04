@@ -12,14 +12,13 @@ class ChartLabels extends Component {
     this.renderLabels()
   }
 
-  render () {
-    var style = {
-      left: '-50px',
-      top: '-50px'
-    }
+  shouldComponentUpdate () {
+    return false
+  }
 
+  render () {
     return (
-      <div className='calendar-chart-labels' style={style} ref={(x) => { this._ref = x }}>
+      <div className='calendar-chart-labels' ref={(x) => { this._ref = x }}>
         {this.props.children}
       </div>
     )
@@ -29,7 +28,7 @@ class ChartLabels extends Component {
     // Constants
     const DISPLAY_SEGMENTS = 39 // Total segments to display on screen
     const TOTAL_SEGMENTS = 48
-    const BASE_UNIT = (window.innerHeight > 1000) ? ((window.innerHeight - 100) - 20) : 1000
+    const BASE_UNIT = 1000
 
     // Vars
     var dayOfWeekIndex = 0
@@ -124,7 +123,7 @@ class ChartLabels extends Component {
         var color = '#bbb'
 
         if (d.data.name === DAYS_OF_WEEK[0] || d.data.name === DAYS_OF_WEEK[6]) {
-          return '#999'
+          return '#b88'
         }
 
         return color

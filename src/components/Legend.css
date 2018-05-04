@@ -1,0 +1,59 @@
+.legend {
+  background-color: white;
+  box-shadow: 2px 2px 20px 0 rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  margin-bottom: auto;
+  z-index: 10;
+}
+
+.legend h2 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  text-transform: none;
+  color: black;
+  margin-bottom: 5px;
+}
+
+.legend section {
+  display: grid;
+  grid-template-columns: 26px max-content 26px max-content;
+  grid-row-gap: 10px;
+}
+
+.legend h2 {
+  grid-column: 1 / -1;
+}
+
+.legend .swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  margin-right: 10px;
+}
+
+.legend p {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  color: black;
+  margin-bottom: 0;
+}
+
+.legend .short {
+  padding-right: 10px;
+}
+
+.legend .wide {
+  grid-column: 2 / -1;
+}

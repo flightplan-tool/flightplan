@@ -5,6 +5,6 @@ export default (props) => {
   return <img
     className='chart-stamp'
     alt='Flightplan Logo'
-    src={`/images/flightplan-logo.svg`}
+    src={`/images/flightplan-logo-dark.svg`}
   />
 }

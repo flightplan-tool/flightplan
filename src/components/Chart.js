@@ -1,142 +1,83 @@
 import React, { Component } from 'react'
+import { autorun } from 'mobx'
 import { inject } from 'mobx-react'
 import * as d3 from 'd3'
 
 import * as utilities from '../lib/utilities'
-import * as constants from '../lib/constants'
 
 import './Chart.css'
 
-// CONSTANTS
-const DAYS_OF_WEEK = 7
-const DISPLAY_SEGMENTS = 39 // Total segments to display on screen
-const TOTAL_SEGMENTS = 48 // Total number of segments for each chart ring
+// Theme
+import theme from './theme.json'
+
+// Constants
 const DURATION = 1000
-const DELAY = 1000
 const OFFSET = 22
 
-@inject('chartStore')
+@inject('calendarStore', 'searchStore')
 class Chart extends Component {
-  constructor (props) {
-    super(props)
-
-    this.dataset = []
-    this.store = props.chartStore
-  }
-
   componentDidMount () {
-    this.renderChart()
+    const { data } = this.props.calendarStore
+    this.applyTheme(data)
+    this.createChart(data)
+
+    // Create an autorun, that automatically updates segment colors
+    // based on underlying mobx data store
+    autorun(() => {
+      const { data } = this.props.calendarStore
+      this.applyTheme(data)
+      this.updateChart(data)
+    })
+
+    this.animateIn()
   }
 
-  componentDidUpdate () {
-    this.renderChart()
+  shouldComponentUpdate () {
+    return false
   }
 
   render () {
     return <div className='chart' ref={(x) => { this._ref = x }} />
   }
 
-  /// ////////////////////////////////////////////////////////
-  // CHART CREATION
-  /// ////////////////////////////////////////////////////////
+  // Apply theme colors to the data before transforming to SVG
+  applyTheme(data) {
+    // Load legend, so we know what colors to apply to awards
+    const { legend } = this.props.searchStore
+    console.log(legend)
 
-  renderChart () {
-    const { config } = this.props
+    for (const month of data) {
+      for (const segment of month) {
+        const { type, isWeekend } = segment
+        
+        // Lookup color theme
+        let style = {fillColor: 'none'}
+        if (segment.award) {
+          style = {fillColor: '#0000ff', textColor: '#000000'}
+        } else if (type in theme) {
+          style = theme[type]
+        } else if (segment.date) {
+          style = theme.months[segment.date.month()]
+        }
 
-    const baseUnit = (window.innerHeight > 1000) ? ((window.innerHeight - 100) - 20) : 1000
-    this.width = baseUnit - OFFSET
-    this.height = baseUnit - OFFSET
-    this.innerRadius = ((baseUnit / 2) - 20)
-    this.outerRadius = (baseUnit / 2)
+        // Apply style to segment
+        const { fillColor = '', textColor = '' } = style
+        segment.fillColor = fillColor
+        segment.textColor = textColor
 
-    // Make dataset available to service
-    this.store.setCalendarConfig(config.calendar)
-    this.store.setChartConfig(this.dataset)
-    this.store.setEventsConfig(config.events)
-    this.store.setDefaultsConfig(config.defaults)
-
-    // Chart
-    this.configureDataset()
-    this.create()
-
-    // Animations
-    this.animateIn()
-  }
-
-  /**
-   * Configure calendar dataset
-   */
-  configureDataset () {
-    const { config } = this.props
-
-    config.calendar.forEach((month, index) => {
-      this.dataset[index] = [] // Add empty array at current month index
-      this.configureSegments(month, index)
-    })
-
-    this.addMarkers()
-  }
-
-  configureSegments (month, index) {
-    const { config } = this.props
-
-    var currentDayIndex = month.startIndex
-
-    for (var i = 0; i <= TOTAL_SEGMENTS; i++) {
-      // Local vars
-      var fillColor = 'none'
-      var textColor = month.textColor
-      var segmentLabel = ''
-      var isActive = false
-      var itemDate = ''
-      var dayOfWeek = ''
-
-      if (i < month.startIndex) {
-        // Shade offset segments same color as chartRing
-        fillColor = config.defaults.COLOR_FOREGROUND
-      } else if (i < (month.days + month.startIndex)) {
-        isActive = true
-        itemDate = this.getSegmentDate(i, month.index, month.startIndex)
-        segmentLabel = this.getSegmentLabel(i)
-        fillColor = this.getFillColor(currentDayIndex, month.fillColor)
-
-        // Increment current day index
-        currentDayIndex = this.getDayOfWeekIndex(currentDayIndex)
-        dayOfWeek = constants.DAYS_OF_WEEK[currentDayIndex]
-      } else if (i <= DISPLAY_SEGMENTS) {
-        fillColor = config.defaults.COLOR_FOREGROUND
+        // Tint the weekends
+        if (isWeekend && (type === 'search' || type === 'segment')) {
+          segment.fillColor = utilities.shadeColor(segment.fillColor, -0.3)
+        }
       }
-
-      this.dataset[index].push({
-        count: (100 / 40),
-        isActive: isActive,
-        fillColor: fillColor,
-        textColor: textColor,
-        label: segmentLabel,
-        date: new Date(itemDate),
-        day: utilities.getDaySlug(((i + 1) - month.startIndex)),
-        month: utilities.getMonthSlug((month.index + 1)),
-        year: config.year,
-        dayOfWeek: dayOfWeek
-      })
     }
   }
 
-  addMarkers () {
-    this.store.markCurrentDay()
-    this.store.markEvents()
-  }
-
-  /// ////////////////////////////////////////////////////////
-  // CHART CREATION
-  /// ////////////////////////////////////////////////////////
-
-  create () {
-    let { width, height } = this
-
-    // Calculate new values based on index
-    width -= OFFSET
-    height -= OFFSET
+  createChart (data) {
+    const baseUnit = 1000
+    const size = baseUnit - (2 * OFFSET)
+    this.innerRadius = ((baseUnit / 2) - 20)
+    this.outerRadius = (baseUnit / 2)
 
     this.pie = d3.pie()
       .padAngle(0.005)
@@ -145,19 +86,19 @@ class Chart extends Component {
       }).sort(null)
 
     this.chartRing = d3.select(this._ref).append('svg')
-      .attr('width', width)
-      .attr('height', height)
+      .attr('width', '100%')
+      .attr('height', '100%')
       .style('margin-top', (OFFSET / 2) + 'px')
       .style('margin-left', (OFFSET / 2) + 'px')
       .attr('class', 'calendar-chart-ring')
-      .attr('viewBox', '0 0 ' + width + ' ' + width)
+      .attr('viewBox', '0 0 ' + size + ' ' + size)
       .append('g')
-      .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-      .call(() => this.addSegments())
+      .attr('transform', 'translate(' + size / 2 + ',' + size / 2 + ')')
+      .call(() => this.addSegments(data))
   }
 
-  addSegments () {
-    this.dataset.forEach((month, index) => {
+  addSegments (data) {
+    data.forEach((month, index) => {
       this.innerRadius -= OFFSET
       this.outerRadius -= OFFSET
 
@@ -171,7 +112,7 @@ class Chart extends Component {
           return 'chart-ring chart-ring-' + index
         })
 
-      // Configure segment colour
+      // Configure segment color
       group.selectAll('path')
         .data(this.pie(month))
         .enter()
@@ -180,26 +121,24 @@ class Chart extends Component {
         .attr('class', (d, i) => {
           return 'segment segment-' + i
         })
-        .attr('fill', (d) => {
-          return d.data.fillColor
-        })
+        .attr('fill', (d) => d.data.fillColor)
         .on('mouseover', (d) => {
-          if (d.data.isActive) {
-            var monthIndex = utilities.getMonthIndexFromDate(d.data.date)
-            var dayIndex = utilities.getDayIndexFromDate(d.data.date)
-            this.store.focusEvent(monthIndex, dayIndex, true)
+          if (d.data.date) {
+            var monthIndex = d.data.index
+            var dayIndex = d.data.date.date() - 1
+            this.focusEvent(monthIndex, dayIndex, true)
           }
         })
         .on('mouseout', (d) => {
-          if (d.data.isActive) {
-            var monthIndex = utilities.getMonthIndexFromDate(d.data.date)
-            var dayIndex = utilities.getDayIndexFromDate(d.data.date)
-            this.store.focusEvent(monthIndex, dayIndex, false)
+          if (d.data.date) {
+            var monthIndex = d.data.index
+            var dayIndex = d.data.date.date() - 1
+            this.focusEvent(monthIndex, dayIndex, false)
           }
         })
         .on('click', (d) => {
           console.log('You clicked:', d.data)
-          // if (d.data.isActive) {
+          // if (d.data.date) {
           //   $state.go('calendar.month.day', {
           //     day: d.data.day,
           //     month: d.data.month
@@ -213,11 +152,11 @@ class Chart extends Component {
   }
 
   addMonthLabels (group, index) {
-    const { config } = this.props
+    const { calendar } = this.props.calendarStore
 
     // Configure month labels
     group.selectAll('g.month-label')
-      .data([config.calendar[index].index])
+      .data([calendar[index].monthLabel])
       .enter()
       .append('g')
       .attr('class', 'month-label')
@@ -225,22 +164,18 @@ class Chart extends Component {
       .style('text-anchor', 'end')
       .attr('dx', '-20')
       .attr('dy', (this.outerRadius * -1) + 13)
-      .attr('fill', config.calendar[index].fillColor)
-      .text((d, i) => {
-        return constants.MONTH_LABELS[d]
-      })
+      .style('fill', theme.monthLabel.textColor)
+      .text((d, i) => d)
   }
 
   addDayLabels (group, month, arc, index) {
-    const { config } = this.props
-
     // Configure day labels
     group.selectAll('g.segment-label')
       .data(this.pie(month))
       .enter()
       .append('g')
       .attr('class', (d, i) => {
-        return 'segment-label ' + this.getSegmentLabel(i)
+        return 'segment-label segment-label-' + i
       })
       .append('text')
       .attr('pointer-events', 'none')
@@ -253,103 +188,93 @@ class Chart extends Component {
       })
       .attr('text-anchor', 'middle')
       .attr('dy', 3)
-      .style('fill', (d, i) => {
-        return d.data.textColor
-      })
-      .text((d, i) => {
-        var text = ''
-
-        if (i < config.calendar[index].startIndex) {
-          text = ''
-        } else if (i < (config.calendar[index].days + config.calendar[index].startIndex)) {
-          text = ((i + 1) - (config.calendar[index].startIndex))
-
-          if (text < 10) {
-            text = '0' + text
-          }
-        }
-
-        return text
-      })
+      .style('fill', (d, i) => d.data.textColor)
+      .text((d, i) => d.data.text)
   }
 
-  /**
-   * Animate chart rings into view
-   */
+  // Update the chart segment colors based on dataset
+  updateChart (data) {
+    data.forEach((month, index) => {
+      d3.select(this._ref)
+        .select('g.chart-ring-' + index)
+        .selectAll('path')
+        .data(this.pie(month))
+        .transition()
+        .duration(DURATION / 2)
+        .delay(index * 50)
+        .style('fill', (d) => d.data.fillColor)
+    })
+  }
+
+  // Animate chart rings into view
   animateIn () {
     this.chartRing.selectAll('.chart-ring')
       .style('opacity', 0)
       .transition()
       .duration(DURATION)
       .delay((d, i) => {
-        return (DELAY + (i * 100))
+        return i * 100
       })
       .style('opacity', 1)
   }
 
-  /**
-   * Animate chart rings into view
-   */
-  animateOut () {
-    this.chartRing.selectAll('.chart-ring')
-      .style('opacity', 1)
+  // Colours ring segment based on focus state
+  focusEvent (monthIndex, dayIndex, isFocused) {
+    const { calendar } = this.props.calendarStore
+    dayIndex += calendar[monthIndex].startIndex
+    this.focusSegment(monthIndex, dayIndex, isFocused)
+  }
+
+  focusSegment (monthIndex, dayIndex, isFocused) {
+    // Update row focus
+    d3.select('g.chart-ring-' + monthIndex)
+      .selectAll('path')
       .transition()
-      .duration(DURATION)
-      .delay((d, i) => {
-        return (DELAY + (i * 100))
+      .duration(150)
+      .style('fill', (d, i) => {
+        var fillColor = d.data.fillColor
+
+        if (isFocused) {
+          if (d.data.date && d.data.type !== 'today') {
+            fillColor = utilities.shadeColor(d.data.fillColor, -0.5)
+          }
+        }
+
+        return fillColor
       })
-      .style('opacity', 0)
-  }
 
-  /// ///////////////////////////////////////////////////////////////////
-  // HELPERS
-  /// ///////////////////////////////////////////////////////////////////
+    // Update segment color
+    d3.select('g.chart-ring-' + monthIndex)
+      .select('.segment-' + dayIndex)
+      .transition()
+      .duration(150)
+      .style('fill', (d, i) => {
+        let fillColor = d.data.fillColor
+        if (isFocused) {
+          const focusType = d.data.type + 'Focused'
+          if (focusType in theme) {
+            fillColor = theme[focusType].fillColor
+          }
+        }
+        return fillColor
+      })
 
-  getSegmentLabel (index) {
-    return 'segment-label-' + index
-  }
-
-  getSegmentDate (index, itemIndex, startIndex) {
-    return (this.props.config.year + '-' + (itemIndex + 1) + '-' + ((index + 1) - startIndex))
-  }
-
-  getDayOfWeekIndex (index) {
-    // Days of week iterator
-    if (index === (DAYS_OF_WEEK - 1)) {
-      index = 0
-    } else {
-      index++
-    }
-
-    return index
-  }
-
-  /**
-   * Determine if current segments are Saturday or Sunday
-   * and shade accordingly
-   */
-  getFillColor (index, color) {
-    var fillColor = color
-
-    if ((index === (DAYS_OF_WEEK - 2)) || (index === (DAYS_OF_WEEK - 1))) {
-      fillColor = utilities.shadeColor(color, -0.3)
-    }
-
-    return fillColor
-  }
-
-  /// ///////////////////////////////////////////////////////////////////
-  // GETTERS
-  /// ///////////////////////////////////////////////////////////////////
-
-  getMonth (year, month) {
-    var monthObj = this.props.config.chart[utilities.getMonthIndex(month)]
-    return monthObj.filter(x => x.isActive)
-  }
-
-  getDay (year, month, day) {
-    const days = this.props.config.chart[utilities.getMonthIndex(month)]
-    return days.find(x => (x.day === day))
+    // Update text color
+    d3.select('g.chart-ring-' + monthIndex)
+      .select('.segment-label-' + dayIndex)
+      .select('text')
+      .transition()
+      .duration(150)
+      .style('fill', (d, i) => {
+        let textColor = d.data.textColor
+        if (isFocused) {
+          const focusType = d.data.type + 'Focused'
+          if (focusType in theme) {
+            textColor = theme[focusType].textColor
+          }
+        }
+        return textColor
+      })
   }
 }
 

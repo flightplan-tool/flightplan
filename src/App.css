@@ -1,29 +1,46 @@
 body {
+  font-family: 'Fira Sans', sans-serif;
   font-feature-settings: "kern", "liga", "pnum";
-  font-size: 0.85em;
-  line-height: 1.5;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: 0.85em;
-  line-height: 1.2;
-  margin: 0 0 0.75em;
+
+#root > .grid {
+  display: grid;
+  grid-template-columns: max-content repeat(2, minmax(450px, 1fr));
+  grid-template-rows: minmax(250px, max-content) max-content;
+  grid-template-areas:  "searchForm   legend  ."
+                        "searchForm   chart   chart";
 }
+
+.searchForm {
+  grid-area: searchForm;
+}
+
+.legend {
+  justify-self: center;
+  grid-area: legend;
+  margin-top: 40px;
+  margin-right: 60px;
+}
+
+.chart-rings-container {
+  justify-self: center;
+  grid-area: chart;
+}
+
 p {
   margin: 0 0 0.75em;
 }
+
 a {
   color: #477dca;
   text-decoration: none;
   transition: color 150ms ease;
 }
+
 a:active, a:focus, a:hover {
   color: shade(#477dca, 25%);
 }
+
 hr {
   border-bottom: 1px solid #ddd;
   border-left: 0;
@@ -31,6 +48,7 @@ hr {
   border-top: 0;
   margin: 1.5em 0;
 }
+
 img,
 picture {
   margin: 0;
@@ -38,14 +56,47 @@ picture {
 }
 
 h1 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: normal;
+  text-transform: uppercase;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+h2 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: normal;
+  text-transform: uppercase;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+h4 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
   font-style: normal;
-  font-size: 3.75em;
-  text-transform: none;
-  color: #fff;
-  margin-bottom: 10px;
-  strong {
-    font-weight: 700;
-  }
+  line-height: normal;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+em {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  font-style: normal;
+  line-height: normal;
+  color: #eba900;
 }
 
 /*

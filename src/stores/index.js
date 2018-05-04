@@ -1,10 +1,10 @@
-import ChartStore from './chartStore'
+import CalendarStore from './calendarStore'
 import SearchStore from './searchStore'
 
-const chartStore = new ChartStore()
 const searchStore = new SearchStore()
+const calendarStore = new CalendarStore(searchStore)
 
 export default {
-  chartStore,
-  searchStore
+  searchStore,
+  calendarStore
 }

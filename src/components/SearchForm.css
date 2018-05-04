@@ -1,60 +1,90 @@
-#calendarHeader {
-  padding: 20px 30px;
-  float: left;
+body {
+  background-color: #F3F4EF;
 }
 
-#calendarHeader a, #calendarHeader a:visited {
-  color: #666;
+.searchForm {
+  background-color: #15165c;
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.75);
+  padding: 20px;
+  width: 320px;
+  height: 100%;
 }
 
-#calendarHeader a:hover, #calendarHeader a:focus {
-  color: #ccc;
+.searchForm fieldset {
+  border: 0;
+  border-top: dotted 1px white;
+  padding: 20px 0;
 }
 
-#calendarHeader a:focus {
-  color: #ccc;
+.searchForm label, .searchForm p {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  color: white;
 }
 
-.theme-2012 #calendarHeader hr {
-  display: none;
+.searchForm input[type=text], .searchForm input[type=number] {
+  font-size: 13px;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 2px #e9e9e9;
+  border: 1px solid #aeaeae;
+  line-height: 16px;
+  padding: 6px 10px 5px;
 }
 
-.theme-2012 #calendarHeader a, .theme-2012 #calendarHeader a:visited {
-  color: #666;
+.cities .grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:  "fromLabel toLabel"
+                        "fromCity  toCity"
+                        "oneWay    roundTrip";
+  grid-column-gap: 20px;
+  grid-row-gap: 10px;
 }
 
-.theme-2012 #calendarHeader a:hover, .theme-2012 #calendarHeader a:focus {
-  color: #ccc;
+.cities input[type=text] {
+  width: 80px;
 }
 
-.theme-2013 #calendarHeader hr {
-  display: none;
+.cities .radiobutton {
+  margin-top: 10px;
 }
 
-.theme-2013 #calendarHeader a, .theme-2013 #calendarHeader a:visited {
-  color: #666;
+.dates .grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:  "startLabel endLabel"
+                        "startDate  endDate";
+  grid-column-gap: 20px;
+  grid-row-gap: 10px;
 }
 
-.theme-2013 #calendarHeader a:hover, .theme-2013 #calendarHeader a:focus {
-  color: #ccc;
+.dates input[type=text] {
+  width: 80px;
 }
 
-.theme-2015 #calendarHeader h1 {
-  margin-bottom: 0;
-}
-.theme-2015 #calendarHeader hr {
-  border-top: 1px dotted #fff;
-  margin: 10px 0 20px 0;
-}
-
-.theme-2015 #calendarHeader p {
-  color: #3db657;
-}
-
-.theme-2015 #calendarHeader a, .theme-2015 #calendarHeader a:visited {
-  color: #3652a6;
+.classes .grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:  "firstClass       businessClass"
+                        "premEconClass    econClass"
+                        "showWaitlisted   showWaitlisted"
+                        "showNonSaver     showNonSaver"
+                        "spacer           spacer"
+                        "passengersLabel  passengers";
+  grid-column-gap: 20px;
+  grid-row-gap: 10px;
 }
 
-.theme-2015 #calendarHeader a:hover, .theme-2015 #calendarHeader a:focus {
-  color: #4465c2;
+.classes label {
+  align-self: center;
+}
+
+.flights .checkbox, .airlines .checkbox {
+  margin-top: 15px;
 }

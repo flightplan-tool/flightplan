@@ -9,8 +9,10 @@
     "moment": "^2.22.1",
     "react": "^16.3.2",
     "react-app-rewire-mobx": "^1.0.8",
+    "react-datepicker": "^1.4.1",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
+    "react-select": "^2.0.0-beta.2",
     "url-search-params": "^0.10.0"
   },
   "scripts": {
