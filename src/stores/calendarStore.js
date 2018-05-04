@@ -100,10 +100,27 @@ export default class CalendarStore {
   }
 
   markResults (data, awards) {
+    // Iterate over each award
     for (const award of awards) {
-      const segment = this.findSegment(data, moment(award.date))
+      const { airline, date, fareCodes } = award
+
+      // Find the segment the award belongs to
+      const segment = this.findSegment(data, moment(date))
       if (segment) {
-        segment.award = award
+
+        // We may have multiple awards on the same day, choose first airline
+        // (lexicographically)
+        if (!segment.award || airline < segment.award.airline) {
+          segment.award = {
+            airline,
+            fareCodes: new Set()
+          }
+        }
+
+        // Merge all award codes found for this airline
+        if (airline === segment.award.airline) {
+          fareCodes.split(' ').forEach(x => segment.award.fareCodes.add(x))
+        }
       }
     }
   }

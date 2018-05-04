@@ -68,6 +68,7 @@ class SearchForm extends Component {
               minDate={moment()}
               maxDate={moment().add(1, 'y')}
               monthsShown={2}
+              fixedHeight
               onChange={(val) => searchStore.update({ startDate: val })}
               style={{ gridArea: 'startDate' }}
             />
@@ -78,6 +79,7 @@ class SearchForm extends Component {
               minDate={searchStore.startDate}
               maxDate={moment().add(1, 'y')}
               monthsShown={2}
+              fixedHeight
               onChange={(val) => searchStore.update({ endDate: val })}
               style={{ gridArea: 'endDate' }}
             />

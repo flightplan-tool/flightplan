@@ -43,34 +43,48 @@ class Chart extends Component {
   // Apply theme colors to the data before transforming to SVG
   applyTheme(data) {
     // Load legend, so we know what colors to apply to awards
-    const { legend } = this.props.searchStore
-    console.log(legend)
-
     for (const month of data) {
       for (const segment of month) {
-        const { type, isWeekend } = segment
-        
-        // Lookup color theme
-        let style = {fillColor: 'none'}
-        if (segment.award) {
-          style = {fillColor: '#0000ff', textColor: '#000000'}
-        } else if (type in theme) {
-          style = theme[type]
-        } else if (segment.date) {
-          style = theme.months[segment.date.month()]
-        }
-
         // Apply style to segment
+        const style = this.segmentStyle(segment)
         const { fillColor = '', textColor = '' } = style
         segment.fillColor = fillColor
         segment.textColor = textColor
 
         // Tint the weekends
-        if (isWeekend && (type === 'search' || type === 'segment')) {
+        const { award, type, isWeekend } = segment
+        if (!award && isWeekend && (type === 'search' || type === 'segment')) {
           segment.fillColor = utilities.shadeColor(segment.fillColor, -0.3)
         }
       }
     }
+  }
+
+  segmentStyle (segment) {
+    const { award, date, type } = segment
+
+    if (award) {
+      const { legend } = this.props.searchStore
+      const { airline, fareCodes } = award
+
+      // Find the legend section that corresponds to this award's airline
+      const section = legend.find(x => x.key === airline)
+      if (section) {
+        const match = section.fareCodes.find(x => fareCodes.has(x.key))
+        if (match) {
+          const { index, waitlisted } = match
+          const palette = waitlisted ? theme.awardWaitlisted : theme.award
+          return palette[index % palette.length]
+        }
+      }
+    }
+    if (type in theme) {
+      return theme[type]
+    }
+    if (date) {
+      return theme.months[date.month()]
+    }
+    return {fillColor: 'none'}
   }
 
   createChart (data) {
