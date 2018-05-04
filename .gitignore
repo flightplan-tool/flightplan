@@ -2,6 +2,9 @@
 data/
 db/
 
+# User accounts
+config/accounts.json
+
 # Logs
 logs
 *.log

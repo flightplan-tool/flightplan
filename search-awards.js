@@ -4,8 +4,8 @@ const moment = require('moment')
 const prompt = require('syncprompt')
 const sqlite = require('sqlite')
 
-const credentials = require('./credentials')
 const SQEngine = require('./airlines/sq/engine')
+const accounts = require('./lib/accounts')
 const consts = require('./lib/consts')
 const { migrate, insertRow, loadCookies, saveCookies } = require('./lib/db')
 
@@ -21,8 +21,8 @@ Options:
   -c, --class           Cabin class (F=First, C=Business, W=PremEcon, Y=Economy)
   -s, --start           Starting date of the search range (YYYY-MM-DD)
   -e, --end             Ending date of the search range (YYYY-MM-DD)
-  -a, --adults          # of adults traveling (Defaults to 1)
-  -k, --children        # of children traveling (Defaults to 0)
+  -p, --passengers      # of passengers traveling (Defaults to 1)
+  -a, --account         Index of account to use (0=first, will wrap if not enough accounts available)
   -h, --headful         Run browser in non-headless mode
 `
 
@@ -34,14 +34,13 @@ function pathForQuery (query) {
 
 async function canSkip (query, db) {
   try {
-    const { fromCity, toCity, cabinClass, departDate, returnDate, adults, children } = query
+    const { fromCity, toCity, cabinClass, departDate, returnDate, quantity } = query
 
     // Prepare paramters
     const departStr = departDate ? departDate.format('YYYY-MM-DD') : null
     const returnStr = returnDate ? returnDate.format('YYYY-MM-DD') : null
     const cities = [fromCity, toCity]
     const dates = [departStr, returnStr || departStr]
-    const quantity = adults + children
     let sql, params
 
     // First, get the set of rows which might be interesting
@@ -107,8 +106,8 @@ const main = async () => {
   let cabinClass = argv['c'] || argv['class']
   let startDate = argv['s'] || argv['start']
   let endDate = argv['e'] || argv['end']
-  let adults = argv['a'] || argv['adults'] || 1
-  let children = argv['k'] || argv['children'] || 0
+  let passengers = argv['p'] || argv['passengers'] || 1
+  let accountIdx = argv['a'] || argv['account'] || 0
   let headless = !(argv['h'] || argv['headful'])
 
   // Fill in missing arguments
@@ -185,8 +184,7 @@ const main = async () => {
     queries.forEach(q => {
       q.engine = 'SQ'
       q.cabinClass = cabinClass
-      q.adults = adults
-      q.children = children
+      q.quantity = passengers
     })
 
     // Execute queries
@@ -201,7 +199,8 @@ const main = async () => {
 
       // Lazy load the search engine
       if (!engine) {
-        engine = new SQEngine({...credentials, headless, cookies, timeout: 5 * 60000})
+        const account = accounts.getCredentials('SQ', accountIdx)
+        engine = new SQEngine({...account, headless, cookies, timeout: 5 * 60000})
         if (!await engine.initialize()) {
           throw new Error('Failed to initialize SQ engine!')
         }
