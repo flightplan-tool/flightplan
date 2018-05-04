@@ -1,8 +1,8 @@
 .chart-stamp {
   position: absolute;
   left: 50%;
-  top: 480px;
-  transform: translate(-15px, 0);
-  width: 350px;
+  top: 460px;
+  transform: translate(-46.5%, 0);
+  width: 30%;
   height: 100px;
 }

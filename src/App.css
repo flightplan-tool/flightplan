@@ -5,7 +5,7 @@ body {
 
 #root > .grid {
   display: grid;
-  grid-template-columns: max-content repeat(2, minmax(450px, 1fr));
+  grid-template-columns: max-content repeat(2, minmax(500px, 1fr));
   grid-template-rows: minmax(250px, max-content) max-content;
   grid-template-areas:  "searchForm   legend  ."
                         "searchForm   chart   chart";

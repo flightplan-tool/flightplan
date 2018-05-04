@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { autorun } from 'mobx'
 import { inject } from 'mobx-react'
 import * as d3 from 'd3'
+import d3Tip from "d3-tip"
 
 import * as utilities from '../lib/utilities'
 
@@ -52,8 +53,8 @@ class Chart extends Component {
         segment.textColor = textColor
 
         // Tint the weekends
-        const { award, type, isWeekend } = segment
-        if (!award && isWeekend && (type === 'search' || type === 'segment')) {
+        const { awards, type, isWeekend } = segment
+        if (!awards && isWeekend && (type === 'search' || type === 'segment')) {
           segment.fillColor = utilities.shadeColor(segment.fillColor, -0.3)
         }
       }
@@ -61,16 +62,23 @@ class Chart extends Component {
   }
 
   segmentStyle (segment) {
-    const { award, date, type } = segment
-
-    if (award) {
+    if (segment.awards) {
       const { legend } = this.props.searchStore
-      const { airline, fareCodes } = award
 
-      // Find the legend section that corresponds to this award's airline
+      // For fill color, grab awards from the first airline alphabetically
+      const airline = segment.awards.map(x => x.airline).sort()[0]
+
+      // Merge all award codes for this airline
+      const awards = segment.awards.filter(x => x.airline === airline)
+      const codes = awards.reduce((set, award) => {
+        award.fareCodes.split(' ').forEach(x => set.add(x))
+        return set
+      }, new Set())
+
+      // Lookup the color from the legend data
       const section = legend.find(x => x.key === airline)
       if (section) {
-        const match = section.fareCodes.find(x => fareCodes.has(x.key))
+        const match = section.fareCodes.find(x => codes.has(x.key))
         if (match) {
           const { index, waitlisted } = match
           const palette = waitlisted ? theme.awardWaitlisted : theme.award
@@ -78,18 +86,18 @@ class Chart extends Component {
         }
       }
     }
-    if (type in theme) {
-      return theme[type]
+    if (segment.type in theme) {
+      return theme[segment.type]
     }
-    if (date) {
-      return theme.months[date.month()]
+    if (segment.date) {
+      return theme.months[segment.date.month()]
     }
     return {fillColor: 'none'}
   }
 
   createChart (data) {
     const baseUnit = 1000
-    const size = baseUnit - (2 * OFFSET)
+    const size = baseUnit + OFFSET
     this.innerRadius = ((baseUnit / 2) - 20)
     this.outerRadius = (baseUnit / 2)
 
@@ -98,6 +106,11 @@ class Chart extends Component {
       .value((d) => {
         return d.count
       }).sort(null)
+
+    this.tip = d3Tip()
+      .attr('class', 'tooltip')
+      .direction('w')
+      .html((d) => this.renderToolTip(d.data.awards))
 
     this.chartRing = d3.select(this._ref).append('svg')
       .attr('width', '100%')
@@ -108,6 +121,7 @@ class Chart extends Component {
       .attr('viewBox', '0 0 ' + size + ' ' + size)
       .append('g')
       .attr('transform', 'translate(' + size / 2 + ',' + size / 2 + ')')
+      .call(this.tip)
       .call(() => this.addSegments(data))
   }
 
@@ -136,30 +150,20 @@ class Chart extends Component {
           return 'segment segment-' + i
         })
         .attr('fill', (d) => d.data.fillColor)
-        .on('mouseover', (d) => {
+        .on('mouseover.highlight', (d) => {
           if (d.data.date) {
             var monthIndex = d.data.index
             var dayIndex = d.data.date.date() - 1
             this.focusEvent(monthIndex, dayIndex, true)
           }
         })
-        .on('mouseout', (d) => {
+        .on('mouseout.highlight', (d) => {
           if (d.data.date) {
             var monthIndex = d.data.index
             var dayIndex = d.data.date.date() - 1
             this.focusEvent(monthIndex, dayIndex, false)
           }
         })
-        .on('click', (d) => {
-          console.log('You clicked:', d.data)
-          // if (d.data.date) {
-          //   $state.go('calendar.month.day', {
-          //     day: d.data.day,
-          //     month: d.data.month
-          //   })
-          // }
-        })
-
       this.addMonthLabels(group, index)
       this.addDayLabels(group, month, arc, index)
     })
@@ -206,18 +210,28 @@ class Chart extends Component {
       .text((d, i) => d.data.text)
   }
 
-  // Update the chart segment colors based on dataset
   updateChart (data) {
+    // Update the chart segment colors based on dataset
     data.forEach((month, index) => {
       d3.select(this._ref)
         .select('g.chart-ring-' + index)
         .selectAll('path')
         .data(this.pie(month))
+        .attr('class', (d, i) => {
+          return 'segment segment-' + i + (d.data.awards ? ' awards' : '')
+        })
         .transition()
         .duration(DURATION / 2)
         .delay(index * 50)
         .style('fill', (d) => d.data.fillColor)
     })
+
+    // Update tooltips on segments with award availability
+    d3.select(this._ref)
+      .selectAll('g.chart-ring')
+      .selectAll('path.awards')
+      .on('mouseover.tip', this.tip.show)
+      .on('mouseout.tip', this.tip.hide)
   }
 
   // Animate chart rings into view
@@ -289,6 +303,15 @@ class Chart extends Component {
         }
         return textColor
       })
+  }
+
+  renderToolTip (awards) {
+    console.log(awards)
+    let html = ''
+    for (const award of awards) {
+      html += `<p>${award.flight} <em>${award.fareCodes}</em></p>`
+    }
+    return html
   }
 }
 
