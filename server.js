@@ -12,18 +12,12 @@ app.get('/search', async (req, res, next) => {
     const {
       fromCity,
       toCity,
-      cabinClass,
       passengers = '1',
       direction = 'oneway',
-      showWaitlisted = 'true',
       startDate,
       endDate,
-      airlines,
-      flights,
       limit
     } = req.query
-
-    console.log('QUERY:', req.query)
 
     // Validate dates
     const start = moment(startDate)
@@ -68,23 +62,6 @@ app.get('/search', async (req, res, next) => {
 
     // Run SQL query
     let awards = await db.all(query, ...params)
-
-    // Do further filtering
-    const hideWaitlisted = !truthy(showWaitlisted)
-    if (cabinClass || hideWaitlisted) {
-      awards.forEach(award => {
-        let { fareCodes } = award
-        fareCodes = fareCodes.split(' ')
-        if (cabinClass) {
-          fareCodes = fareCodes.filter(x => x.startsWith(cabinClass))
-        }
-        if (hideWaitlisted) {
-          fareCodes = fareCodes.filter(x => !x.includes('@'))
-        }
-        award.fareCodes = fareCodes.join(' ')
-      })
-      awards = awards.filter(x => x.fareCodes.length !== 0)
-    }
 
     res.send(awards)
   } catch (err) {
