@@ -19,7 +19,7 @@ class JLEngine extends Engine {
       fares: {
         FS: {cabin: cabins.first, saver: true},
         CS: {cabin: cabins.business, saver: true},
-        WS: {cabin: cabins.premecon, saver: true},
+        WS: {cabin: cabins.premium, saver: true},
         YS: {cabin: cabins.economy, saver: true}
       },
       accountRequired: false,

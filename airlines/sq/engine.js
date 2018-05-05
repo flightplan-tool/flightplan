@@ -22,8 +22,8 @@ class SQEngine extends Engine {
         FA: {cabin: cabins.first, saver: false},
         CS: {cabin: cabins.business, saver: true},
         CA: {cabin: cabins.business, saver: false},
-        WS: {cabin: cabins.premecon, saver: true},
-        WA: {cabin: cabins.premecon, saver: false},
+        WS: {cabin: cabins.premium, saver: true},
+        WA: {cabin: cabins.premium, saver: false},
         YS: {cabin: cabins.economy, saver: true},
         YA: {cabin: cabins.economy, saver: false}
       },
@@ -257,7 +257,7 @@ class SQEngine extends Engine {
       // Set cabin class
       const classOptions = {
         [cabins.economy]: 'economy',
-        [cabins.premecon]: 'premiumeconomy',
+        [cabins.premium]: 'premiumeconomy',
         [cabins.business]: 'business',
         [cabins.first]: 'firstSuite'
       }

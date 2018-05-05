@@ -23,9 +23,9 @@ class CXEngine extends Engine {
         CS: {cabin: cabins.business, saver: true},
         C1: {cabin: cabins.business, saver: false},
         C2: {cabin: cabins.business, saver: false},
-        WS: {cabin: cabins.premecon, saver: true},
-        W1: {cabin: cabins.premecon, saver: false},
-        W2: {cabin: cabins.premecon, saver: false},
+        WS: {cabin: cabins.premium, saver: true},
+        W1: {cabin: cabins.premium, saver: false},
+        W2: {cabin: cabins.premium, saver: false},
         YS: {cabin: cabins.economy, saver: true},
         Y1: {cabin: cabins.economy, saver: false},
         Y2: {cabin: cabins.economy, saver: false}

@@ -114,7 +114,7 @@ class Engine {
         start.add(throttlePeriod, 's')
         const delayMillis = start.diff()
         if (delayMillis > 0) {
-          console.log(`*** Cool-down period, resuming ${this._start.fromNow()} ***`)
+          console.log(`*** Cool-down period, resuming ${start.fromNow()} ***`)
           await this.page.waitFor(delayMillis)
         }
         this.throttling = { start: moment(), requests: 0 }

@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 
 const SQEngine = require('./engine')
+const { cabins } = require('../../lib/consts')
 const { truthy } = require('../../lib/utils')
 const { isBlocked } = require('./helpers')
 
@@ -54,19 +55,33 @@ function parseTable ($, table, query) {
 
   // Iterate over flights in this table
   $(table).find('td.flight-part').each((_, row) => {
-    let flight = reFlight.exec($(row).find('span[id^=originFlight-]').text())
-    let aircraft = reAircraft.exec($(row).find('div.details > p').text())
-    flight = flight ? flight[1] : null
-    aircraft = aircraft ? aircraft[1] : ''
-    let fares = [
-      parseAward($, codes, $(row).find('td.hidden-mb.package-1')),
-      parseAward($, codes, $(row).find('td.hidden-mb.package-2'))
-    ]
-    fares = fares.filter(x => x).join(' ')
-    awards.push({ fromCity, toCity, date, cabin, flight, aircraft, fares, quantity })
+    // Confirm the cabin being displayed matches what we searched for
+    if (cabinDisplayed($, row) === cabin) {
+      let flight = reFlight.exec($(row).find('span[id^=originFlight-]').text())
+      let aircraft = reAircraft.exec($(row).find('div.details > p').text())
+      flight = flight ? flight[1] : null
+      aircraft = aircraft ? aircraft[1] : ''
+      let fares = [
+        parseAward($, codes, $(row).find('td.hidden-mb.package-1')),
+        parseAward($, codes, $(row).find('td.hidden-mb.package-2'))
+      ]
+      fares = fares.filter(x => x).join(' ')
+      awards.push({ fromCity, toCity, date, cabin, flight, aircraft, fares, quantity })
+    }
   })
 
   return awards
+}
+
+function cabinDisplayed ($, row) {
+  const displayCodes = {
+    'Economy': cabins.economy,
+    'Premium Economy': cabins.premium,
+    'Business': cabins.business,
+    'First': cabins.first,
+    'Suites': cabins.first
+  }
+  return displayCodes[$(row).find('#cabinForDisplay0').attr('value').trim()]
 }
 
 function parseAward ($, codes, element) {
