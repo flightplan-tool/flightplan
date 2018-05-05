@@ -1,35 +1,49 @@
-const fs = require('fs')
 const moment = require('moment')
-const puppeteer = require('puppeteer')
 
-const applyEvasions = require('../../lib/evasions')
-const { randomInt, printRoute } = require('../../lib/utils')
+const Engine = require('../_base/engine')
+const { cabins } = require('../../lib/consts')
+const { randomInt } = require('../../lib/utils')
 const { isBlocked } = require('./helpers')
-
-const REQUESTS_PER_HOUR = 85
-const THROTTLE_PERIOD = 30 * 60
 
 const URL_FLIGHT_SEARCH = 'https://www.singaporeair.com/en_UK/ppsclub-krisflyer/flightsearch/'
 
-class Engine {
+class SQEngine extends Engine {
   constructor (options) {
-    this._options = options
-    this._start = moment()
-    this._requests = 0
+    super()
+    this.options = options
+  }
+
+  static get config () {
+    return {
+      id: 'SQ',
+      name: 'Singapore Airlines',
+      fares: {
+        FS: {cabin: cabins.first, saver: true},
+        FA: {cabin: cabins.first, saver: false},
+        CS: {cabin: cabins.business, saver: true},
+        CA: {cabin: cabins.business, saver: false},
+        WS: {cabin: cabins.premecon, saver: true},
+        WA: {cabin: cabins.premecon, saver: false},
+        YS: {cabin: cabins.economy, saver: true},
+        YA: {cabin: cabins.economy, saver: false}
+      },
+      accountRequired: true,
+      requestsPerHour: 85,
+      throttlePeriod: 30 * 60,
+      validation: {
+        minDays: 0,
+        maxDays: 354
+      }
+    }
   }
 
   async initialize () {
     try {
-      console.log('SQ: Initializing...')
-
-      // Launch the browser in headless mode and set up a page.
-      this._browser = await puppeteer.launch({
-        args: ['--use-gl'],
-        headless: this._options.headless
-      })
+      // Setup browser
+      this.browser = await this.newBrowser(this.options)
 
       // Navigate to the flight search page
-      this.page = await this.newPage(URL_FLIGHT_SEARCH)
+      this.page = await this.newPage(this.browser, this.options, URL_FLIGHT_SEARCH)
       const { page } = this
 
       // Make sure we're in redeem flights mode (to see all the *A cities)
@@ -44,24 +58,6 @@ class Engine {
 
       // Login
       return await this.login()
-    } catch (e) {
-      throw e
-    }
-  }
-
-  async newPage (url) {
-    try {
-      const page = await this._browser.newPage()
-      page.setViewport({width: randomInt(1150, 1450), height: randomInt(850, 1050)})
-      page.setDefaultNavigationTimeout(this._options.timeout)
-      await applyEvasions(page)
-      if (this._options.cookies) {
-        await page.setCookie(...this._options.cookies)
-      }
-      if (url) {
-        await page.goto(url, {waitUntil: 'networkidle2'})
-      }
-      return page
     } catch (e) {
       throw e
     }
@@ -113,7 +109,7 @@ class Engine {
     try {
       console.log('SQ: Logging in...')
       const { page } = this
-      const { username, password } = this._options
+      const { username, password } = this.options
 
       let attempts = 0
       while (true) {
@@ -187,42 +183,19 @@ class Engine {
         toCity,
         departDate,
         returnDate,
-        cabinClass,
-        adults,
-        children,
-        htmlFile,
-        screenshot
+        cabin,
+        quantity
       } = query
       const { page } = this
 
       // Validate from / to
       if (!this._from.has(fromCity)) {
         console.log(`SQ: Invalid From city: ${fromCity}`)
-        return
+        return false
       } else if (!this._to.has(toCity)) {
         console.log(`SQ: Invalid To city: ${toCity}`)
-        return
+        return false
       }
-
-      // Validate depart / return dates
-      if (!departDate.isValid()) {
-        console.log(`SQ: Invalid departure date: ${departDate}`)
-      } else if (!departDate.isBetween(moment(), moment().add(1, 'years'))) {
-        console.log(`SQ: Departure date not between today and 365 days from now: ${departDate}`)
-      }
-      if (returnDate) {
-        if (!returnDate.isValid()) {
-          console.log(`SQ: Invalid return date: ${returnDate}`)
-        } else if (!returnDate.isBetween(departDate, moment().add(1, 'years'))) {
-          console.log(`SQ: Return date not between departure date and 365 days from now: ${returnDate}`)
-        }
-      }
-
-      // Throttle before executing search
-      await this.throttle()
-
-      // Print route(s) being searched
-      printRoute(query)
 
       // Go to flight search page
       await page.goto(URL_FLIGHT_SEARCH, {waitUntil: 'networkidle2'})
@@ -235,8 +208,9 @@ class Engine {
       }
 
       // Check the Redeem Flights radio button
+      await page.waitFor('#travel-radio-2', { visible: true })
       await page.click('#travel-radio-2')
-      await page.waitFor(500)
+      await this.settle()
 
       // Set origin and destination
       await page.evaluate((value) => {
@@ -245,7 +219,7 @@ class Engine {
       await page.evaluate((value) => {
         document.getElementById('city1-2').value = value
       }, this._to.get(toCity))
-      await page.waitFor(500)
+      await this.settle()
 
       // Select Round-Trip or One-Way radio button
       if (returnDate) {
@@ -255,7 +229,7 @@ class Engine {
         await page.waitFor('#city1-radio-5', {visible: true})
         await page.click('#city1-radio-5')
       }
-      await page.waitFor(500)
+      await this.settle()
 
       // Set departure date
       // await page.click(returnDate ? '#city1-travel-start-day' : '#city1-travel-start-day-2')
@@ -267,7 +241,7 @@ class Engine {
         document.querySelector('#city1-travel-start-day').value = strDate
         document.querySelector('#city1-travel-start-day-2').value = strDate
       }, departDate.format('DD/MM/YYYY'))
-      await page.waitFor(500)
+      await this.settle()
 
       // Set return date
       if (returnDate) {
@@ -277,52 +251,39 @@ class Engine {
         await page.evaluate((strDate) => {
           document.querySelector('#city1-travel-return-day').value = strDate
         }, returnDate.format('DD/MM/YYYY'))
-        await page.waitFor(500)
+        await this.settle()
       }
 
       // Set cabin class
       const classOptions = {
-        Y: 'economy',
-        W: 'premiumeconomy',
-        C: 'business',
-        F: 'firstSuite'
+        [cabins.economy]: 'economy',
+        [cabins.premecon]: 'premiumeconomy',
+        [cabins.business]: 'business',
+        [cabins.first]: 'firstSuite'
       }
-      if (!(cabinClass in classOptions)) {
-        console.log('SQ: Invalid cabin class:', cabinClass)
+      if (!(cabin in classOptions)) {
+        this.error(`Invalid cabin class: ${cabin}`)
         return
       }
       if (!(await this.select('#customSelect-4-combobox',
-      'li[id^="customSelect-4-option-"]', classOptions[cabinClass]))) {
-        console.log('SQ: Could not set cabin class to:', classOptions[cabinClass])
+      'li[id^="customSelect-4-option-"]', classOptions[cabin]))) {
+        console.log('SQ: Could not set cabin class to:', classOptions[cabin])
         return
       }
 
-      // Set the # of adults and children
+      // Set the # of adults
       if (!await this.select('#customSelect-5-combobox',
-      'li[id^="customSelect-5-option-"]', adults.toString())) {
-        console.log('SQ: Could not set # of adults to:', adults)
+      'li[id^="customSelect-5-option-"]', quantity.toString())) {
+        console.log('SQ: Could not set # of adults to:', quantity)
         return
-      }
-      if (!await this.select('#customSelect-6-combobox',
-      'li[id^="customSelect-6-option-"]', children.toString())) {
-        console.log('SQ: Could not set # of children to:', adults)
       }
 
       // Submit the form
-      await page.waitFor(randomInt(500, 1000))
       await page.click('#form-book-travel-1 #city-travel-input-2')
       const response = await page.waitForNavigation({waitUntil: 'networkidle2'})
 
-      // Screenshot page if requested
-      if (screenshot) {
-        await page.screenshot({path: screenshot})
-      }
-
-      // Get the full HTML content and write it out
-      const html = await page.evaluate(() => document.body.innerHTML)
-      if (htmlFile) {
-        fs.writeFileSync(htmlFile, html)
-      }
+      // Save HTML and screenshot
+      const html = await this.save(query, page)
 
       // Check response code
       if (!response.ok()) {
@@ -376,44 +337,17 @@ class Engine {
     }
   }
 
-  async getCookies () {
+  async settle () {
     try {
-      return await this.page.cookies()
-    } catch (e) {
-      return []
-    }
-  }
+      const { page } = this
 
-  async close () {
-    try {
-      if (this._browser) {
-        await this._browser.close()
-        this._browser = null
-      }
-    } catch (e) {
-      throw e
-    }
-  }
-
-  async throttle () {
-    try {
-      const limit = REQUESTS_PER_HOUR / 3600 * THROTTLE_PERIOD
-      if (this._requests >= limit) {
-        // Sleep until end of period, to provide a cool-down period
-        this._start.add(THROTTLE_PERIOD, 's')
-        const delayMillis = this._start.diff()
-        if (delayMillis > 0) {
-          console.log(`*** Cool-down period, resuming ${this._start.fromNow()} ***`)
-          await this.page.waitFor(delayMillis)
-        }
-        this._requests = 0
-        this._start = moment()
-      }
-      this._requests++
+      // Wait a tiny bit, for things to run
+      await page.waitFor(250)
+      await page.waitFor('div.overlay-loading', { hidden: true })
     } catch (e) {
       throw e
     }
   }
 }
 
-module.exports = Engine
+module.exports = SQEngine

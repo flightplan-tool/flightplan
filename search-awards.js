@@ -2,12 +2,12 @@ const fs = require('fs')
 const minimist = require('minimist')
 const moment = require('moment')
 const prompt = require('syncprompt')
-const sqlite = require('sqlite')
 
-const SQEngine = require('./airlines/sq/engine')
+const airlines = require('./airlines')
 const accounts = require('./lib/accounts')
-const consts = require('./lib/consts')
-const { migrate, insertRow, loadCookies, saveCookies } = require('./lib/db')
+const { paths, cabins } = require('./lib/consts')
+const { printRoute } = require('./lib/utils')
+const db = require('./lib/db')
 
 const USAGE = `
 Usage: search-awards.js [OPTIONS]
@@ -15,26 +15,32 @@ Usage: search-awards.js [OPTIONS]
   Search an airline website for award inventory, and save the results to disk.
 
 Options:
+  -m, --method          IATA 2-letter code of the airline whose website to search
   -f, --from CITY       IATA 3-letter code of the departure city
   -t, --to CITY         IATA 3-letter code of the arrival city
   -o, --oneway          Searches for one-way award inventory only (default is to search in both directions)
-  -c, --class           Cabin class (F=First, C=Business, W=PremEcon, Y=Economy)
+  -c, --cabin           Cabin (${Object.keys(cabins).join(', ')})
   -s, --start           Starting date of the search range (YYYY-MM-DD)
   -e, --end             Ending date of the search range (YYYY-MM-DD)
   -p, --passengers      # of passengers traveling (Defaults to 1)
   -a, --account         Index of account to use (0=first, will wrap if not enough accounts available)
   -h, --headful         Run browser in non-headless mode
+
+Supported Methods:
+${Object.keys(airlines).sort().map(id => (
+  `  ${id} - ${airlines[id].Engine.config.name}`
+)).join('\n')}
 `
 
 function pathForQuery (query) {
   const { fromCity, toCity, departDate } = query
   const fields = [fromCity, toCity, departDate.format('YYYY-MM-DD'), (new Date()).getTime()]
-  return `${consts.DATA_PATH}/${fields.join('-')}`
+  return `${paths.data}/${fields.join('-')}`
 }
 
-async function canSkip (query, db) {
+async function canSkip (query) {
   try {
-    const { fromCity, toCity, cabinClass, departDate, returnDate, quantity } = query
+    const { fromCity, toCity, cabin, departDate, returnDate, quantity } = query
 
     // Prepare paramters
     const departStr = departDate ? departDate.format('YYYY-MM-DD') : null
@@ -44,18 +50,18 @@ async function canSkip (query, db) {
     let sql, params
 
     // First, get the set of rows which might be interesting
-    sql = 'SELECT * FROM awards_requests WHERE cabinClass = ? AND ' +
+    sql = 'SELECT * FROM awards_requests WHERE cabin = ? AND ' +
       'fromCity IN (?, ?) AND toCity IN (?, ?) AND ' +
       'departDate IN (?, ?) AND (returnDate IN (?, ?) OR returnDate IS NULL)'
-    params = [cabinClass, ...cities, ...cities, ...dates, ...dates]
+    params = [cabin, ...cities, ...cities, ...dates, ...dates]
     const routes = []
-    for (const row of await db.all(sql, ...params)) {
+    for (const row of await db.db().all(sql, ...params)) {
       // Add the departing route
-      routes.push([row.fromCity, row.toCity, row.departDate, row.adults + row.children])
+      routes.push([row.fromCity, row.toCity, row.departDate, row.quantity])
 
       // Add the return route
       if (row.returnDate) {
-        routes.push([row.toCity, row.fromCity, row.returnDate, row.adults + row.children])
+        routes.push([row.toCity, row.fromCity, row.returnDate, row.quantity])
       }
     }
 
@@ -71,11 +77,11 @@ async function canSkip (query, db) {
     }
 
     // If we already know there's no inventory for both routes, we can also skip
-    sql = 'SELECT * FROM awards WHERE cabinClass = ? AND ' +
+    sql = 'SELECT * FROM awards WHERE cabin = ? AND ' +
       'fromCity IN (?, ?) AND toCity IN (?, ?) AND date IN (?, ?)'
-    params = [cabinClass, ...cities, ...cities, ...dates]
+    params = [cabin, ...cities, ...cities, ...dates]
     const awards = []
-    for (const row of await db.all(sql, ...params)) {
+    for (const row of await db.db().all(sql, ...params)) {
       // Add the award
       awards.push([row.fromCity, row.toCity, row.date, row.quantity, row.fareCodes])
     }
@@ -87,23 +93,57 @@ async function canSkip (query, db) {
     ))
     return (departRestricted && returnRestricted)
   } catch (e) {
-    throw new Error('Failed to check database results')
+    throw e
   }
 }
 
-const main = async () => {
-  let db, engine
+function validCabin (engine, cabin) {
+  const fares = Object.values(engine.config.fares)
+  const cabinSet = new Set([...fares.map(x => x.cabin)])
+  if (!cabinSet.has(cabin)) {
+    engine.error(`This method does not support the cabin "${cabin}"`)
+    return false
+  }
+  return true
+}
 
+function validDates (engine, startDate, endDate) {
+  // Calculate the valid range allowed by the engine
+  const { minDays, maxDays } = engine.config.validation
+  const now = moment().startOf('d')
+  const a = now.clone().add(minDays, 'd')
+  const b = now.clone().add(maxDays, 'd')
+
+  // Check if our search range is completely outside the valid range
+  if (endDate.isBefore(a, 'd') || startDate.isAfter(b, 'd')) {
+    engine.error(`This method only supports searching within the range: ${a.format('L')} -> ${b.format('L')}`)
+    return [null, null]
+  }
+
+  // If only start or end are outside the valid range, we can adjust them
+  if (startDate.isBefore(a, 'd')) {
+    engine.info(`This method can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.format('L')}`)
+    startDate = a
+  }
+  if (endDate.isAfter(b, 'd')) {
+    engine.info(`This method can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.format('L')}`)
+    endDate = b
+  }
+  return [startDate, endDate]
+}
+
+const main = async () => {
   // Parse arguments
   const argv = minimist(process.argv, {boolean: ['o', 'oneway', 'h', 'headful']})
   if (['help', '?', '?'].find(x => x in argv)) {
     console.log(USAGE)
     return
   }
+  let method = argv['m'] || argv['method']
   let fromCity = argv['f'] || argv['from']
   let toCity = argv['t'] || argv['to']
   let oneWay = argv['o'] || argv['oneway']
-  let cabinClass = argv['c'] || argv['class']
+  let cabin = argv['c'] || argv['cabin']
   let startDate = argv['s'] || argv['start']
   let endDate = argv['e'] || argv['end']
   let passengers = argv['p'] || argv['passengers'] || 1
@@ -111,14 +151,17 @@ const main = async () => {
   let headless = !(argv['h'] || argv['headful'])
 
   // Fill in missing arguments
+  if (!method) {
+    method = prompt('Airline website to search (2-letter code)? ')
+  }
   if (!fromCity) {
     fromCity = prompt('Departure city (3-letter code)? ')
   }
   if (!toCity) {
     toCity = prompt('Arrival city (3-letter code)? ')
   }
-  if (!cabinClass) {
-    cabinClass = prompt('Desired cabin class (F/C/W/Y)? ')
+  if (!cabin) {
+    cabin = prompt(`Desired cabin class (${Object.keys(cabins).join('/')}})? `)
   }
   if (!startDate) {
     startDate = prompt('Start date of search range (YYYY-MM-DD)? ')
@@ -128,33 +171,55 @@ const main = async () => {
   }
 
   // Validate arguments
-  cabinClass = cabinClass.toUpperCase()
+  if (!(method in airlines)) {
+    console.error(`Unrecognized search method: ${method}`)
+    return
+  }
+  if (!(cabin in cabins)) {
+    console.error(`Unrecognized cabin specified: ${cabin}`)
+    return
+  }
   startDate = moment(startDate)
+  if (!startDate.isValid()) {
+    console.error(`Invalid start date: ${startDate}`)
+  }
   endDate = moment(endDate)
+  if (!endDate.isValid()) {
+    console.error(`Invalid end date: ${endDate}`)
+  }
   if (endDate.isBefore(startDate)) {
     console.error(`Invalid date range for search: ${startDate.format('L')} -> ${endDate.format('L')}`)
     return
   }
 
+  // Resolve method and validate cabin / date range
+  method = airlines[method]
+  if (!validCabin(method.Engine, cabin)) {
+    return
+  }
+  [ startDate, endDate ] = validDates(method.Engine, startDate, endDate)
+  if (!startDate || !endDate) {
+    return
+  }
+
+  let engine
   try {
     // Create data path if necessary
-    if (!fs.existsSync(consts.DATA_PATH)) {
-      fs.mkdirSync(consts.DATA_PATH)
+    if (!fs.existsSync(paths.data)) {
+      fs.mkdirSync(paths.data)
     }
 
-    // Create database if necessary
-    await migrate()
-
-    // Open database
-    db = await sqlite.open(consts.DB_PATH, { Promise })
+    // Create database if necessary, and then open
+    await db.migrate()
+    await db.open()
 
     // Load cookies from database
-    const cookies = await loadCookies(db)
+    const cookies = await db.loadCookies()
 
     // Generate queries
     const queries = []
     const days = endDate.diff(startDate, 'd') + 1
-    const gap = oneWay ? 0 : Math.min(consts.GAP_DAYS, days)
+    const gap = oneWay ? 0 : Math.min(3, days)
     for (let i = 0; i < gap; i++) {
       queries.push({
         fromCity: toCity,
@@ -182,8 +247,8 @@ const main = async () => {
       })
     }
     queries.forEach(q => {
-      q.engine = 'SQ'
-      q.cabinClass = cabinClass
+      q.method = method.Engine.id
+      q.cabin = cabin
       q.quantity = passengers
     })
 
@@ -192,19 +257,28 @@ const main = async () => {
     console.log(`Searching ${days} days of award inventory (${startDate.format('L')} - ${endDate.format('L')})`)
     for (const query of queries) {
       // Check if the query's results are already stored
-      if (await canSkip(query, db)) {
+      if (await canSkip(query)) {
         skipped++
         continue
       }
 
       // Lazy load the search engine
       if (!engine) {
-        const account = accounts.getCredentials('SQ', accountIdx)
-        engine = new SQEngine({...account, headless, cookies, timeout: 5 * 60000})
-        if (!await engine.initialize()) {
-          throw new Error('Failed to initialize SQ engine!')
+        const account = method.Engine.accountRequired
+          ? accounts.getCredentials('SQ', accountIdx) : {}
+        const options = {...account, headless, cookies, timeout: 5 * 60000}
+        engine = await method.Engine.new(options)
+        if (!engine) {
+          method.Engine.error('Failed to initialize search engine')
+          return
         }
       }
+
+      // Throttle before executing search
+      await engine.throttle()
+
+      // Print route(s) being searched
+      printRoute(method.Engine, query)
 
       // Run the search query
       try {
@@ -217,11 +291,9 @@ const main = async () => {
           row.departDate = row.departDate ? row.departDate.format('YYYY-MM-DD') : null
           row.returnDate = row.returnDate ? row.returnDate.format('YYYY-MM-DD') : null
           const fields = [
-            'engine', 'fromCity', 'toCity',
-            'cabinClass', 'departDate', 'returnDate',
-            'adults', 'children', 'htmlFile'
+            'method', 'fromCity', 'toCity', 'departDate', 'returnDate', 'cabin', 'quantity', 'htmlFile'
           ]
-          await insertRow(db, 'awards_requests', row, fields)
+          await db.insertRow('awards_requests', row, fields)
         }
       } catch (e) {
         console.error('Search failed:', e)
@@ -234,7 +306,7 @@ const main = async () => {
 
     // Save cookies to database
     if (engine) {
-      await saveCookies(db, await engine.getCookies())
+      await db.saveCookies(await engine.getCookies())
     }
   } catch (e) {
     console.error(e.stack)
@@ -243,9 +315,7 @@ const main = async () => {
     if (engine) {
       await engine.close()
     }
-    if (db) {
-      await db.close()
-    }
+    await db.close()
   }
 }
 
