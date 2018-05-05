@@ -278,7 +278,7 @@ const main = async () => {
       await engine.throttle()
 
       // Print route(s) being searched
-      printRoute(method.Engine, query)
+      printRoute(query)
 
       // Run the search query
       try {
