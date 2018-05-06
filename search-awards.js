@@ -76,22 +76,24 @@ async function canSkip (query) {
       return true
     }
 
-    // If we already know there's no inventory for both routes, we can also skip
-    sql = 'SELECT * FROM awards WHERE cabin = ? AND ' +
-      'fromCity IN (?, ?) AND toCity IN (?, ?) AND date IN (?, ?)'
-    params = [cabin, ...cities, ...cities, ...dates]
-    const awards = []
-    for (const row of await db.db().all(sql, ...params)) {
-      // Add the award
-      awards.push([row.fromCity, row.toCity, row.date, row.quantity, row.fareCodes])
-    }
-    const departRestricted = awards.find(x => (
-        x[0] === fromCity && x[1] === toCity && x[2] === departStr && x[3] <= quantity && !x[4]
-    ))
-    const returnRestricted = returnDate && awards.find(x => (
-        x[0] === toCity && x[1] === fromCity && x[2] === returnStr && x[3] <= quantity && !x[4]
-    ))
-    return (departRestricted && returnRestricted)
+    // // If we already know there's no inventory for both routes, we can also skip
+    // sql = 'SELECT * FROM awards WHERE cabin = ? AND ' +
+    //   'fromCity IN (?, ?) AND toCity IN (?, ?) AND date IN (?, ?)'
+    // params = [cabin, ...cities, ...cities, ...dates]
+    // const awards = []
+    // for (const row of await db.db().all(sql, ...params)) {
+    //   // Add the award
+    //   awards.push([row.fromCity, row.toCity, row.date, row.quantity, row.fares])
+    // }
+    // const departRestricted = awards.find(x => (
+    //     x[0] === fromCity && x[1] === toCity && x[2] === departStr && x[3] <= quantity && !x[4]
+    // ))
+    // const returnRestricted = returnDate && awards.find(x => (
+    //     x[0] === toCity && x[1] === fromCity && x[2] === returnStr && x[3] <= quantity && !x[4]
+    // ))
+    // return (departRestricted && returnRestricted)
+
+    return false
   } catch (e) {
     throw e
   }
