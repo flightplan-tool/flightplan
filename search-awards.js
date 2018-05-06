@@ -291,7 +291,7 @@ const main = async () => {
       // Run the search query
       try {
         const basePath = pathForQuery(query)
-        query.htmlFile = basePath + '.html'
+        query.htmlFile = basePath + '.html.gz'
         query.screenshot = basePath + '.jpg'
         if (await engine.search(query)) {
           // Write to database

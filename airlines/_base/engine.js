@@ -1,4 +1,6 @@
 const fs = require('fs')
+const path = require('path')
+const zlib = require('zlib')
 const moment = require('moment')
 const puppeteer = require('puppeteer')
 
@@ -145,7 +147,8 @@ class Engine {
       // Get the full HTML content and write it out
       const html = await page.evaluate(() => document.querySelector('html').outerHTML)
       if (htmlFile) {
-        fs.writeFileSync(htmlFile, html)
+        const data = (path.extname(htmlFile) === '.gz') ? zlib.gzipSync(html) : html
+        fs.writeFileSync(htmlFile, data)
       }
 
       return html

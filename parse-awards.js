@@ -1,4 +1,6 @@
 const fs = require('fs')
+const path = require('path')
+const zlib = require('zlib')
 const minimist = require('minimist')
 
 const SQParser = require('./airlines/sq/parser')
@@ -21,8 +23,14 @@ function parseRequest (request) {
     return { error: `Request is missing HTML file: ${htmlFile}` }
   }
 
+  // Read file, and decompress if necessary
+  let data = fs.readFileSync(htmlFile)
+  if (path.extname(htmlFile) === '.gz') {
+    data = zlib.gunzipSync(data)
+  }
+
   // Parse the HTML content from the request
-  return SQParser(fs.readFileSync(htmlFile), request)
+  return SQParser(data, request)
 }
 
 const main = async () => {
