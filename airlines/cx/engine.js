@@ -29,8 +29,8 @@ class CXEngine extends Engine {
         Y2: {cabin: cabins.economy, saver: false}
       },
       accountRequired: true,
-      requestsPerHour: 85,
-      throttlePeriod: 30 * 60,
+      requestsPerHour: 60,
+      throttlePeriod: 15 * 60,
       validation: {
         minDays: 1,
         maxDays: 355
