@@ -33,8 +33,14 @@ ${Object.keys(airlines).sort().map(id => (
 `
 
 function pathForQuery (query) {
-  const { fromCity, toCity, departDate } = query
-  const fields = [fromCity, toCity, departDate.format('YYYY-MM-DD'), (new Date()).getTime()]
+  const { method, fromCity, toCity, departDate } = query
+  const fields = [
+    method,
+    fromCity,
+    toCity,
+    departDate.format('YYYY-MM-DD'),
+    (new Date()).getTime()
+  ]
   return `${paths.data}/${fields.join('-')}`
 }
 
@@ -267,7 +273,7 @@ const main = async () => {
       // Lazy load the search engine
       if (!engine) {
         const account = method.Engine.accountRequired
-          ? accounts.getCredentials('SQ', accountIdx) : {}
+          ? accounts.getCredentials(method.Engine.id, accountIdx) : {}
         const options = {...account, headless, cookies, timeout: 5 * 60000}
         engine = await method.Engine.new(options)
         if (!engine) {

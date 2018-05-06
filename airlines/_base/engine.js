@@ -143,7 +143,7 @@ class Engine {
       }
 
       // Get the full HTML content and write it out
-      const html = await page.evaluate(() => document.body.innerHTML)
+      const html = await page.evaluate(() => document.querySelector('html').outerHTML)
       if (htmlFile) {
         fs.writeFileSync(htmlFile, html)
       }

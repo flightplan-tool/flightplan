@@ -28,8 +28,8 @@ class SQEngine extends Engine {
         YA: {cabin: cabins.economy, saver: false}
       },
       accountRequired: true,
-      requestsPerHour: 85,
-      throttlePeriod: 30 * 60,
+      requestsPerHour: 60,
+      throttlePeriod: 15 * 60,
       validation: {
         minDays: 0,
         maxDays: 354
@@ -201,8 +201,8 @@ class SQEngine extends Engine {
       await page.goto(URL_FLIGHT_SEARCH, {waitUntil: 'networkidle2'})
 
       // If not logged in, do that again
-      if (!this.isLoggedIn()) {
-        if (!this.login()) {
+      if (!await this.isLoggedIn()) {
+        if (!await this.login()) {
           throw new Error('SQ Login failed!')
         }
       }
