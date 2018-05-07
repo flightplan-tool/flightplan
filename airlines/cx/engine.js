@@ -160,8 +160,10 @@ class CXEngine extends Engine {
         await page.waitFor(250)
 
         // Check remember box
-        await page.click('label[for=checkRememberMe]')
-        await page.waitFor(250)
+        if (!await page.$('label[for=checkRememberMe]:checked')) {
+          await page.click('label[for=checkRememberMe]')
+          await page.waitFor(250)
+        }
 
         // Submit form, and give the landing page up to 5 seconds to load
         try {
@@ -278,9 +280,6 @@ class CXEngine extends Engine {
       // Select fixed travel dates
       await page.click('#byDest-radio')
       await page.waitFor(500)
-
-      // Insert a small wait
-      await page.waitFor(randomInt(8, 10) * 1000)
 
       // Save the main page results first
       if (!await this.saveResults('#btnSearch', query, page)) {
