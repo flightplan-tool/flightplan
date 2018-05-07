@@ -263,7 +263,7 @@ class KEEngine extends Engine {
       await this.save(query, page)
 
       // Check response code
-      if (!response.ok() && response.status !== 304) {
+      if (!response.ok() && response.status() !== 304) {
         console.log(`KE: Received non-OK HTTP Status Code: ${response.status()}`)
         return false
       }
