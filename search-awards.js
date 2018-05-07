@@ -200,13 +200,17 @@ const main = async () => {
     return
   }
 
-  // Resolve method and validate cabin / date range
+  // Resolve method and validate cabin, date range, trip type
   method = airlines[method]
   if (!validCabin(method.Engine, cabin)) {
     return
   }
   [ startDate, endDate ] = validDates(method.Engine, startDate, endDate)
   if (!startDate || !endDate) {
+    return
+  }
+  if (oneWay && !method.Engine.config.oneWaySupported) {
+    console.error('One-way searches are not supported by this method')
     return
   }
 
@@ -225,16 +229,22 @@ const main = async () => {
     const cookies = await db.loadCookies()
 
     // Generate queries
-    const queries = []
+    const { tripMinDays, oneWaySupported } = method.Engine.config
     const days = endDate.diff(startDate, 'd') + 1
-    const gap = oneWay ? 0 : Math.min(3, days)
+    const gap = oneWay ? 0 : Math.min(tripMinDays, days)
+    const queries = []
+
+    // Compute the one-way segments coming back at beginning of search range
     for (let i = 0; i < gap; i++) {
       queries.push({
         fromCity: toCity,
         toCity: fromCity,
-        departDate: startDate.clone().add(i, 'd')
+        departDate: startDate.clone().add(i, 'd'),
+        returnDate: oneWaySupported ? null : startDate.clone().add(i + tripMinDays, 'd')
       })
     }
+
+    // Compute segments in middle of search range
     const departDate = startDate.clone()
     const returnDate = startDate.clone().add(gap, 'd')
     for (let i = 0; i < days - gap; i++) {
@@ -247,13 +257,26 @@ const main = async () => {
       departDate.add(1, 'd')
       returnDate.add(1, 'd')
     }
+
+    // Compute the one-way segments going out at end of search range
     for (let i = gap - 1; i >= 0; i--) {
-      queries.push({
-        fromCity,
-        toCity,
-        departDate: endDate.clone().subtract(i, 'd')
-      })
+      if (oneWaySupported) {
+        queries.push({
+          fromCity,
+          toCity,
+          departDate: endDate.clone().subtract(i, 'd')
+        })
+      } else {
+        queries.push({
+          fromCity: toCity,
+          toCity: fromCity,
+          departDate: endDate.clone().subtract(i + tripMinDays, 'd'),
+          returnDate: endDate.clone().subtract(i, 'd')
+        })
+      }
     }
+
+    // Fill in info that's universal for each query
     queries.forEach(q => {
       q.method = method.Engine.id
       q.cabin = cabin

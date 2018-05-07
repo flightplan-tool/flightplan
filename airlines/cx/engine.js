@@ -31,6 +31,8 @@ class CXEngine extends Engine {
       accountRequired: true,
       requestsPerHour: 60,
       throttlePeriod: 15 * 60,
+      oneWaySupported: true,
+      tripMinDays: 3,
       validation: {
         minDays: 1,
         maxDays: 355

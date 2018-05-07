@@ -24,6 +24,8 @@ class KEEngine extends Engine {
       accountRequired: true,
       requestsPerHour: 85,
       throttlePeriod: 30 * 60,
+      oneWaySupported: true,
+      tripMinDays: 3,
       validation: {
         minDays: 1,
         maxDays: 355
