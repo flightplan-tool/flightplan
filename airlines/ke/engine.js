@@ -262,13 +262,16 @@ class KEEngine extends Engine {
       // Save HTML and screenshot
       await this.save(query, page)
 
-      // Check response code
-      if (!response.ok() && response.status() !== 304) {
-        console.log(`KE: Received non-OK HTTP Status Code: ${response.status()}`)
-        return false
+      // We may not have a response (this seems OK, KE may be pre-fetching perhaps)
+      if (response) {
+        // Check response code
+        if (!response.ok() && response.status() !== 304) {
+          console.log(`KE: Received non-OK HTTP Status Code: ${response.status()}`)
+          return false
+        }
       }
 
-      // Update previous query
+    // Update previous query
       this.prevQuery = {...query, oneWay: !returnDate}
 
       // Success!
