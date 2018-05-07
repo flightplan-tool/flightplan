@@ -166,11 +166,13 @@ class SQEngine extends Engine {
 
           // Check remember box, and submit the form
           await page.click('#checkbox-1')
-          await page.click('#submit-1')
+          await Promise.all([
+            page.waitForNavigation({waitUntil: 'networkidle2'}),
+            page.click('#submit-1')
+          ])
         }
 
-        // Give time to start processing and complete
-        await page.waitForNavigation({waitUntil: 'networkidle2'})
+        // Give time for processing to complete
         await page.waitFor(1000)
       }
     } catch (e) {
@@ -281,8 +283,10 @@ class SQEngine extends Engine {
       }
 
       // Submit the form
-      await page.click('#form-book-travel-1 #city-travel-input-2')
-      const response = await page.waitForNavigation({waitUntil: 'networkidle2'})
+      const [response] = await Promise.all([
+        page.waitForNavigation({waitUntil: 'networkidle2'}),
+        page.click('#form-book-travel-1 #city-travel-input-2')
+      ])
 
       // Save HTML and screenshot
       const html = await this.save(query, page)

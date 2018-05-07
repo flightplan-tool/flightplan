@@ -136,8 +136,10 @@ class NHEngine extends Engine {
         // Check remember box, and submit the form
         await page.click('#rememberLogin')
         await page.waitFor(250)
-        await page.click('#amcMemberLogin')
-        await page.waitForNavigation({ waitUntil: 'networkidle0' })
+        await Promise.all([
+          page.waitForNavigation({ waitUntil: 'networkidle0' }),
+          page.click('#amcMemberLogin')
+        ])
         await this.settle()
       }
     } catch (e) {
@@ -221,9 +223,10 @@ class NHEngine extends Engine {
       }
 
       // Submit the search form
-      await page.click('#itinerarySearch > div.areaSeparate > p.btnFloat > input')
-      await page.waitFor(500)
-      const response = await page.waitForNavigation({waitUntil: 'networkidle0'})
+      const [response] = await Promise.all([
+        page.waitForNavigation({ waitUntil: 'networkidle0' }),
+        page.click('#itinerarySearch > div.areaSeparate > p.btnFloat > input')
+      ])
       await this.settle()
 
       // Make sure we're looking at NH awards, not *A

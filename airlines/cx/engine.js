@@ -1,6 +1,6 @@
 const Engine = require('../_base/engine')
 const { cabins } = require('../../lib/consts')
-const { appendPath } = require('../../lib/utils')
+const { appendPath, randomInt } = require('../../lib/utils')
 
 const URL_FLIGHT_SEARCH = 'https://api.asiamiles.com/ibered/jsp/redeem-flights/asia-miles-flight-award-redemption.jsp?ENTRYCOUNTRY=HK&ENTRYLANGUAGE=en&ENTRYPOINT=asiamiles.com'
 
@@ -29,7 +29,7 @@ class CXEngine extends Engine {
         Y2: {cabin: cabins.economy, saver: false}
       },
       accountRequired: true,
-      requestsPerHour: 60,
+      requestsPerHour: 30,
       throttlePeriod: 15 * 60,
       oneWaySupported: true,
       tripMinDays: 3,
@@ -159,14 +159,16 @@ class CXEngine extends Engine {
         await page.keyboard.type(password, { delay: 10 })
         await page.waitFor(250)
 
-        // Check remember box, and submit the form
+        // Check remember box
         await page.click('label[for=checkRememberMe]')
         await page.waitFor(250)
-        await page.click('#account-login div.form-login-wrapper button.btn-primary')
 
-        // Give the landing page up to 5 seconds to load
+        // Submit form, and give the landing page up to 5 seconds to load
         try {
-          await page.waitForNavigation({waitUntil: 'networkidle0', timeout: 5000})
+          await Promise.all([
+            page.waitForNavigation({waitUntil: 'networkidle0', timeout: 5000}),
+            page.click('#account-login div.form-login-wrapper button.btn-primary')
+          ])
         } catch (e) {}
 
         // Go to the flight search page (which will show us if we're logged in or not)
@@ -278,24 +280,21 @@ class CXEngine extends Engine {
       await page.waitFor(500)
 
       // Save the main page results first
-      await page.click('#btnSearch')
-      if (!await this.saveResults(query, page)) {
+      if (!await this.saveResults('#btnSearch', query, page)) {
         return false
       }
 
       // Now save the results for tab "Priority Awards Tier 1"
       await page.waitFor('#PT1Tab > a', { visible: true })
       await page.waitFor(1000)
-      await page.click('#PT1Tab > a')
-      if (!await this.saveResults(query, page, '-1')) {
+      if (!await this.saveResults('#PT1Tab > a', query, page, '-1')) {
         return false
       }
 
       // Finally, save the results for tab "Priority Awards Tier 2"
       await page.waitFor('#PT2Tab > a', { visible: true })
       await page.waitFor(1000)
-      await page.click('#PT2Tab > a')
-      if (!await this.saveResults(query, page, '-2')) {
+      if (!await this.saveResults('#PT2Tab > a', query, page, '-2')) {
         return false
       }
 
@@ -306,8 +305,11 @@ class CXEngine extends Engine {
     }
   }
 
-  async saveResults (query, page, fileIdx) {
-    const response = await page.waitForNavigation({waitUntil: 'networkidle2'})
+  async saveResults (btnSelector, query, page, fileIdx) {
+    const [response] = await Promise.all([
+      page.waitForNavigation({waitUntil: 'networkidle2'}),
+      page.click(btnSelector)
+    ])
     await this.settle()
 
     // Inject file index
@@ -318,6 +320,9 @@ class CXEngine extends Engine {
         htmlFile: appendPath(query.htmlFile, fileIdx)
       }
     }
+
+    // Insert a small wait
+    await page.waitFor(randomInt(5, 10) * 1000)
 
     // Save HTML and screenshot
     await this.save(query, page)
