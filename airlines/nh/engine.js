@@ -24,7 +24,7 @@ class NHEngine extends Engine {
       oneWaySupported: false,
       tripMinDays: 3,
       validation: {
-        minDays: 1,
+        minDays: 3,
         maxDays: 355
       }
     }
@@ -94,7 +94,21 @@ class NHEngine extends Engine {
         page.waitFor('#accountNumber', { visible: true })
       ])
 
-      return !!(await page.$('li.btnLogoutArea'))
+      const loggedIn = !!(await page.$('li.btnLogoutArea'))
+
+      // If not fully logged in, log out (in case saved AMC number is different)
+      if (loggedIn && await page.$('#password')) {
+        await Promise.all([
+          page.waitForNavigation({ waitUntil: 'networkidle0' }),
+          page.click('li.btnLogoutArea > a')
+        ])
+
+        // Go back to flight search page
+        await page.goto(URL_FLIGHT_SEARCH, {waitUntil: 'networkidle0'})
+        return false
+      }
+
+      return loggedIn
     } catch (e) {
       return false
     }
@@ -230,9 +244,12 @@ class NHEngine extends Engine {
       await this.settle()
 
       // Make sure we're looking at NH awards, not *A
-      if (!await page.$('#selectAward01:checked')) {
-        await page.click('#selectAward01')
-      }
+      try {
+        await page.waitFor('#selectAward01', { visible: true, timeout: 1000 })
+        if (!await page.$('#selectAward01:checked')) {
+          await page.click('#selectAward01')
+        }
+      } catch (e) {}
 
       // Save HTML and screenshot
       await this.save(query, page)

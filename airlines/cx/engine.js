@@ -279,6 +279,9 @@ class CXEngine extends Engine {
       await page.click('#byDest-radio')
       await page.waitFor(500)
 
+      // Insert a small wait
+      await page.waitFor(randomInt(8, 10) * 1000)
+
       // Save the main page results first
       if (!await this.saveResults('#btnSearch', query, page)) {
         return false
@@ -322,7 +325,7 @@ class CXEngine extends Engine {
     }
 
     // Insert a small wait
-    await page.waitFor(randomInt(5, 10) * 1000)
+    await page.waitFor(randomInt(3, 5) * 1000)
 
     // Save HTML and screenshot
     await this.save(query, page)
