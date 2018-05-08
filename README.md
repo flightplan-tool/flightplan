@@ -104,6 +104,7 @@ const sq = fp.new('sq')
       fromCity: 'SIN', toCity: 'HKG',
       departDate: '2019-03-06', cabin: 'business',
       username: '1234567890', password: '123456'
+      htmlFile: 'output.html', screenshot: 'output.jpg'
     })
     
     if (!error) {
