@@ -62,57 +62,53 @@ With Flightplan, you specify an airline and get back an *engine*, which supports
 This is useful, because searching is expensive, but parsing is cheap. So it makes sense to search once, but be able to parse many times (perhaps due to bug fixes or new features being added).
 
 ```javascript
-import fp from flightplan
+const fp = require('flightplan');
 
-const cx = fp.new('cx')
+const cx = fp.new('cx');
 
 (async () => {
   // Must call initialize before searching
-  const success = await cx.initialize({ username: '1234567890', 'password': 'passw0rd' })
-  if (!success)
-    return
-  }
+  await cx.initialize({ username: '1234567890', 'password': 'passw0rd' });
 
   // Do a one-way search (replace credentials with real ones below)
   const { responses, error } = await cx.search({
     fromCity: 'HKG', toCity: 'LHR',
     departDate: '2019-03-06', cabin: 'first'
-  })
+  });
   
   // Check for an error
   if (error) {
-    console.log(error)
-    return
+    console.log(error);
+    return;
   }
   
   // Parse out awards from the responses
-  const { awards } = cx.parse(responses)
-  console.log(awards)
-})()
+  const { awards } = cx.parse(responses);
+  console.log(awards);
+})();
 ```
 
 You can also instruct the search engine to save both the HTML output, and even screenshots! :tada: This makes debugging what might've gone wrong later much easier. Let's try it out:
 
 ```javascript
-import fp from flightplan
+const fp = require('flightplan');
 
-const sq = fp.new('sq')
+const sq = fp.new('sq');
 
 (async () => {
-  if (await sq.initialize({ username: '1234567890', password: '123456' })) {
-    const { htmlFiles, screenshots, fileCount, error } = await sq.search({
-      fromCity: 'SIN', toCity: 'HKG',
-      departDate: '2019-03-06', cabin: 'business',      
-      htmlFile: 'output.html', screenshot: 'output.jpg'
-    })
+  await sq.initialize({ username: '1234567890', password: '123456' });
+  const { htmlFiles, screenshots, fileCount, error } = await sq.search({
+    fromCity: 'SIN', toCity: 'HKG',
+    departDate: '2019-03-06', cabin: 'business',      
+    htmlFile: 'output.html', screenshot: 'output.jpg'
+  });
     
-    if (!error) {
-      console.log('Files Saved:', fileCount)
-      console.log('HTML:', htmlFiles)
-      console.log('Screenshots:', screenshots)
-    }
+  if (!error) {
+    console.log('Files Saved:', fileCount);
+    console.log('HTML:', htmlFiles);
+    console.log('Screenshots:', screenshots);
   }
-})()
+})();
 ```
 
 More API details to come later...
