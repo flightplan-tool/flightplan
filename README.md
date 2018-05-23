@@ -67,7 +67,8 @@ import fp from flightplan
 const cx = fp.new('cx')
 
 (async () => {
-  const success = await cx.initialize() // Must be called before searching
+  // Must call initialize before searching
+  const success = await cx.initialize({ username: '1234567890', 'password': 'passw0rd' })
   if (!success)
     return
   }
@@ -76,7 +77,6 @@ const cx = fp.new('cx')
   const { responses, error } = cx.search({
     fromCity: 'HKG', toCity: 'LHR',
     departDate: '2019-03-06', cabin: 'first',
-    username: '1234567890', 'password': 'passw0rd'
   })
   
   // Check for an error
