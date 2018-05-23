@@ -74,7 +74,7 @@ const cx = fp.new('cx')
   }
 
   // Do a one-way search (replace credentials with real ones below)
-  const { responses, error } = cx.search({
+  const { responses, error } = await cx.search({
     fromCity: 'HKG', toCity: 'LHR',
     departDate: '2019-03-06', cabin: 'first',
   })
