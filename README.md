@@ -76,7 +76,7 @@ const cx = fp.new('cx')
   // Do a one-way search (replace credentials with real ones below)
   const { responses, error } = await cx.search({
     fromCity: 'HKG', toCity: 'LHR',
-    departDate: '2019-03-06', cabin: 'first',
+    departDate: '2019-03-06', cabin: 'first'
   })
   
   // Check for an error
@@ -99,16 +99,15 @@ import fp from flightplan
 const sq = fp.new('sq')
 
 (async () => {
-  if (await sq.initialize()) {
+  if (await sq.initialize({ username: '1234567890', password: '123456' })) {
     const { htmlFiles, screenshots, fileCount, error } = sq.search({
       fromCity: 'SIN', toCity: 'HKG',
-      departDate: '2019-03-06', cabin: 'business',
-      username: '1234567890', password: '123456'
+      departDate: '2019-03-06', cabin: 'business',      
       htmlFile: 'output.html', screenshot: 'output.jpg'
     })
     
     if (!error) {
-      console.log('Response Count:', fileCount)
+      console.log('Files Saved:', fileCount)
       console.log('HTML:', htmlFiles)
       console.log('Screenshots:', screenshots)
     }
