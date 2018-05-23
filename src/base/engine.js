@@ -15,7 +15,7 @@ class Engine {
     this.config = parent.config
   }
 
-  async _initialize (options) {
+  async _initialize (options = {}) {
     this.options = options
 
     // Initialize throttling
@@ -31,7 +31,15 @@ class Engine {
     this.page = await this.newPage(this.browser, options, this.config.searchURL)
 
     // Login, and run implementation-specific initialization
-    return (await this._login() && this.initialize(this.page))
+    if (!await this._login()) {
+      throw new Error(`Login failed`)
+    }
+    const ret = await this.initialize(this.page)
+    if (ret && ret.error) {
+      throw new Error(ret.error)
+    }
+
+    return true
   }
 
   async _login () {
@@ -64,7 +72,10 @@ class Engine {
       }
 
       // Call implementation-specific login
-      await this.login(page)
+      const ret = await this.login(page)
+      if (ret && ret.error) {
+        throw new Error(ret.error)
+      }
 
       // Go to the search page (which will show us if we're logged in or not)
       await page.goto(searchURL, { waitUntil })
@@ -79,7 +90,7 @@ class Engine {
     this.query = query
 
     // Results will be stored by here, and populated by save()
-    this.results = { responses: [], fileCount: 0 }
+    this.results = { responses: [], htmlFiles: [], screenshots: [], fileCount: 0 }
     let ret
 
     // Normalize the query
@@ -162,9 +173,8 @@ class Engine {
   }
 
   async newBrowser (options) {
-    return puppeteer.launch({
-      args: ['--use-gl'], headless: options.headless
-    })
+    const { headless = false } = options
+    return puppeteer.launch({ args: ['--use-gl'], headless })
   }
 
   async newPage (browser, options, url) {
@@ -214,6 +224,7 @@ class Engine {
     // Screenshot page if requested
     if (screenshot) {
       await page.screenshot({path: screenshot})
+      results.screenshots.push(screenshot)
     }
 
     // Get the full HTML content
@@ -227,6 +238,7 @@ class Engine {
       try {
         const data = (path.extname(htmlFile) === '.gz') ? zlib.gzipSync(html) : html
         fs.writeFileSync(htmlFile, data)
+        results.htmlFiles.push(htmlFile)
         results.fileCount++
       } catch (e) {
         return { error: `Failed to write HTML output to disk: ${e.message}` }
@@ -236,13 +248,8 @@ class Engine {
     // Append response
     results.responses.push(html)
 
-    // Check if it looks like we've been blocked
-    if (this.isBlocked(html)) {
-      const delay = utils.randomInt(65, 320)
-      this.warn(`Blocked by server, waiting for ${moment().add(delay, 's').fromNow(true)}`)
-      await page.waitFor(delay * 1000)
-      return { error: 'Blocked by server' }
-    }
+    // Write to results whether it looks like we've been blocked
+    results.blocked = this.isBlocked(html)
 
     return html
   }
@@ -261,6 +268,11 @@ class Engine {
 
     // For convenience, compute if query is one-way
     query.oneWay = !query.returnDate
+
+    // Default quantity to 1 if not specified
+    if (query.quantity === undefined) {
+      query.quantity = 1
+    }
 
     // Freeze the query, and store it on this instance
     this.query = Object.freeze({...query})

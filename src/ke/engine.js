@@ -29,6 +29,9 @@ module.exports = class extends Engine {
 
   async login (page) {
     const { username, password } = this.options
+    if (!username || !password) {
+      return { error: `Missing login credentials` }
+    }
 
     // If login form not shown, click login link
     if (!await page.$('#usernameInput')) {

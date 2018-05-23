@@ -2,12 +2,14 @@ const program = require('commander')
 const fs = require('fs')
 const moment = require('moment')
 const prompt = require('syncprompt')
+const sleep = require('await-sleep')
 
 const fp = require('../src')
 const accounts = require('../shared/accounts')
 const db = require('../shared/db')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
+const utils = require('../shared/utils')
 
 program
   .option('-w, --website <airline>', 'IATA 2-letter code of the airline whose website to search')
@@ -276,10 +278,17 @@ const main = async (args) => {
       routes.print(query)
 
       // Run the search query
-      const { fileCount, error } = await engine.search(query)
+      const { fileCount, blocked, error } = await engine.search(query)
       if (error) {
         console.error(error)
         continue
+      }
+
+      // Insert a delay if we've been blocked
+      if (blocked) {
+        const delay = utils.randomInt(65, 320)
+        console.log(`Blocked by server, waiting for ${moment().add(delay, 's').fromNow(true)}`)
+        await sleep(delay * 1000)
       }
 
       // Write to database

@@ -39,6 +39,9 @@ module.exports = class extends Engine {
 
   async login (page) {
     const { username, password } = this.options
+    if (!username || !password) {
+      return { error: `Missing login credentials` }
+    }
 
     // Enter username and password
     await page.click('#accountNumber')

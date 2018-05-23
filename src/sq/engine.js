@@ -25,6 +25,9 @@ module.exports = class extends Engine {
 
   async login (page) {
     const { username, password } = this.options
+    if (!username || !password) {
+      return { error: `Missing login credentials` }
+    }
 
     // Check if the login form is visible
     let formVisible = true
@@ -42,6 +45,25 @@ module.exports = class extends Engine {
       await page.waitFor(1000)
     }
 
+    // Enter username and password
+    await page.click('#membership-1')
+    await page.waitFor(1000)
+    await page.keyboard.type(username, { delay: 10 })
+    await page.click('#membership-2')
+    await page.waitFor(1000)
+    await page.keyboard.type(password, { delay: 10 })
+    await page.waitFor(250)
+
+    // Check remember box, and submit the form
+    if (!await page.$('#checkbox-1:checked')) {
+      await page.click('#checkbox-1')
+      await page.waitFor(250)
+    }
+    this.clickAndWait('#submit-1')
+    await page.waitFor(500)
+    await settle(this)
+    await page.waitFor(5000)
+
     // Bypass invisible captcha, if present
     const bypassed = await page.evaluate(() => {
       if (typeof captchaSubmit === 'function') {
@@ -52,27 +74,10 @@ module.exports = class extends Engine {
     })
     if (bypassed) {
       this.info('Detected and bypassed invisible captcha')
-    } else {
-      // Enter username and password
-      await page.click('#membership-1')
-      await page.waitFor(1000)
-      await page.keyboard.type(username, { delay: 10 })
-      await page.click('#membership-2')
-      await page.waitFor(1000)
-      await page.keyboard.type(password, { delay: 10 })
-      await page.waitFor(250)
-
-      // Check remember box, and submit the form
-      if (!await page.$('#checkbox-1:checked')) {
-        await page.click('#checkbox-1')
-        await page.waitFor(250)
-      }
-      page.click('#submit-1')
+      await page.waitFor(3000)
+      await settle(this)
+      await page.waitFor(5000)
     }
-
-    // Give time for processing to complete
-    await page.waitFor(1000)
-    await settle(this)
   }
 
   validAirport (airport) {
@@ -166,15 +171,18 @@ module.exports = class extends Engine {
 async function settle (engine) {
   const { page } = engine
 
-  // Wait a tiny bit, for things to run
-  await page.waitFor(250)
-  await page.waitFor('div.overlay-loading', { hidden: true })
-
-  // Decline any popup's
-  const btnDecline = await page.$('div.insider-opt-in-disallow-button')
-  if (btnDecline) {
-    btnDecline.click()
+  while (true) {
+    // Wait a tiny bit, for things to run
+    await page.waitFor(250)
+    await page.waitFor('div.overlay-loading', { hidden: true })
     page.waitFor(1000)
+
+    // Decline any popup's
+    const btnDecline = await page.$('div.insider-opt-in-disallow-button')
+    if (!btnDecline) {
+      break
+    }
+    btnDecline.click()
   }
 }
 
