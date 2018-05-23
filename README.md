@@ -100,7 +100,7 @@ const sq = fp.new('sq')
 
 (async () => {
   if (await sq.initialize({ username: '1234567890', password: '123456' })) {
-    const { htmlFiles, screenshots, fileCount, error } = sq.search({
+    const { htmlFiles, screenshots, fileCount, error } = await sq.search({
       fromCity: 'SIN', toCity: 'HKG',
       departDate: '2019-03-06', cabin: 'business',      
       htmlFile: 'output.html', screenshot: 'output.jpg'
