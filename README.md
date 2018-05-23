@@ -88,7 +88,7 @@ const cx = fp.new('cx')
   // Parse out awards from the responses
   const { awards } = cx.parse(responses)
   console.log(awards)
-})
+})()
 ```
 
 You can also instruct the search engine to save both the HTML output, and even screenshots! :tada: This makes debugging what might've gone wrong later much easier. Let's try it out:
@@ -112,7 +112,7 @@ const sq = fp.new('sq')
       console.log('Screenshots:', screenshots)
     }
   }
-})
+})()
 ```
 
 More API details to come later...
