@@ -9,7 +9,7 @@
   "scripts": {
     "client": "cd client && yarn start",
     "server": "nodemon bin/cli-server.js",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "dev": "concurrently --kill-others-on-fail -p \"[{name}]\" -n \"CLIENT,SERVER\" -c \"black.bgBlue.bold,black.bgGreen.bold\" \"yarn client\" \"yarn server\""
   },
   "repository": "https://github.com/jd20/flightplan-tool",
   "author": "JD",
