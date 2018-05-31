@@ -1,0 +1,25 @@
+.calendar-chart-ring {
+  z-index: 5;
+}
+
+.calendar-chart-ring svg {
+  z-index: 5;
+}
+
+.segment-label {
+  color: #fff;
+  font-size: 0.625em;
+}
+
+.month-label {
+  font-size: 0.75em;
+  text-align: right;
+}
+
+.tooltip {
+  background-color: white;
+  box-shadow: 2px 2px 20px 0 rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  margin-bottom: auto;
+  z-index: 15;
+}

@@ -1,0 +1,19 @@
+/* Forces a 1:1 aspect ratio on the chart container */
+.chart-rings-container {
+  max-width: 1000px;
+  width: 100%;
+  height: 0;
+  padding-top: 100%;
+  position: relative;
+  transform: translate(0, -240px); 
+}
+
+/* Positions the content inside the chart container */
+.chart-rings-inside {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}

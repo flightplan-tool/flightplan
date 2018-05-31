@@ -1,0 +1,165 @@
+body {
+  font-family: 'Fira Sans', sans-serif;
+  font-feature-settings: "kern", "liga", "pnum";
+}
+
+#root > .grid {
+  display: grid;
+  grid-template-columns: max-content repeat(2, minmax(500px, 1fr));
+  grid-template-rows: minmax(250px, max-content) max-content;
+  grid-template-areas:  "searchForm   legend  ."
+                        "searchForm   chart   chart";
+}
+
+.searchForm {
+  grid-area: searchForm;
+}
+
+.legend {
+  justify-self: center;
+  grid-area: legend;
+  margin-top: 40px;
+  margin-right: 60px;
+}
+
+.chart-rings-container {
+  justify-self: center;
+  grid-area: chart;
+}
+
+p {
+  margin: 0 0 0.75em;
+}
+
+a {
+  color: #477dca;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+a:active, a:focus, a:hover {
+  color: shade(#477dca, 25%);
+}
+
+hr {
+  border-bottom: 1px solid #ddd;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  margin: 1.5em 0;
+}
+
+img,
+picture {
+  margin: 0;
+  max-width: 100%;
+}
+
+h1 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: normal;
+  text-transform: uppercase;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+h2 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: normal;
+  text-transform: uppercase;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+h4 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: normal;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+em {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  font-style: normal;
+  line-height: normal;
+  color: #eba900;
+}
+
+/*
+/////////////////////////////////////////////////////////////////////////
+// 2012 THEME
+/////////////////////////////////////////////////////////////////////////
+*/
+.theme-2012 {
+  color: #666;
+  font-family: "raleway", sans-serif;
+  color: #18171c;
+}
+
+.theme-2012 h1,
+.theme-2012 h2,
+.theme-2012 h3,
+.theme-2012 h4,
+.theme-2012 h5,
+.theme-2012 h6 {
+  color: #18171c;
+  letter-spacing: 1px;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+/*
+/////////////////////////////////////////////////////////////////////////
+// 2013 THEME
+/////////////////////////////////////////////////////////////////////////
+*/
+.theme-2013 {
+  color: #666;
+  font-family: "raleway", sans-serif;
+}
+
+.theme-2013 h1,
+.theme-2013 h2,
+.theme-2013 h3,
+.theme-2013 h4,
+.theme-2013 h5,
+.theme-2013 h6 {
+  letter-spacing: 1px;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+/*
+/////////////////////////////////////////////////////////////////////////
+// 2015 THEME
+/////////////////////////////////////////////////////////////////////////
+*/
+.theme-2015 {
+  color: #666;
+  font-family: "proxima-nova", sans-serif;
+}
+
+.theme-2015 h1,
+.theme-2015 h2,
+.theme-2015 h3,
+.theme-2015 h4,
+.theme-2015 h5,
+.theme-2015 h6 {
+  letter-spacing: 1px;
+  font-weight: 300;
+  line-height: 1.2;
+}
