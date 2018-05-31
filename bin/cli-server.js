@@ -1,6 +1,7 @@
 const express = require('express')
-const db = require('sqlite')
 const moment = require('moment')
+
+const db = require('../shared/db')
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -8,18 +9,20 @@ const port = process.env.PORT || 5000
 app.get('/api/search', async (req, res, next) => {
   try {
     const {
-      fromCity,
-      toCity,
-      passengers = '1',
+      fromCity = '',
+      toCity = '',
+      quantity = '1',
       direction = 'oneway',
-      startDate,
-      endDate,
+      startDate = '',
+      endDate = '',
       limit
     } = req.query
 
     // Validate dates
     const start = moment(startDate)
     const end = moment(endDate)
+    console.log(startDate)
+    console.log(start)
     if (!start.isValid()) {
       throw new Error('Invalid start date:', startDate)
     }
@@ -48,9 +51,9 @@ app.get('/api/search', async (req, res, next) => {
     query += ' AND date BETWEEN ? AND ?'
     params.push(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'))
 
-    // Add passenger count
+    // Add quantity
     query += ' AND quantity >= ?'
-    params.push(parseInt(passengers))
+    params.push(parseInt(quantity))
 
     // Add limit
     if (limit) {
@@ -59,7 +62,7 @@ app.get('/api/search', async (req, res, next) => {
     }
 
     // Run SQL query
-    let awards = await db.all(query, ...params)
+    let awards = await db.db().all(query, ...params)
 
     res.send(awards)
   } catch (err) {
@@ -75,7 +78,7 @@ function run () {
 
 // First, try to open the database
 console.log('Opening database...')
-db.open('./db/database.sqlite3', { Promise })
+db.open()
   // Update db schema to the latest version using SQL-based migrations
   // .then(() => db.migrate({ force: 'last' }))
   .then(() => run())
