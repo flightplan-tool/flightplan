@@ -3,9 +3,9 @@ const db = require('sqlite')
 const moment = require('moment')
 
 const app = express()
-const port = process.env.PORT || 8000
+const port = process.env.PORT || 5000
 
-app.get('/search', async (req, res, next) => {
+app.get('/api/search', async (req, res, next) => {
   try {
     const {
       fromCity,
