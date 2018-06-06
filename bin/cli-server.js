@@ -1,10 +1,34 @@
 const express = require('express')
 const moment = require('moment')
 
+const fp = require('../src')
 const db = require('../shared/db')
 
 const app = express()
 const port = process.env.PORT || 5000
+
+app.get('/api/config', async (req, res, next) => {
+  try {
+    // Insert each airline
+    const airlines = fp.supported().map((id) => {
+      const config = fp.new(id).config
+      const { name, fares } = config
+      return { id, name, fares }
+    })
+
+    // Specify the available cabin options
+    const cabins = [
+      { value: fp.cabins.first, label: 'First' },
+      { value: fp.cabins.business, label: 'Business' },
+      { value: fp.cabins.premium, label: 'Prem. Economy' },
+      { value: fp.cabins.economy, label: 'Economy' }
+    ]
+
+    res.send({airlines, cabins})
+  } catch (err) {
+    next(err)
+  }
+})
 
 app.get('/api/search', async (req, res, next) => {
   try {
