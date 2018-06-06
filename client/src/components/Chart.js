@@ -71,14 +71,14 @@ class Chart extends Component {
       // Merge all award codes for this airline
       const awards = segment.awards.filter(x => x.airline === airline)
       const codes = awards.reduce((set, award) => {
-        award.fareCodes.split(' ').forEach(x => set.add(x))
+        award.fares.split(' ').forEach(x => set.add(x))
         return set
       }, new Set())
 
       // Lookup the color from the legend data
       const section = legend.find(x => x.key === airline)
       if (section) {
-        const match = section.fareCodes.find(x => codes.has(x.key))
+        const match = section.fares.find(x => codes.has(x.key))
         if (match) {
           const { index, waitlisted } = match
           const palette = waitlisted ? theme.awardWaitlisted : theme.award
@@ -306,10 +306,9 @@ class Chart extends Component {
   }
 
   renderToolTip (awards) {
-    console.log(awards)
     let html = ''
     for (const award of awards) {
-      html += `<p>${award.flight} <em>${award.fareCodes}</em></p>`
+      html += `<p>${award.flight} <em>${award.fares}</em></p>`
     }
     return html
   }

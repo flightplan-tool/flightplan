@@ -30,7 +30,6 @@ class ChartLabels extends Component {
 
     // Vars
     const baseUnit = 1000
-    var dayOfWeekIndex = 0
     var donutData = []
     var size = baseUnit + 20
     var innerRadius = ((baseUnit / 2) - 20)

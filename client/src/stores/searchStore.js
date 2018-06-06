@@ -2,11 +2,6 @@ import { observable, computed, action, autorun } from 'mobx'
 import moment from 'moment'
 import URLSearchParams from 'url-search-params'
 
-import {
-  AIRLINE_NAMES,
-  FARE_CODE_NAMES,
-  CABIN_ORDER,
-} from '../lib/constants'
 import { strcmp } from '../lib/utilities'
 
 function flightKey(flight) {
@@ -17,7 +12,7 @@ export default class SearchStore {
   // Query parameters
   @observable fromCity = 'SIN'
   @observable toCity = 'HKG'
-  @observable passengers = 1
+  @observable quantity = 1
   @observable direction = 'roundtrip'
   @observable cabinClasses = ['F']
   @observable showWaitlisted = true
@@ -31,7 +26,10 @@ export default class SearchStore {
   @observable loading = false
   @observable _results = []
 
-  constructor () {
+  constructor (configStore) {
+    this.configStore = configStore
+
+    // Execute search query whenever it is updated, and valid
     autorun(() => {
       if (this.validQuery()) {
         this.search(this.buildQuery())
@@ -49,22 +47,22 @@ export default class SearchStore {
 
     // Filter results
     const ret = this._results.map(result => {
-      let { fareCodes } = result
-      fareCodes = fareCodes.split(' ')
-      fareCodes = fareCodes.filter(code => {
+      let { fares } = result
+      fares = fares.split(' ')
+      fares = fares.filter(code => {
         return !!cabinClasses.find(x => code.startsWith(x))
       })
       if (!showWaitlisted) {
-        fareCodes = fareCodes.filter(x => !x.includes('@'))
+        fares = fares.filter(x => !x.includes('@'))
       }
       if (!showNonSaver) {
-        fareCodes = fareCodes.filter(x => x[1] === 'S')
+        fares = fares.filter(x => x[1] === 'S')
       }
-      return {...result, fareCodes: fareCodes.join(' ')}
+      return {...result, fares: fares.join(' ')}
     })
     
     // Filter out results with no fares
-    return ret.filter(x => x.fareCodes.length !== 0)
+    return ret.filter(x => x.fares.length !== 0)
   }
 
   // Results, filtered by selected airlines / flights
@@ -79,10 +77,22 @@ export default class SearchStore {
     ))
   }
 
+  @computed get airlineInfo () {
+    const map = new Map()
+    const airlines = this.configStore.airlines
+    if (airlines) {
+      for (const airline of airlines) {
+        map.set(airline.id, airline)
+      }
+    }
+    return map
+  }
+
   @computed get airlines () {
+    const { airlineInfo } = this
     let ret = new Set([...this.results.map(x => x.airline)])
     ret = [...ret.values()].map(x => (
-      {code: x, name: AIRLINE_NAMES[x]}
+      {code: x, name: airlineInfo.get(x).name}
     ))
     ret.sort((x, y) => strcmp(x.name, y.name))
     return ret
@@ -109,46 +119,43 @@ export default class SearchStore {
   // Build a legend, mapping fare codes to colors
   @computed get legend () {
     const map = new Map()
+    const { airlineInfo } = this
 
     for (const award of this.awards) {
       const { airline } = award
+      const { name, fares } = airlineInfo.get(airline)
 
       // Initialize the data for an airline
       if (!map.has(airline)) {
         map.set(airline, {
-          key: airline,
-          name: AIRLINE_NAMES[airline],
-          baseCodes: new Set()
+          key: airline, name, fares, awards: new Set()
         })
       }
 
-      // Add the fare code
-      const { baseCodes } = map.get(airline)
-      award.fareCodes.split(' ').forEach(code => {
-        baseCodes.add(code.slice(0, -1))
+      // Add the award
+      const { awards } = map.get(airline)
+      award.fares.split(' ').forEach(code => {
+        awards.add(code.slice(0, -1))
       })
     }
 
-    // Sort airlines and fare codes, and assign colors
+    // Sort airlines and fares, and assign colors
     let idx = 0
-    const legend = [...map.values()].sort((x, y) => strcmp(x.airline, y.airline))
+    const legend = [...map.values()].sort((x, y) => strcmp(x.name, y.name))
     for (const data of legend) {
-      let { baseCodes } = data
-      baseCodes = [...baseCodes.values()].sort((a, b) => (
-        CABIN_ORDER.indexOf(a) - CABIN_ORDER.indexOf(b)
-      ))
-      
-      // Create fare codes (name with color)
-      data.fareCodes = []
-      for (const code of baseCodes) {
-        data.fareCodes.push({
+      // Generate sorted list of awards, based on search results
+      const { fares, awards } = data
+      data.fares = []
+      for (const fare of fares.filter(x => awards.has(x.code))) {
+        const { code, name } = fare
+        data.fares.push({
           key: code + '+',
-          name: `${FARE_CODE_NAMES[code]} (${code}+)`,
+          name: `${name} (${code}+)`,
           index: idx,
           waitlisted: false
         })
         if (this.showWaitlisted) {
-          data.fareCodes.push({
+          data.fares.push({
             key: code + '@',
             name: `Waitlisted (${code}@)`,
             index: idx,
@@ -229,7 +236,7 @@ export default class SearchStore {
       this.validCity(this.toCity) &&
       this.validDate(this.startDate) &&
       this.validDate(this.endDate) &&
-      this.validPassengers(this.passengers)
+      this.validQuantity(this.quantity)
     )
   }
 
@@ -241,17 +248,17 @@ export default class SearchStore {
     return val.isValid()
   }
 
-  validPassengers (val) {
+  validQuantity (val) {
     return Number.isInteger(val) && val >= 1 && val <= 10
   }
 
   buildQuery () {
     // Build query object
-    const { passengers, direction } = this
+    const { quantity, direction } = this
     const query = {
       fromCity: this.fromCity.toUpperCase(),
       toCity: this.toCity.toUpperCase(),
-      passengers,
+      quantity,
       direction,
       startDate: this.startDate.format('YYYY-MM-DD'),
       endDate: this.endDate.format('YYYY-MM-DD')
@@ -262,7 +269,7 @@ export default class SearchStore {
     for (const [key, value] of Object.entries(query)) {
       params.append(key, value)
     }
-    return 'http://localhost:8000/search?' + params.toString()
+    return '/api/search?' + params.toString()
   }
 
   search = (url) => {

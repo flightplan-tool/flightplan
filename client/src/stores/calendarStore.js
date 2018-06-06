@@ -102,7 +102,7 @@ export default class CalendarStore {
   markResults (data, awards) {
     // Iterate over each award
     for (const award of awards) {
-      const { airline, date, fareCodes } = award
+      const { airline, date, fares } = award
 
       // Find the segment the award belongs to
       const segment = this.findSegment(data, moment(date))

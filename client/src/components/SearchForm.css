@@ -88,3 +88,9 @@ body {
 .flights .checkbox, .airlines .checkbox {
   margin-top: 15px;
 }
+
+.double-arrows {
+  vertical-align: bottom;
+  margin-left: 17px;
+  margin-bottom: 2px;
+}

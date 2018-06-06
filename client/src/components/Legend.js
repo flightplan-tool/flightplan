@@ -24,10 +24,10 @@ class Legend extends Component {
   }
 
   renderSection (section, showWaitlisted) {
-    const { key, name, fareCodes } = section
+    const { key, name, fares } = section
 
     const elements = []
-    for (const code of fareCodes) {
+    for (const code of fares) {
       const { key, name, index, waitlisted } = code
       const palette = waitlisted ? theme.awardWaitlisted : theme.award
       const color = palette[index % palette.length].fillColor

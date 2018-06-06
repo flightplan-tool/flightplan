@@ -1,6 +1,7 @@
 function strcmp () {
   for (let i = 0; i < arguments.length - 1; i += 2) {
-    const a = arguments[i], b = arguments[i + 1]
+    const a = arguments[i]
+    const b = arguments[i + 1]
     if (a !== b) {
       if (a < b) {
         return -1

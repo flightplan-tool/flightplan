@@ -6,17 +6,19 @@ import Select from 'react-select'
 
 import CheckBox from './controls/CheckBox'
 import RadioButton from './controls/RadioButton'
-import {
-  FARE_CODE_NAMES,
-  CABIN_ORDER
-} from '../lib/constants'
 
 import './SearchForm.css'
 import 'react-datepicker/dist/react-datepicker.css'
 
-@inject('searchStore')
+@inject('configStore', 'searchStore')
 @observer
 class SearchForm extends Component {
+  swapCities () {
+    const { searchStore } = this.props
+    const { fromCity, toCity } = searchStore
+    searchStore.update({ fromCity: toCity, toCity: fromCity })
+  }
+
   render () {
     const { searchStore } = this.props
     const passengerOptions = [...Array(10).keys()].map(x => ({ value: x + 1, label: (x + 1).toString() }))
@@ -27,14 +29,21 @@ class SearchForm extends Component {
         <fieldset className='cities'>
           <div className='grid'>
             <label style={{ gridArea: 'fromLabel' }}>From</label>
-            <input
-              name='fromCity'
-              type='text'
-              value={searchStore.fromCity}
-              onFocus={(e) => e.target.select()}
-              onChange={(e) => { searchStore.update({ fromCity: e.target.value }) }}
-              style={{ gridArea: 'fromCity' }}
-            />
+            <div style={{ gridArea: 'fromCity' }}>
+              <input
+                name='fromCity'
+                type='text'
+                value={searchStore.fromCity}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => { searchStore.update({ fromCity: e.target.value }) }}
+              />
+              <img
+                className='double-arrows'
+                alt='Swap From / To'
+                src={`/images/double-arrows.svg`}
+                onClick={() => this.swapCities()}
+              />
+            </div>
             <label style={{ gridArea: 'toLabel' }}>To</label>
             <input
               name='toCity'
@@ -136,8 +145,8 @@ class SearchForm extends Component {
             <div style={{ gridArea: 'passengers' }}>
               <Select
                 name='passengers'
-                defaultValue={passengerOptions.find(x => x.value === searchStore.passengers)}
-                onChange={(e) => { searchStore.update({ passengers: e.value }) }}
+                defaultValue={passengerOptions.find(x => x.value === searchStore.quantity)}
+                onChange={(e) => { searchStore.update({ quantity: e.value }) }}
                 options={passengerOptions}
                 styles={{
                   control: (base, state) => ({
@@ -215,20 +224,21 @@ class SearchForm extends Component {
   }
 
   renderResultCount () {
-    const { awards } = this.props.searchStore
+    const { searchStore } = this.props
+    const { awards, airlineInfo } = searchStore
 
     let total = 0
     const counts = new Map()
     for (const award of awards) {
       // Get counts for airline
-      const { airline, fareCodes } = award
+      const { airline, fares } = award
       if (!counts.has(airline)) {
         counts.set(airline, new Map())
       }
       const subCounts = counts.get(airline)
 
       // Update for each fare code
-      for (const code of fareCodes.split(' ')) {
+      for (const code of fares.split(' ')) {
         const count = subCounts.has(code) ? subCounts.get(code) : 0
         subCounts.set(code, count + 1)
         total++
@@ -239,14 +249,12 @@ class SearchForm extends Component {
     const entries = []
     for (const airline of [...counts.keys()].sort()) {
       const subCounts = counts.get(airline)
-      let baseCodes = [...subCounts.keys()].map(x => x.slice(0, -1))
-      baseCodes = [...new Set(baseCodes).values()].sort((a, b) => (
-        CABIN_ORDER.indexOf(a) - CABIN_ORDER.indexOf(b)
-      ))
-      for (const baseCode of baseCodes) {
-        for (const code of [baseCode + '+', baseCode + '@']) {
+      const awards = new Set([...subCounts.keys()].map(x => x.slice(0, -1)))
+      const fares = airlineInfo.get(airline).fares
+      for (const fare of fares.filter(x => awards.has(x.code))) {
+        for (const code of [fare.code + '+', fare.code + '@']) {
           if (subCounts.has(code)) {
-            let codeLbl = FARE_CODE_NAMES[code.slice(0, -1)]
+            let codeLbl = fare.name
             codeLbl += code.includes('@') ? ' Waitlisted' : ''
             codeLbl += ` (${code})`
 

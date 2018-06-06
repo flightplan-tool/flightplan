@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import moment from 'moment'
 
 import Chart from './Chart'
 import ChartLabels from './ChartLabels'
