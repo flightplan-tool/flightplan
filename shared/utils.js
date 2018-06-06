@@ -1,5 +1,8 @@
+const fs = require('fs')
 const path = require('path')
 const prompt = require('syncprompt')
+
+const db = require('./db')
 
 function appendPath (strPath, str) {
   if (!strPath) {
@@ -11,6 +14,50 @@ function appendPath (strPath, str) {
     pos = base.length
   }
   return path.join(dir, base.slice(0, pos) + str + base.slice(pos))
+}
+
+function changeExtension (strPath, ext) {
+  if (!strPath) {
+    return strPath
+  }
+  const { dir, base } = path.parse(strPath)
+  if (!ext.startsWith('.')) {
+    ext = '.' + ext
+  }
+  let pos = base.indexOf('.')
+  if (pos < 0) {
+    pos = base.length
+  }
+  return path.join(dir, base.slice(0, pos) + ext)
+}
+
+async function cleanupRequest (row) {
+  const { id, htmlFile, fileCount } = row
+
+  // Compute all files associated with this request
+  const files = []
+  for (let index = 0; index < fileCount; index++) {
+    let filename = htmlFile
+
+    // Update the filename based on index
+    if (index > 0) {
+      filename = appendPath(filename, '-' + index)
+    }
+
+    // Add both HTML file and screenshot
+    files.push(filename)
+    files.push(changeExtension(filename, '.jpg'))
+  }
+
+  // Delete the files from disk
+  for (const filename of files) {
+    if (fs.existsSync(filename)) {
+      fs.unlinkSync(filename)
+    }
+  }
+
+  // Remove from the database
+  await db.db().run('DELETE FROM awards_requests WHERE id = ?', id)
 }
 
 function deepFreeze (obj, levels = -1) {
@@ -78,6 +125,8 @@ function truthy (val) {
 
 module.exports = {
   appendPath,
+  changeExtension,
+  cleanupRequest,
   deepFreeze,
   promptYesNo,
   randomInt,

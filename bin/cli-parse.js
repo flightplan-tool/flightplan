@@ -16,18 +16,6 @@ function filter (sql, engine) {
   return engine ? [sql + ' WHERE engine = ?', engine] : [sql]
 }
 
-function deleteFile (filename, index) {
-  // Update the filename based on index
-  if (index > 0) {
-    filename = utils.appendPath(filename, '-' + index)
-  }
-
-  // Check if the file exists, and if so delete it
-  if (fs.existsSync(filename)) {
-    fs.unlinkSync(filename)
-  }
-}
-
 const main = async (args) => {
   const { verbose, yes } = args
   let numRequests = 0
@@ -96,17 +84,7 @@ const main = async (args) => {
       if (yes || utils.promptYesNo(`${failed.length} failed requests will be purged from the database. Do you want to continue?`)) {
         console.log('Cleaning up stored files and database entries...')
         for (const row of failed) {
-          const { id, htmlFile, fileCount } = row
-
-          // Remove the faulty request's HTML and screenshot files
-          for (let index = 0; index < fileCount; index++) {
-            const screenshot = htmlFile.replace('.html', '.jpg')
-            deleteFile(htmlFile, index)
-            deleteFile(screenshot, index)
-          }
-
-          // Remove from the database
-          await db.db().run('DELETE FROM awards_requests WHERE id = ?', id)
+          await utils.cleanupRequest(row)
         }
       }
     }
