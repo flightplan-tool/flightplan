@@ -1,6 +1,6 @@
 {
   "name": "flightplan-tool",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Search for award inventory using Node.js and Headless Chrome!",
   "main": "src/index.js",
   "bin": {
@@ -11,7 +11,7 @@
     "server": "nodemon bin/cli-server.js",
     "dev": "concurrently --kill-others-on-fail -p \"[{name}]\" -n \"CLIENT,SERVER\" -c \"black.bgBlue.bold,black.bgGreen.bold\" \"yarn client\" \"yarn server\""
   },
-  "repository": "https://github.com/jd20/flightplan-tool",
+  "repository": "https://github.com/jd20/flightplan",
   "author": "JD",
   "license": "MIT",
   "private": false,
