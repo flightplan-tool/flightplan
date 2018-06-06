@@ -45,8 +45,6 @@ app.get('/api/search', async (req, res, next) => {
     // Validate dates
     const start = moment(startDate)
     const end = moment(endDate)
-    console.log(startDate)
-    console.log(start)
     if (!start.isValid()) {
       throw new Error('Invalid start date:', startDate)
     }
