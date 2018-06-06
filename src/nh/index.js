@@ -16,10 +16,10 @@ module.exports = {
       requestsPerHour: 80,
       period: 30 * 60
     },
-    fares: {
-      FS: {cabin: cabins.first, saver: true},
-      CS: {cabin: cabins.business, saver: true},
-      YS: {cabin: cabins.economy, saver: true}
-    }
+    fares: [
+      {code: 'FS', cabin: cabins.first, saver: true, name: 'First'},
+      {code: 'CS', cabin: cabins.business, saver: true, name: 'Business'},
+      {code: 'YS', cabin: cabins.economy, saver: true, name: 'Economy'}
+    ]
   }
 }

@@ -14,6 +14,19 @@ function appendPath (strPath, str) {
 }
 
 function deepFreeze (obj, levels = -1) {
+  // Do we have an array? If so, freeze each element
+  if (Array.isArray(obj)) {
+    obj = [...obj]
+    for (let idx = 0; idx < obj.length; idx++) {
+      const ele = obj[idx]
+      if (typeof ele === 'object' && ele !== null) {
+        obj[idx] = deepFreeze(ele, (levels > 0) ? levels - 1 : levels)
+      }
+    }
+    return Object.freeze(obj)
+  }
+
+  // Handle objects with properties
   obj = {...obj}
   if (levels !== 0) {
     // Retrieve the property names defined on obj
@@ -21,7 +34,7 @@ function deepFreeze (obj, levels = -1) {
 
     // Freeze properties before freezing self
     propNames.forEach((name) => {
-      var prop = obj[name]
+      const prop = obj[name]
       if (typeof prop === 'object' && prop !== null) {
         obj[name] = deepFreeze(prop, (levels > 0) ? levels - 1 : levels)
       }

@@ -18,9 +18,9 @@ module.exports = class extends Parser {
 
     // Select the fares relevant to this request
     const codes = {}
-    for (const [code, info] of Object.entries(this.config.fares)) {
-      if (info.cabin === cabin) {
-        codes[code] = info
+    for (const fare of this.config.fares) {
+      if (fare.cabin === cabin) {
+        codes[fare.code] = fare
       }
     }
 

@@ -79,7 +79,7 @@ function validateArguments (args) {
 
   // Instantiate engine, and do further validation
   const engine = fp.new(args.website)
-  const fares = Object.values(engine.config.fares)
+  const fares = engine.config.fares
   const cabins = new Set([...fares.map(x => x.cabin)])
   if (!cabins.has(args.cabin)) {
     return `Selected engine (${args.website}) does not support the cabin: ${args.cabin}`
