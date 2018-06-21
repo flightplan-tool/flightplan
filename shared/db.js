@@ -105,9 +105,16 @@ function insertRow (table, row, filter) {
   return _db.run(sql, ...colVals)
 }
 
+async function count (table) {
+  const result = await _db.get(`SELECT count(*) FROM ${table}`)
+  return result ? result['count(*)'] : undefined
+}
+
 async function close () {
-  await _db.close()
-  _db = null
+  if (_db) {
+    await _db.close()
+    _db = null
+  }
 }
 
 module.exports = {
@@ -118,5 +125,6 @@ module.exports = {
   loadCookies,
   saveCookies,
   insertRow,
+  count,
   close
 }

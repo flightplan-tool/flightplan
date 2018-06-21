@@ -31,11 +31,11 @@ function changeExtension (strPath, ext) {
   return path.join(dir, base.slice(0, pos) + ext)
 }
 
-async function cleanupRequest (row) {
-  const { id, htmlFile, fileCount } = row
+function assetsForRequest (request) {
+  const { htmlFile, fileCount } = request
 
   // Compute all files associated with this request
-  const files = []
+  const assets = { htmlFiles: [], screenshots: [] }
   for (let index = 0; index < fileCount; index++) {
     let filename = htmlFile
 
@@ -44,20 +44,27 @@ async function cleanupRequest (row) {
       filename = appendPath(filename, '-' + index)
     }
 
-    // Add both HTML file and screenshot
-    files.push(filename)
-    files.push(changeExtension(filename, '.jpg'))
+    // Keep track of every file associated with a request
+    assets.htmlFiles.push(filename)
+    assets.screenshots.push(changeExtension(filename, '.jpg'))
   }
 
+  return assets
+}
+
+async function cleanupRequest (request) {
+  // Get the files associated with this request
+  const { htmlFiles, screenshots } = assetsForRequest(request)
+
   // Delete the files from disk
-  for (const filename of files) {
+  for (const filename of [...htmlFiles, ...screenshots]) {
     if (fs.existsSync(filename)) {
       fs.unlinkSync(filename)
     }
   }
 
   // Remove from the database
-  await db.db().run('DELETE FROM awards_requests WHERE id = ?', id)
+  await db.db().run('DELETE FROM awards_requests WHERE id = ?', request.id)
 }
 
 function deepFreeze (obj, levels = -1) {
@@ -126,6 +133,7 @@ function truthy (val) {
 module.exports = {
   appendPath,
   changeExtension,
+  assetsForRequest,
   cleanupRequest,
   deepFreeze,
   promptYesNo,

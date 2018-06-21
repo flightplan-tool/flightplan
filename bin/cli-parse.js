@@ -1,5 +1,4 @@
 const program = require('commander')
-const fs = require('fs')
 
 const fp = require('../src')
 const db = require('../shared/db')

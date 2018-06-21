@@ -2,7 +2,6 @@ const program = require('commander')
 const fs = require('fs')
 const path = require('path')
 
-const fp = require('../src')
 const db = require('../shared/db')
 const paths = require('../shared/paths')
 const utils = require('../shared/utils')
@@ -18,25 +17,16 @@ async function cleanupRequests (yes, verbose) {
   const associatedFiles = new Set()
   await db.db().each('SELECT * FROM awards_requests', (err, row) => {
     if (err) {
-      throw new Error('Could nto scan search requests: ' + err)
+      throw new Error('Could not scan search requests: ' + err)
     }
 
     // Check for any missing resources
-    const { htmlFile, fileCount } = row
-    let missing = false
-    for (let index = 0; index < fileCount; index++) {
-      let filename = htmlFile
-      if (index > 0) {
-        filename = utils.appendPath(htmlFile, '-' + index)
-      }
-      if (!fs.existsSync(filename)) {
-        missing = true
-      }
+    const assets = utils.assetsForRequest(row)
+    const missing = !!assets.htmlFiles.find(x => !fs.existsSync(x))
 
-      // Keep track of every file associated with a request
-      associatedFiles.add(filename)
-      associatedFiles.add(utils.changeExtension(filename, '.jpg'))
-    }
+    // Keep track of every file associated with a request
+    assets.htmlFiles.forEach(x => associatedFiles.add(x))
+    assets.screenshots.forEach(x => associatedFiles.add(x))
 
     // If any files were missing, cleanup the request
     if (missing) {
