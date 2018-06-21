@@ -6,3 +6,15 @@
   width: 30%;
   height: 100px;
 }
+
+.chart-stamp-loader {
+  position: absolute;
+  left: 50%;
+  top: 460px;
+  transform: translate(-33px, -23px);
+}
+
+.ball-scale-ripple-multiple div {
+  width: 140px;
+  height: 140px;
+}

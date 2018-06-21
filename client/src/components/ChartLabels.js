@@ -98,7 +98,7 @@ class ChartLabels extends Component {
       .append('textPath')
       .attr('startOffset', '50%')
       .style('text-anchor', 'middle')
-      .style('fill', (d, i) => d.data.isWeekend ? '#b88' : '#bbb')
+      .style('fill', (d, i) => d.data.isWeekend ? '#ae5a5a' : '#bbb')
       .style('opacity', 0)
       .attr('xlink:href', (d, i) => '#donutArc' + i)
       .text((d) => d.data.name)

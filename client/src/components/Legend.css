@@ -1,5 +1,6 @@
 .legend {
-  background-color: white;
+  color: white;
+  background-color: #02192b;
   box-shadow: 2px 2px 20px 0 rgba(0, 0, 0, 0.5);
   padding: 15px;
   margin-bottom: auto;
@@ -16,7 +17,6 @@
   letter-spacing: normal;
   text-align: left;
   text-transform: none;
-  color: black;
   margin-bottom: 5px;
 }
 
@@ -46,7 +46,6 @@
   line-height: normal;
   letter-spacing: normal;
   text-align: left;
-  color: black;
   margin-bottom: 0;
 }
 

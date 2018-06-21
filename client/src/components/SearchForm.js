@@ -75,7 +75,7 @@ class SearchForm extends Component {
               name='fromCity'
               selected={searchStore.startDate}
               minDate={moment()}
-              maxDate={moment().add(1, 'y')}
+              maxDate={searchStore.endDate}
               monthsShown={2}
               fixedHeight
               onChange={(val) => searchStore.update({ startDate: val })}

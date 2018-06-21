@@ -21,6 +21,7 @@ class Chart extends Component {
     const { data } = this.props.calendarStore
     this.applyTheme(data)
     this.createChart(data)
+    this.animateIn()
 
     // Create an autorun, that automatically updates segment colors
     // based on underlying mobx data store
@@ -29,8 +30,6 @@ class Chart extends Component {
       this.applyTheme(data)
       this.updateChart(data)
     })
-
-    this.animateIn()
   }
 
   shouldComponentUpdate () {
@@ -54,7 +53,7 @@ class Chart extends Component {
 
         // Tint the weekends
         const { awards, type, isWeekend } = segment
-        if (!awards && isWeekend && (type === 'search' || type === 'segment')) {
+        if (!awards && isWeekend && (type === 'inactive' || type === 'active')) {
           segment.fillColor = utilities.shadeColor(segment.fillColor, -0.3)
         }
       }
@@ -89,9 +88,6 @@ class Chart extends Component {
     if (segment.type in theme) {
       return theme[segment.type]
     }
-    if (segment.date) {
-      return theme.months[segment.date.month()]
-    }
     return {fillColor: 'none'}
   }
 
@@ -109,8 +105,8 @@ class Chart extends Component {
 
     this.tip = d3Tip()
       .attr('class', 'tooltip')
-      .direction('w')
-      .html((d) => this.renderToolTip(d.data.awards))
+      .direction('sw')
+      .html((d) => this.renderToolTip(d.data))
 
     this.chartRing = d3.select(this._ref).append('svg')
       .attr('width', '100%')
@@ -164,6 +160,8 @@ class Chart extends Component {
             this.focusEvent(monthIndex, dayIndex, false)
           }
         })
+      group.selectAll('.segment-label text')
+        .attr('fill', (d) => d.data.textColor)
       this.addMonthLabels(group, index)
       this.addDayLabels(group, month, arc, index)
     })
@@ -213,17 +211,24 @@ class Chart extends Component {
   updateChart (data) {
     // Update the chart segment colors based on dataset
     data.forEach((month, index) => {
-      d3.select(this._ref)
+      const group = d3.select(this._ref)
         .select('g.chart-ring-' + index)
-        .selectAll('path')
+
+      group.selectAll('path')
         .data(this.pie(month))
         .attr('class', (d, i) => {
-          return 'segment segment-' + i + (d.data.awards ? ' awards' : '')
+          return 'segment segment-' + i + (d.data.awards ? ' awards' : ' empty')
         })
         .transition()
         .duration(DURATION / 2)
         .delay(index * 50)
         .style('fill', (d) => d.data.fillColor)
+      group.selectAll('.segment-label text')
+        .data(this.pie(month))
+        .transition()
+        .duration(DURATION / 2)
+        .delay(index * 50)
+        .style('fill', (d) => d.data.textColor)
     })
 
     // Update tooltips on segments with award availability
@@ -232,6 +237,11 @@ class Chart extends Component {
       .selectAll('path.awards')
       .on('mouseover.tip', this.tip.show)
       .on('mouseout.tip', this.tip.hide)
+    d3.select(this._ref)
+      .selectAll('g.chart-ring')
+      .selectAll('path.empty')
+      .on('mouseover.tip', null)
+      .on('mouseout.tip', null)
   }
 
   // Animate chart rings into view
@@ -254,63 +264,124 @@ class Chart extends Component {
   }
 
   focusSegment (monthIndex, dayIndex, isFocused) {
-    // Update row focus
+    // Update row fill color
     d3.select('g.chart-ring-' + monthIndex)
       .selectAll('path')
       .transition()
       .duration(150)
-      .style('fill', (d, i) => {
-        var fillColor = d.data.fillColor
+      .style('fill', (d, i) => this.focusColor(d.data, 'fillColor', isFocused))
 
-        if (isFocused) {
-          if (d.data.date && d.data.type !== 'today') {
-            fillColor = utilities.shadeColor(d.data.fillColor, -0.5)
-          }
-        }
+    // Update row text color
+    d3.select('g.chart-ring-' + monthIndex)
+      .selectAll('.segment-label text')
+      .transition()
+      .duration(150)
+      .style('fill', (d, i) => this.focusColor(d.data, 'textColor', isFocused))
 
-        return fillColor
-      })
-
-    // Update segment color
+    // Update segment fill color
     d3.select('g.chart-ring-' + monthIndex)
       .select('.segment-' + dayIndex)
       .transition()
       .duration(150)
-      .style('fill', (d, i) => {
-        let fillColor = d.data.fillColor
-        if (isFocused) {
-          const focusType = d.data.type + 'Focused'
-          if (focusType in theme) {
-            fillColor = theme[focusType].fillColor
-          }
-        }
-        return fillColor
-      })
+      .style('fill', (d, i) => (isFocused ? theme.highlight.fillColor : d.data.fillColor))
 
-    // Update text color
+    // Update segment text color
     d3.select('g.chart-ring-' + monthIndex)
-      .select('.segment-label-' + dayIndex)
-      .select('text')
+      .select('.segment-label-' + dayIndex + ' text')
       .transition()
       .duration(150)
-      .style('fill', (d, i) => {
-        let textColor = d.data.textColor
-        if (isFocused) {
-          const focusType = d.data.type + 'Focused'
-          if (focusType in theme) {
-            textColor = theme[focusType].textColor
-          }
-        }
-        return textColor
-      })
+      .style('fill', (d, i) => (isFocused ? theme.highlight.textColor : d.data.textColor))
   }
 
-  renderToolTip (awards) {
-    let html = ''
-    for (const award of awards) {
-      html += `<p>${award.flight} <em>${award.fares}</em></p>`
+  focusColor (data, colorType, isFocused) {
+    const { awards, type } = data
+    let color = data[colorType]
+    
+    if (isFocused) {
+      if (awards) {
+        // Tint the color provided (fill color only, not text color)
+        if (colorType === 'fillColor') {
+          color = utilities.shadeColor(color, -0.15)
+        }
+      } else {
+        // Lookup color from theme
+        const focusType = type + 'Focused'
+        if (focusType in theme) {
+          color = theme[focusType][colorType]
+        }
+      }
     }
-    return html
+
+    return color
+  }
+
+  renderToolTip (data) {
+    const { legend } = this.props.searchStore
+    const { date, awards } = data
+
+    const renderRow = (awards) => {
+      const { airline, flight, fromCity, toCity, aircraft } = awards[0]
+      
+      // Calculate highest quantity available for each fare code
+      const fareMap = new Map()
+      for (const award of awards) {
+        for (const fare of award.fares.split(' ')) {
+          fareMap.set(fare, Math.max(award.quantity, fareMap.get(fare) || 0))
+        }
+      }
+      const fares = [...fareMap.entries()].map(entry => {
+        const [fareCode, quantity] = entry
+        const fare = {
+          text: `${quantity}x ${fareCode}`,
+          color: '#ccc'
+        }
+
+        // Lookup the color from the legend data
+        const section = legend.find(x => x.key === airline)
+        if (section) {
+          const match = section.fares.find(x => x.key === fareCode)
+          if (match) {
+            const { index, waitlisted } = match
+            const palette = waitlisted ? theme.awardWaitlisted : theme.award
+            fare.color = palette[index % palette.length].fillColor
+          }
+        }
+
+        return fare
+      })
+
+      return `
+        <div class="logo">
+          <img srcset="/images/airlines/${airline.toLowerCase()}_small.png,
+                       /images/airlines/${airline.toLowerCase()}_small@2x.png 2x"
+               src="/images/airlines/${airline.toLowerCase()}_small.png"
+               alt="Airline Logo">
+        </div>
+        <div>
+          <p class="flight"><b>${flight}:</b> ${fromCity} ✈ ${toCity}</p>
+          <p class="aircraft">${aircraft}</p>
+        </div>
+        <div class="awards">
+          ${fares.map(fare => `<div style="background-color:${fare.color}">${fare.text}</div>`).join('')}
+        </div>
+      `
+    }
+
+    // Convert awards to rows (grouped by flight)
+    const flights = awards.reduce((map, x) => {
+      const arr = map.get(x.flight) || []
+      arr.push(x)
+      map.set(x.flight, arr)
+      return map
+    }, new Map())
+
+    // Generate HTML markup
+    return `
+      <div class="date">
+        <h2>${date.format('ll')}</h2>
+      </div>
+      ${[...flights.entries()].map(row => renderRow(row[1])).join('')}
+    `
   }
 }
 

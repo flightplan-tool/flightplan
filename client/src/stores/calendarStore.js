@@ -59,7 +59,7 @@ export default class CalendarStore {
       let isWeekend = false
       
       if (i < startIndex) {
-        type = 'empty'
+        type = 'void'
       } else if (i < (month.days + startIndex)) {
         // This is a calendar day, compute date
         date = moment({
@@ -74,12 +74,12 @@ export default class CalendarStore {
         if (date.isSame(today, 'day')) {
           type = 'today'
         } else if (date.isBetween(startDate, endDate, 'day', '[]')) {
-          type = 'search'
+          type = 'active'
         } else {
-          type = 'segment'
+          type = 'inactive'
         }
       } else if (i <= DISPLAY_SEGMENTS) {
-        type = 'empty'
+        type = 'void'
       }
 
       segments.push({

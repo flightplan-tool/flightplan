@@ -36,11 +36,11 @@
 }
 
 .checkbox:hover input:checked ~ .checkmark {
-  background-color: #ff704d;
+  background-color: #a5d2e8;
 }
 
 .checkbox input:checked ~ .checkmark {
-  background-color: #ff4610;
+  background-color: #47a4d2;
   border: none;
 }
 

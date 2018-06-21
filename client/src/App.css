@@ -1,6 +1,11 @@
 body {
   font-family: 'Fira Sans', sans-serif;
   font-feature-settings: "kern", "liga", "pnum";
+  height: 100%;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-image: linear-gradient(18deg, #182024 15%, #2B4059 99%);
 }
 
 #root > .grid {
@@ -96,70 +101,5 @@ em {
   font-weight: 300;
   font-style: normal;
   line-height: normal;
-  color: #eba900;
-}
-
-/*
-/////////////////////////////////////////////////////////////////////////
-// 2012 THEME
-/////////////////////////////////////////////////////////////////////////
-*/
-.theme-2012 {
-  color: #666;
-  font-family: "raleway", sans-serif;
-  color: #18171c;
-}
-
-.theme-2012 h1,
-.theme-2012 h2,
-.theme-2012 h3,
-.theme-2012 h4,
-.theme-2012 h5,
-.theme-2012 h6 {
-  color: #18171c;
-  letter-spacing: 1px;
-  font-weight: 300;
-  line-height: 1.2;
-}
-
-/*
-/////////////////////////////////////////////////////////////////////////
-// 2013 THEME
-/////////////////////////////////////////////////////////////////////////
-*/
-.theme-2013 {
-  color: #666;
-  font-family: "raleway", sans-serif;
-}
-
-.theme-2013 h1,
-.theme-2013 h2,
-.theme-2013 h3,
-.theme-2013 h4,
-.theme-2013 h5,
-.theme-2013 h6 {
-  letter-spacing: 1px;
-  font-weight: 300;
-  line-height: 1.2;
-}
-
-/*
-/////////////////////////////////////////////////////////////////////////
-// 2015 THEME
-/////////////////////////////////////////////////////////////////////////
-*/
-.theme-2015 {
-  color: #666;
-  font-family: "proxima-nova", sans-serif;
-}
-
-.theme-2015 h1,
-.theme-2015 h2,
-.theme-2015 h3,
-.theme-2015 h4,
-.theme-2015 h5,
-.theme-2015 h6 {
-  letter-spacing: 1px;
-  font-weight: 300;
-  line-height: 1.2;
+  color: #b8e986;
 }

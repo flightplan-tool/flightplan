@@ -17,9 +17,60 @@
 }
 
 .tooltip {
-  background-color: white;
-  box-shadow: 2px 2px 20px 0 rgba(0, 0, 0, 0.5);
-  padding: 15px;
+  display: grid;
+  grid-template-columns: 49px auto auto;
+  grid-gap: 20px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 4px 4px 30px 0 rgba(0, 0, 0, 0.6);
   margin-bottom: auto;
   z-index: 15;
+}
+
+.tooltip h2 {
+  color: #000;
+}
+
+.tooltip .logo img {
+  width: 49px;
+  height: 49px;
+}
+
+.tooltip .date {
+  grid-column: 1 / 4;
+  grid-row: 1;
+}
+
+.tooltip .flight {
+  font-size: 18px;
+  font-weight: 200;
+  font-style: normal;
+  line-height: normal;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.tooltip .flight b {
+  font-weight: bold;
+}
+
+.tooltip .aircraft {
+  font-size: 14px;
+  font-weight: 300;
+  font-style: normal;
+  line-height: normal;
+  color: #47a4d2;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.tooltip .awards {
+  font-size: 18px;
+  color: #fff;
+  padding: 5px 10px 5px 20px;
+}
+
+.tooltip .awards div {
+  display: inline-block;
+  padding: 10px;
 }

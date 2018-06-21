@@ -33,7 +33,7 @@
 }
 
 .radiobutton input:checked ~ .radiomark {
-  border-color: #ff4610;;
+  border-color: #47a4d2;;
 }
 
 .radiomark:after {
@@ -52,5 +52,5 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #ff4610;;
+  background: #47a4d2;;
 }

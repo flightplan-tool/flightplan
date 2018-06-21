@@ -1,33 +1,33 @@
 {
-  "empty": {"fillColor": "#e4e3e8"},
+  "void": {"fillColor": "#182024"},
+  "inactive": {"fillColor": "#182024", "textColor": "#334e5c"},
+  "inactiveFocused": {"fillColor": "#1f292e", "textColor": "#334e5c"},
+  "active": {"fillColor": "#436578", "textColor": "#ffffff"},
+  "activeFocused": {"fillColor": "#50798F", "textColor": "#ffffff"},
   "today": {"fillColor": "#da0138", "textColor": "#ffffff"},
-  "search": {"fillColor": "#ffffff", "textColor": "#000000"},
   "todayFocused": {"fillColor": "#da0138", "textColor": "#ffffff"},
-  "searchFocused": {"fillColor": "#e15f01", "textColor": "#ffffff"},
-  "segmentFocused": {"fillColor": "#000000", "textColor": "#ffffff"},
-  "months": [
-    {"fillColor": "#c8c7b5", "textColor": "#ffffff"},
-    {"fillColor": "#b4b593", "textColor": "#ffffff"},
-    {"fillColor": "#9b9f6c", "textColor": "#ffffff"},
-    {"fillColor": "#bbd17e", "textColor": "#ffffff"},
-    {"fillColor": "#a8c243", "textColor": "#ffffff"},
-    {"fillColor": "#92b60c", "textColor": "#ffffff"},
-    {"fillColor": "#80c0dc", "textColor": "#ffffff"},
-    {"fillColor": "#46a6d0", "textColor": "#ffffff"},
-    {"fillColor": "#028ac6", "textColor": "#ffffff"},
-    {"fillColor": "#afc0ba", "textColor": "#ffffff"},
-    {"fillColor": "#93aca6", "textColor": "#ffffff"},
-    {"fillColor": "#7b978b", "textColor": "#ffffff"}
-  ],
-  "monthLabel": {"textColor": "#666666"},
+  "highlight": {"fillColor": "#47a4d2", "textColor": "#000000"},
+  "monthLabel": {"textColor": "#568199"},
   "award": [
-    {"fillColor": "#018dca", "textColor": "#ffffff"},
-    {"fillColor": "#90b40b", "textColor": "#ffffff"},
-    {"fillColor": "#989b69", "textColor": "#ffffff"}
+    {"fillColor": "#86BF46", "textColor": "#ffffff"},
+    {"fillColor": "#F5A623", "textColor": "#ffffff"},
+    {"fillColor": "#4A90E2", "textColor": "#ffffff"},
+    {"fillColor": "#50E3C2", "textColor": "#ffffff"},
+    {"fillColor": "#D0021B", "textColor": "#ffffff"},
+    {"fillColor": "#BD10E0", "textColor": "#ffffff"},
+    {"fillColor": "#417505", "textColor": "#ffffff"},
+    {"fillColor": "#7013FE", "textColor": "#ffffff"},
+    {"fillColor": "#F8E71C", "textColor": "#ffffff"}
   ],
   "awardWaitlisted": [
-    {"fillColor": "#7ebfdc", "textColor": "#ffffff"},
-    {"fillColor": "#bdcf7e", "textColor": "#ffffff"},
-    {"fillColor": "#c0c4b1", "textColor": "#ffffff"}
+    {"fillColor": "#B7D991", "textColor": "#ffffff"},
+    {"fillColor": "#C5984E", "textColor": "#ffffff"},
+    {"fillColor": "#617FA3", "textColor": "#ffffff"},
+    {"fillColor": "#579788", "textColor": "#ffffff"},
+    {"fillColor": "#993642", "textColor": "#ffffff"},
+    {"fillColor": "#70407A", "textColor": "#ffffff"},
+    {"fillColor": "#344B18", "textColor": "#ffffff"},
+    {"fillColor": "#4E3671", "textColor": "#ffffff"},
+    {"fillColor": "#DFD876", "textColor": "#ffffff"}
   ]
 }
