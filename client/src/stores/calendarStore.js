@@ -100,12 +100,9 @@ export default class CalendarStore {
   }
 
   markResults (data, awards) {
-    // Iterate over each award
+    // Assign each award to the segment it belongs to
     for (const award of awards) {
-      const { airline, date, fares } = award
-
-      // Find the segment the award belongs to
-      const segment = this.findSegment(data, moment(date))
+      const segment = this.findSegment(data, moment(award.date))
       if (segment) {
         if (!segment.awards) {
           segment.awards = []
