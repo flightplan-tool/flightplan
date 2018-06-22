@@ -53,10 +53,9 @@ const main = async (args) => {
 
       // Handle errors by cleaning up the request
       if (error) {
-        console.error(error)
-        const { id, htmlFile } = row
-        failed.push({ id, htmlFile })
-        return
+        console.error('Error:', error)
+        failed.push(row)
+        continue
       }
 
       // Update the database

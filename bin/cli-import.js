@@ -83,18 +83,16 @@ const main = async (args) => {
       })
 
       console.log(`Importing ${awardCount} awards...`)
-      await fromDB.each('SELECT * FROM awards', (err, row) => {
-        if (err) {
-          throw new Error('Could not import awards: ' + err)
-        }
+      const rows = await fromDB.all('SELECT * FROM awards')
+      for (const row of rows) {
         if (verbose) {
           console.log(JSON.stringify(row, null, 4))
         }
 
         // Insert the request into the database
         delete row.id
-        db.insertRow('awards', row)
-      })
+        await db.insertRow('awards', row)
+      }
     }
 
     console.log('Import complete.')
