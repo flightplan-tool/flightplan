@@ -91,7 +91,7 @@ class Parser {
   }
 
   noAwardFound (request, awards, fromCity, toCity, date) {
-    const { engine, cabin, quantity } = request
+    const { cabin } = request
 
     // If no date, nothing to check...
     if (!date) {

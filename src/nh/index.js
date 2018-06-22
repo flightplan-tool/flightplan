@@ -2,6 +2,7 @@ const { cabins } = require('../consts')
 
 module.exports = {
   engine: require('./engine'),
+  parser: require('./parser'),
   config: {
     name: 'All Nippon Airways',
     website: 'ANA Mileage Club',

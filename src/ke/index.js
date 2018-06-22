@@ -2,6 +2,7 @@ const { cabins } = require('../consts')
 
 module.exports = {
   engine: require('./engine'),
+  parser: require('./parser'),
   config: {
     name: 'Korean Air',
     website: 'SKYPASS',
@@ -18,8 +19,8 @@ module.exports = {
     },
     fares: [
       {code: 'A', cabin: cabins.first, saver: true, name: 'First'},
-      {code: 'CS', cabin: cabins.business, saver: true, name: 'Prestige'},
-      {code: 'YS', cabin: cabins.economy, saver: true, name: 'Economy'}
+      {code: 'O', cabin: cabins.business, saver: true, name: 'Prestige'},
+      {code: 'X', cabin: cabins.economy, saver: true, name: 'Economy'}
     ]
   }
 }
