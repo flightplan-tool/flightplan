@@ -73,8 +73,6 @@ export default class CalendarStore {
         isWeekend = (day === 6) || (day === 0)
         if (date.isSame(today, 'day')) {
           type = 'today'
-        } else if (date.isBetween(startDate, endDate, 'day', '[]')) {
-          type = 'active'
         } else {
           type = 'inactive'
         }
@@ -108,6 +106,7 @@ export default class CalendarStore {
           segment.awards = []
         }
         segment.awards.push(award)
+        segment.type = 'active'
       }
     }
   }

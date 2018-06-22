@@ -39,6 +39,7 @@ app.get('/api/search', async (req, res, next) => {
       direction = 'oneway',
       startDate = '',
       endDate = '',
+      cabin,
       limit
     } = req.query
 
@@ -76,6 +77,13 @@ app.get('/api/search', async (req, res, next) => {
     // Add quantity
     query += ' AND quantity >= ?'
     params.push(parseInt(quantity))
+
+    // Add cabins
+    if (cabin) {
+      const values = cabin.split(',')
+      query += ` AND cabin IN (${values.map(x => '?').join(',')})`
+      values.forEach(x => params.push(x))
+    }
 
     // Add limit
     if (limit) {

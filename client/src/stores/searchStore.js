@@ -14,7 +14,7 @@ export default class SearchStore {
   @observable toCity = 'HKG'
   @observable quantity = 1
   @observable direction = 'roundtrip'
-  @observable cabinClasses = ['F']
+  @observable cabinClasses = ['first']
   @observable showWaitlisted = true
   @observable showNonSaver = true
   @observable startDate = moment().add(1, 'd')
@@ -39,25 +39,37 @@ export default class SearchStore {
 
   // Results, filtered by cabin classes / waitlist / saver
   @computed get results () {
-    const {
-      cabinClasses,
-      showWaitlisted,
-      showNonSaver
-    } = this
+    const { showWaitlisted, showNonSaver } = this
+    const { configStore } = this
+    
+    // Check if config is loaded yet
+    if (configStore.loading) {
+      return []
+    }
+
+    // Keep a map of fare info for faster lookup
+    const fareInfo = new Map()
+    configStore.config.airlines.forEach((airline) => {
+      const { id, fares } = airline
+      fareInfo.set(id, fares.reduce((map, fare) => {
+        map.set(fare.code, fare)
+        return map
+      }, new Map()))
+    })
 
     // Filter results
     const ret = this._results.map(result => {
-      let { fares } = result
+      let { engine, fares } = result
+      const map = fareInfo.get(engine)
+
       fares = fares.split(' ')
       fares = fares.filter(code => {
-        return !!cabinClasses.find(x => code.startsWith(x))
+        const fare = map.get(code.slice(0, -1))
+        return (
+          (showNonSaver || fare.saver) ||
+          (showWaitlisted || !code.includes('@'))
+        )
       })
-      if (!showWaitlisted) {
-        fares = fares.filter(x => !x.includes('@'))
-      }
-      if (!showNonSaver) {
-        fares = fares.filter(x => x[1] === 'S')
-      }
       return {...result, fares: fares.join(' ')}
     })
     
@@ -254,14 +266,15 @@ export default class SearchStore {
 
   buildQuery () {
     // Build query object
-    const { quantity, direction } = this
+    const { quantity, direction, cabinClasses } = this
     const query = {
       fromCity: this.fromCity.toUpperCase(),
       toCity: this.toCity.toUpperCase(),
       quantity,
       direction,
       startDate: this.startDate.format('YYYY-MM-DD'),
-      endDate: this.endDate.format('YYYY-MM-DD')
+      endDate: this.endDate.format('YYYY-MM-DD'),
+      cabin: cabinClasses.join(',')
     }
 
     // Build query string

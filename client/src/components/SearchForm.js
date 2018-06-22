@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 class SearchForm extends Component {
   swapCities () {
     const { searchStore } = this.props
+
     const { fromCity, toCity } = searchStore
     searchStore.update({ fromCity: toCity, toCity: fromCity })
   }
@@ -101,29 +102,29 @@ class SearchForm extends Component {
           <div className='grid'>
             <CheckBox
               label='First'
-              checked={searchStore.getClass('F')}
-              onChange={(e) => { searchStore.toggleClass('F') }}
+              checked={searchStore.getClass('first')}
+              onChange={(e) => { searchStore.toggleClass('first') }}
               style={{ gridArea: 'firstClass' }}
             />
 
             <CheckBox
               label='Business'
-              checked={searchStore.getClass('C')}
-              onChange={(e) => { searchStore.toggleClass('C') }}
+              checked={searchStore.getClass('business')}
+              onChange={(e) => { searchStore.toggleClass('business') }}
               style={{ gridArea: 'businessClass' }}
             />
 
             <CheckBox
               label='Prem. Economy'
-              checked={searchStore.getClass('W')}
-              onChange={(e) => { searchStore.toggleClass('W') }}
+              checked={searchStore.getClass('premium')}
+              onChange={(e) => { searchStore.toggleClass('premium') }}
               style={{ gridArea: 'premEconClass' }}
             />
 
             <CheckBox
               label='Economy'
-              checked={searchStore.getClass('Y')}
-              onChange={(e) => { searchStore.toggleClass('Y') }}
+              checked={searchStore.getClass('economy')}
+              onChange={(e) => { searchStore.toggleClass('economy') }}
               style={{ gridArea: 'econClass' }}
             />
 
