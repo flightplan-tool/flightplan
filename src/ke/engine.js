@@ -223,26 +223,31 @@ async function submitForm (engine, submitSel) {
 
   // Hit submit first
   await page.click(submitSel)
-  await page.waitFor(1000)
 
   // Check for popups
   while (true) {
+    // Check if we got a popup
+    const dontShowAgainSel = '#popsession-checkbox'
+    const confirmSel = '#cboxLoadedContent div.btn-area.tcenter > button'
     try {
-      // Check if we got a popup
-      const dontShowAgainSel = '#popsession-checkbox'
+      await page.waitFor(confirmSel, { visible: true, timeout: 5000 })
+    } catch (e) {}
+
+    // Check the box to not show again, then dismiss the popup
+    try {
       if (await page.$(dontShowAgainSel)) {
         await page.click(dontShowAgainSel)
-        await page.waitFor(500)
+        await page.waitFor(1000)
       }
-      const confirmSel = '#cboxLoadedContent div.btn-area.tcenter > button'
       if (await page.$(confirmSel)) {
         await page.click(confirmSel)
-        await page.waitFor(1000)
       } else {
         // No popup detected, break out
         break
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error(e)
+    }
   }
 }
 

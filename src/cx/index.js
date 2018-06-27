@@ -1,21 +1,19 @@
-const { cabins } = require('../consts')
+const { cabins, profiles } = require('../consts')
 
 module.exports = {
   engine: require('./engine'),
   config: {
     name: 'Cathay Pacific',
     website: 'AsiaMiles',
-    searchURL: 'https://api.asiamiles.com/ibered/jsp/redeem-flights/asia-miles-flight-award-redemption.jsp?ENTRYCOUNTRY=HK&ENTRYLANGUAGE=en&ENTRYPOINT=asiamiles.com',
+    searchURL: 'https://www.asiamiles.com/en/redeem-awards/flight-awards/facade.html?recent_search=true',
     waitUntil: 'networkidle0',
+    roundtripOptimized: false,
     tripMinDays: 3,
     validation: {
       minDays: 1,
       maxDays: 355
     },
-    throttling: {
-      requestsPerHour: 30,
-      period: 15 * 60
-    },
+    throttling: profiles.slow,
     fares: [
       {code: 'FS', cabin: cabins.first, saver: true, name: 'First Standard'},
       {code: 'F1', cabin: cabins.first, saver: false, name: 'First Priority 1'},

@@ -19,7 +19,7 @@ class Engine {
     this.options = options
 
     // Initialize throttling
-    this.throttling = { start: moment(), requests: 0 }
+    this.throttling = {}
 
     // Default locale to "en"
     moment.locale('en')
@@ -101,6 +101,9 @@ class Engine {
     if (ret && ret.error) {
       return ret
     }
+
+    // Apply rate throttling
+    await this.throttle()
 
     // Check if we should reload the search page
     if (!this.reloadSearch || await this.reloadSearch(page)) {
@@ -192,21 +195,41 @@ class Engine {
   }
 
   async throttle () {
-    const { requestsPerHour = 60, period = 30 * 60 } = this.config
-    const limit = requestsPerHour / 3600 * period
+    let { requests = 0, lastRequest = null, checkpoint = null } = this.throttling
+    const { delayBetweenRequests, requestsPerHour, restPeriod } = this.config.throttling
 
-    const { start, requests } = this.throttling
-    if (requests >= limit) {
-      // Sleep until end of period, to provide a cool-down period
-      start.add(period, 's')
-      const delayMillis = start.diff()
+    // Insert delay between requests
+    if (delayBetweenRequests && lastRequest) {
+      const delay = utils.randomDuration(delayBetweenRequests)
+      const delayMillis = lastRequest.clone().add(delay).diff()
       if (delayMillis > 0) {
-        this.warn(`Cool-down period, resuming ${start.fromNow()}`)
         await this.page.waitFor(delayMillis)
       }
-      this.throttling = { start: moment(), requests: 0 }
     }
-    this.throttling.requests++
+    lastRequest = moment()
+
+    // Check if we are at a resting checkpoint
+    if (checkpoint && requests >= checkpoint.limit) {
+      const restMillis = checkpoint.until.diff()
+      if (restMillis > 0) {
+        this.warn(`Cool-down period, resuming ${checkpoint.until.fromNow()}`)
+        await this.page.waitFor(restMillis)
+      }
+      checkpoint = null
+    }
+
+    // If next resting checkpoint is unknown or past, compute new one
+    if (!checkpoint || moment().isSameOrAfter(checkpoint.until)) {
+      const dur = utils.randomDuration(restPeriod)
+      checkpoint = {
+        until: moment().add(dur),
+        limit: Math.max(1, Math.floor(requestsPerHour * dur.asMilliseconds() / (3600 * 1000)))
+      }
+    }
+
+    // Update throttling state
+    requests++
+    this.throttling = { requests, lastRequest, checkpoint }
   }
 
   async save (htmlFile, screenshot, index) {

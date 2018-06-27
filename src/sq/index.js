@@ -1,4 +1,4 @@
-const { cabins } = require('../consts')
+const { cabins, profiles } = require('../consts')
 
 module.exports = {
   engine: require('./engine'),
@@ -8,15 +8,13 @@ module.exports = {
     website: 'KrisFlyer',
     searchURL: 'https://www.singaporeair.com/en_UK/ppsclub-krisflyer/flightsearch/',
     waitUntil: 'networkidle2',
+    roundtripOptimized: true,
     tripMinDays: 3,
     validation: {
       minDays: 0,
       maxDays: 354
     },
-    throttling: {
-      requestsPerHour: 60,
-      period: 15 * 60
-    },
+    throttling: profiles.normal,
     fares: [
       {code: 'FS', cabin: cabins.first, saver: true, name: 'First Saver'},
       {code: 'FA', cabin: cabins.first, saver: false, name: 'First Advantage'},

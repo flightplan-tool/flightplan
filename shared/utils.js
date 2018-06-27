@@ -1,4 +1,5 @@
 const fs = require('fs')
+const moment = require('moment')
 const path = require('path')
 const prompt = require('syncprompt')
 
@@ -125,6 +126,11 @@ function randomInt (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+function randomDuration (range) {
+  const [min, max] = Array.isArray(range) ? range : [range, range]
+  return moment.duration(randomInt(...[min, max].map(x => moment.duration(x).asMilliseconds())))
+}
+
 function truthy (val) {
   const truthyValues = { 'true': 1, '1': 1, 'yes': 1, 'y': 1 }
   return val && val.toString().toLowerCase() in truthyValues
@@ -138,5 +144,6 @@ module.exports = {
   deepFreeze,
   promptYesNo,
   randomInt,
+  randomDuration,
   truthy
 }
