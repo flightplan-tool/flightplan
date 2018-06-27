@@ -1,4 +1,4 @@
-const Parser = require('../base/Parser')
+const Parser = require('../base/parser')
 const { cabins } = require('../consts')
 const utils = require('../../shared/utils')
 

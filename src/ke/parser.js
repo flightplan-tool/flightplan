@@ -1,6 +1,6 @@
 const moment = require('moment')
 
-const Parser = require('../base/Parser')
+const Parser = require('../base/parser')
 
 // Regex patterns
 const rePrice = /[\d,]+ Miles/
