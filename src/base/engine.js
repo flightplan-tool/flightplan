@@ -216,6 +216,7 @@ class Engine {
         await this.page.waitFor(restMillis)
       }
       checkpoint = null
+      requests = 0
     }
 
     // If next resting checkpoint is unknown or past, compute new one
