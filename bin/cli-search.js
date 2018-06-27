@@ -19,8 +19,8 @@ program
   .option('-c, --cabin <class>', `Cabin (${Object.keys(fp.cabins).join(', ')})`, (x) => (x in fp.cabins) ? x : false, undefined)
   .option('-s, --start <date>', `Starting date of the search range (YYYY-MM-DD)`, (x) => parseDate(x), undefined)
   .option('-e, --end <date>', `Ending date of the search range (YYYY-MM-DD)`, (x) => parseDate(x), undefined)
-  .option('-q, --quantity <n>', `# of passengers traveling`, parseInt, 1)
-  .option('-a, --account <n>', `Index of account to use`, parseInt, 0)
+  .option('-q, --quantity <n>', `# of passengers traveling`, (x) => parseInt(x), 1)
+  .option('-a, --account <n>', `Index of account to use`, (x) => parseInt(x), 0)
   .option('-h, --headless', `Run Chrome in headless mode`)
   .on('--help', () => {
     console.log('')
