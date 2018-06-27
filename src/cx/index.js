@@ -13,7 +13,7 @@ module.exports = {
       minDays: 1,
       maxDays: 355
     },
-    throttling: profiles.fast,
+    throttling: profiles.normal,
     fares: [
       {code: 'FS', cabin: cabins.first, saver: true, name: 'First Standard'},
       {code: 'F1', cabin: cabins.first, saver: false, name: 'First Choice'},
