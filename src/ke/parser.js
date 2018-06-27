@@ -17,6 +17,11 @@ module.exports = class extends Parser {
   parse (request, $, html) {
     const { fromCity, toCity, cabin, departDate, returnDate } = request
 
+    // Check if no available awards
+    if ($('div.alert-message').text().includes('Seats are unavailable on the date')) {
+      return { awards: [] }
+    }
+
     // Request parameters for each direction
     const departRequest = {fromCity, toCity, date: departDate, cabin}
     const returnRequest = {fromCity: toCity, toCity: fromCity, date: returnDate, cabin}
