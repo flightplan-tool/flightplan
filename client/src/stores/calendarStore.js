@@ -47,8 +47,7 @@ export default class CalendarStore {
   }
 
   createSegments (month) {
-    const { today, searchStore } = this
-    const { startDate, endDate } = searchStore
+    const { today } = this
 
     const segments = []
     const { startIndex } = month
