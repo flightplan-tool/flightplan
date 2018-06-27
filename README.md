@@ -12,10 +12,10 @@ If you're sitting on a pile of airline miles or credit card points, you know tha
 
 Airline                 | Website               | Search             | Parse
 ------------------------|-----------------------|:------------------:|:------------------:
-CX (Cathay Pacific)     | [AsiaMiles][1]        | :warning:          | :white_check_mark:
-KE (Korean Air)         | [SKYPASS][2]          | :white_check_mark: | :x:
-NH (All Nippon Airways) | [ANA Mileage Club][3] | :white_check_mark: | :x:
-SQ (Singapore Airlines) | [KrisFlyer][4]        | :white_check_mark: | :x:
+CX (Cathay Pacific)     | [AsiaMiles][1]        | :white_check_mark: | :x:
+KE (Korean Air)         | [SKYPASS][2]          | :white_check_mark: | :white_check_mark:
+NH (All Nippon Airways) | [ANA Mileage Club][3] | :white_check_mark: | :white_check_mark:
+SQ (Singapore Airlines) | [KrisFlyer][4]        | :white_check_mark: | :white_check_mark:
 
 [1]: https://www.asiamiles.com/
 [2]: https://www.koreanair.com/global/en/skypass/
