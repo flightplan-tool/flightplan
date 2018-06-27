@@ -1,14 +1,17 @@
 const program = require('commander')
 const fs = require('fs')
+const moment = require('moment')
 const path = require('path')
 
 const db = require('../shared/db')
 const paths = require('../shared/paths')
+const routes = require('../shared/routes')
 const utils = require('../shared/utils')
 
 program
   .option('-y, --yes', 'Automatically execute cleanup without confirmation')
   .option('-v, --verbose', 'Verbose logging')
+  .option('-m, --maxage', 'Discard requests older than specified age (supports ISO 8601 durations), defaults to 1 year')
   .parse(process.argv)
 
 async function cleanupRequests (yes, verbose) {
@@ -92,8 +95,56 @@ async function cleanupResources (yes, verbose, associatedFiles) {
   return { resources: [] }
 }
 
+async function cleanupRedundant (yes, verbose, cutoff) {
+  console.log('Scanning for redundant requests...')
+  const inUse = new Set()
+  const requests = []
+
+  // Lookup all active routes from database
+  const allRoutes = await routes.find()
+  for (const val of allRoutes.values()) {
+    // Compute most recent request for every quantity value
+    const map = val.requests.reduce((map, x) => {
+      requests.push(x)
+      const updatedAt = moment(x.updatedAt)
+      if (updatedAt.isSameOrAfter(cutoff)) {
+        const old = map.get(x.quantity)
+        if (!old || updatedAt.isAfter(moment(old.updatedAt))) {
+          map.set(x.quantity, x)
+        }
+      }
+      return map
+    }, new Map())
+
+    // Add those requests to in-use set
+    map.forEach(x => inUse.add(x.id))
+  }
+
+  // Find requests that are no longer in use
+  const redundant = requests.filter(x => !inUse.has(x.id))
+  if (verbose) {
+    redundant.forEach(x => console.log(JSON.stringify(x, null, 4)))
+  }
+
+  // Check what we found
+  if (redundant.length === 0) {
+    console.log('No redundant requests were found!')
+    return { redundant }
+  }
+
+  // Prompt user to cleanup requests
+  if (yes || utils.promptYesNo(`Found ${redundant.length} redundant requests. Delete them from the database?`)) {
+    console.log('Cleaning up database entries and associated resources...')
+    for (const row of redundant) {
+      await utils.cleanupRequest(row)
+    }
+    return { redundant }
+  }
+  return { redundant: [] }
+}
+
 const main = async (args) => {
-  const { yes, verbose } = args
+  const { yes, verbose, maxage = 'P1Y' } = args
 
   try {
     // Open the database
@@ -106,11 +157,16 @@ const main = async (args) => {
     // Cleanup resources
     const { resources } = await cleanupResources(yes, verbose, associatedFiles)
 
+    // Cleanup redundant requests
+    const cutoff = moment().subtract(moment.duration(maxage))
+    const { redundant } = await cleanupRedundant(yes, verbose, cutoff)
+
     // Print summary
     console.log('')
     console.log('Cleanup Report:')
     console.log('    Deleted Requests: ' + requests.length)
     console.log('    Deleted Resources: ' + resources.length)
+    console.log('    Redundant Requests: ' + redundant.length)
   } catch (e) {
     console.error(e)
     process.exit(1)
