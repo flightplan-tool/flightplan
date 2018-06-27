@@ -13,20 +13,16 @@ module.exports = {
       minDays: 1,
       maxDays: 355
     },
-    throttling: profiles.slow,
+    throttling: profiles.fast,
     fares: [
       {code: 'FS', cabin: cabins.first, saver: true, name: 'First Standard'},
-      {code: 'F1', cabin: cabins.first, saver: false, name: 'First Priority 1'},
-      {code: 'F2', cabin: cabins.first, saver: false, name: 'First Priority 2'},
+      {code: 'F1', cabin: cabins.first, saver: false, name: 'First Choice'},
       {code: 'CS', cabin: cabins.business, saver: true, name: 'Business Standard'},
-      {code: 'C1', cabin: cabins.business, saver: false, name: 'Business Priority 1'},
-      {code: 'C2', cabin: cabins.business, saver: false, name: 'Business Priority 2'},
+      {code: 'C1', cabin: cabins.business, saver: false, name: 'Business Choice'},
       {code: 'WS', cabin: cabins.premium, saver: true, name: 'Prem. Econ. Standard'},
-      {code: 'W1', cabin: cabins.premium, saver: false, name: 'Prem. Econ. Priority 1'},
-      {code: 'W2', cabin: cabins.premium, saver: false, name: 'Prem. Econ. Priority 2'},
+      {code: 'W1', cabin: cabins.premium, saver: false, name: 'Prem. Econ. Choice'},
       {code: 'YS', cabin: cabins.economy, saver: true, name: 'Economy Standard'},
-      {code: 'Y1', cabin: cabins.economy, saver: false, name: 'Economy Priority 1'},
-      {code: 'Y2', cabin: cabins.economy, saver: false, name: 'Economy Priority 2'}
+      {code: 'Y1', cabin: cabins.economy, saver: false, name: 'Economy Choice'}
     ]
   }
 }

@@ -21,10 +21,10 @@ module.exports = class extends Engine {
 
   async isLoggedIn (page) {
     await Promise.race([
-      page.waitFor('#login-welcomemsg', { visible: true }).catch(e => {}),
-      page.waitFor('#account-login div.form-login-wrapper button.btn-primary', { visible: true }).catch(e => {})
+      page.waitFor('li.member-login-section', { visible: true }).catch(e => {}),
+      page.waitFor('li.member-section', { visible: true }).catch(e => {})
     ])
-    return !!(await page.$('#login-welcomemsg'))
+    return !!(await page.$('li.member-section'))
   }
 
   async login (page) {
@@ -62,34 +62,37 @@ module.exports = class extends Engine {
   }
 
   async prepare (page) {
-    // Search by destination, not miles
-    await page.waitFor('#byDest', { visible: true })
-    await page.click('#byDest')
-
-    // Make sure cities are loaded, before typing them in
-    await airportCodes(this)
+    page.waitFor(1000)
   }
 
   async setFromCity (page, city) {
-    await setCity(this, '#byDest-city-from', city)
+    await setCity(this, '#input-origin', '#results-origin', city)
   }
 
   async setToCity (page, city) {
-    await setCity(this, '#byDest-city-to', city)
+    await setCity(this, '#input-destination', '#results-destination', city)
   }
 
   async setOneWay (page, oneWay) {
-    if (!await this.select('#byDest-trip-type', oneWay ? 'O' : 'R')) {
-      return { error: `Could not set trip type to: ${oneWay ? 'One-Way' : 'Round-Trip'}` }
-    }
+    await page.click(oneWay ? '#tab-itinerary-type-oneway span' : '#tab-itinerary-type-return span')
+    await page.waitFor(500)
   }
 
   async setDepartDate (page, departDate) {
-    return await setDate(this, '#byDest-txtDateDepartTrigger > img', departDate)
+    const dates = this.query.oneWay ? [departDate] : [departDate, this.query.returnDate]
+    const selector = `div.travel-dates-${this.query.oneWay ? 'ow' : 'rt'}-wrapper button`
+
+    // Open up the calendar
+    await page.click(selector)
+
+    // Select each date
+    for (const date of dates) {
+      await setDate(this, date)
+    }
   }
 
   async setReturnDate (page, returnDate) {
-    return !await setDate(this, '#byDest-txtDateReturnTrigger > img', departDate)
+    // Nothing to do
   }
 
   async setCabin (page, cabin) {
@@ -102,13 +105,15 @@ module.exports = class extends Engine {
     if (!(cabin in cabinOptions)) {
       return { error: `Invalid cabin class: ${cabin}` }
     }
-    if (!await this.select('#byDest-trip-class1', cabinOptions[cabin])) {
+    if (!await this.select('#select-cabin', cabinOptions[cabin])) {
       return { error: `Could not set cabin to: ${cabin}` }
     }
   }
 
   async setQuantity (page, quantity) {
-    if (!await this.select('#byDest-adult', quantity.toString())) {
+    await page.click('#btn-passengers')
+    await page.waitFor('#select-adult', { visible: true })
+    if (!await this.select('#select-adult', quantity.toString())) {
       return { error: `Could not set # of adults to: ${quantity}` }
     }
   }
@@ -116,43 +121,61 @@ module.exports = class extends Engine {
   async submit (page, htmlFile, screenshot) {
     let ret
 
-    // Select fixed travel dates
-    await page.click('#byDest-radio')
-    await page.waitFor(500)
+    // Turn off flexible dates
+    if (await page.$('#flexible-dates:checked')) {
+      await page.click('label[for=flexible-dates]')
+      await page.waitFor(250)
+    }
 
-    // Save the main page results first
-    ret = await saveTab(this, '#btnSearch', htmlFile, screenshot)
+    // Submit search form
+    ret = await saveResults(this, 'button.btn-facade-search', htmlFile, screenshot)
     if (ret && ret.error) {
       return ret
     }
 
-    // Now save the results for tab "Priority Awards Tier 1"
-    await page.waitFor('#PT1Tab > a', { visible: true })
-    await page.waitFor(1000)
-    ret = await saveTab(this, '#PT1Tab > a', htmlFile, screenshot)
-    if (ret && ret.error) {
-      return ret
-    }
+    // Move through each additional fare class
+    while (true) {
+      // Get the index of the tab after the currently active one
+      const tabIndex = await page.evaluate(sel => {
+        let idx = 1
+        let foundActive = false
+        for (const item of document.querySelectorAll(sel)) {
+          if (foundActive) {
+            return idx
+          } else if (item.querySelector('div.active')) {
+            // This is the active item
+            foundActive = true
+          }
+          idx++
+        }
+        return 0
+      }, 'div.owl-item.active')
+      if (tabIndex) {
+        // Insert a small wait
+        await this.waitBetween([4, 6])
 
-    // Finally, save the results for tab "Priority Awards Tier 2"
-    await page.waitFor('#PT2Tab > a', { visible: true })
-    await page.waitFor(1000)
-    ret = await saveTab(this, '#PT2Tab > a', htmlFile, screenshot)
-    if (ret && ret.error) {
-      return ret
+        // Click the next tab
+        const tabSel = `div.owl-item.active:nth-child(${tabIndex}) div.cabin-ticket-card`
+        ret = await saveResults(this, tabSel, htmlFile, screenshot)
+        continue
+      }
+      break
     }
   }
 }
 
-async function saveTab (engine, selector, htmlFile, screenshot) {
+async function saveResults (engine, selector, htmlFile, screenshot) {
   let ret
+  const { page } = engine
 
   // Click the button
-  const response = await engine.clickAndWait(selector)
+  const response = await page.click(selector)
   await settle(engine)
 
-  // Insert a small wait
-  await engine.waitBetween([3, 5])
+  // Wait reasonable amount of time for tabs to load
+  try {
+    await page.waitFor('div.owl-item.active', { visible: true, timeout: 5000 })
+  } catch (e) {}
 
   // Save the HTML and screenshot
   ret = await engine.save(htmlFile, screenshot)
@@ -168,29 +191,39 @@ async function saveTab (engine, selector, htmlFile, screenshot) {
 }
 
 async function settle (engine) {
-  // Wait a tiny bit, for things to run
   const { page } = engine
-  await page.waitFor(250)
-  await page.waitFor('div.wait-message', { hidden: true })
+
+  // Check for popup
+  try {
+    await page.waitFor('#change-ticket-type-modal', { visible: true, timeout: 1000 })
+    if (!await page.$('#change-ticket-type-dont-show-again:checked')) {
+      await page.click('label[for=change-ticket-type-dont-show-again]')
+      await page.waitFor(250)
+    }
+    await page.click('button.btn-confirm')
+    await page.waitFor(1000)
+  } catch (e) {}
+
+  // Wait for loading overlay to disappear
+  await page.waitFor('.section-loading-overlay', { hidden: true })
   await page.waitFor(1000)
 }
 
-async function setCity (engine, selector, value) {
+async function setCity (engine, inputSel, selectSel, value) {
   const { page } = engine
-  await page.click(selector)
-  await engine.clear(selector)
-  await page.keyboard.type(value, { delay: 500 })
-  await page.waitFor(2000)
-  await page.keyboard.press('Tab')
-  await page.waitFor(1000)
+  await page.click(inputSel)
+  await engine.clear(inputSel)
+  await page.waitFor(500)
+  await page.keyboard.type(value, { delay: 100 })
+  const itemSel = selectSel + ` li[data-airportcode=${value}]`
+  await page.waitFor(itemSel, { visible: true, timeout: 10000 })
+  await page.click(itemSel)
+  await page.waitFor(500)
 }
 
-async function setDate (engine, selector, date) {
+async function setDate (engine, date) {
   const { page } = engine
   let ret, direction
-
-  // Open up the calendar
-  await page.click(selector)
 
   // Move through the calendar page-by-page
   while (true) {
@@ -209,15 +242,15 @@ async function setDate (engine, selector, date) {
     // Should move left?
     let btnSel
     if (date.isBefore(m1)) {
-      btnSel = '.ui-datepicker-prev'
+      btnSel = '.ui-datepicker-group-first .ui-datepicker-prev'
     } else if (date.isAfter(m2.endOf('month'))) {
-      btnSel = '.ui-datepicker-next'
+      btnSel = '.ui-datepicker-group-last .ui-datepicker-next'
     }
     if (btnSel) {
       if (direction && btnSel !== direction) {
         return { error: `Infinite loop detected searching calendar for date: ${date}` }
       }
-      ret = await changeMonth(page, btnSel)
+      ret = await changeMonth(page, btnSel, date)
       if (ret && ret.error) {
         return ret
       }
@@ -241,10 +274,10 @@ async function chooseDate (page, selector, date) {
   }
 
   // Find the right day, and click it
-  strDay = date.date().toString()
   for (const elem of await page.$$(selector + ' a')) {
     const text = await page.evaluate(x => x.textContent, elem)
-    if (text === strDay) {
+    const elemDate = moment(text, 'dddd MMMM D, YYYY')
+    if (elemDate.isValid() && elemDate.date() === date.date()) {
       // Found the date, click it!
       await elem.click()
       await page.waitFor(500)
@@ -252,13 +285,13 @@ async function chooseDate (page, selector, date) {
     }
   }
 
-  return { error: `Date link not found within selected month: ${date}`}
+  return { error: `Date link not found within selected month: ${date}` }
 }
 
-async function changeMonth (page, selector) {
-  // Check if the desired link is disabled
-  if (await page.$(selector + '.ui-state-disabled')) {
-    return { error: `Requested month is outside of bounds: ${date}`}
+async function changeMonth (page, selector, date) {
+  // Check if the desired link is not present
+  if (!await page.$(selector)) {
+    return { error: `Requested month is outside of bounds: ${date}` }
   }
   await page.click(selector)
   await page.waitFor(500)
@@ -267,42 +300,28 @@ async function changeMonth (page, selector) {
 
 async function airportCodes (engine) {
   const { page } = engine
-  const selector = '#as_byDest-city-from > ul'
-  await page.waitFor(1000)
-
-  // We first need to click on the list, so it gets populated. However, it sometimes
-  // disappears unexpectedly, so keep trying until we clicked it successfully.
   const airports = new Set()
-  let attempts = 0
-  while (true) {
-    if (attempts > 10) {
-      return { error: 'Failed to load city list successfully' }
-    }
-    attempts++
 
-    // Wait for button to be visible, then try to click it
-    const btnSel = '#byDest-city-from-alink'
-    await page.waitFor(btnSel, { visible: true })
-    await page.click(btnSel)
+  // Click to focus the input box for entering departure city
+  const inputSel = '#input-origin'
+  await page.waitFor(inputSel, { visible: true })
+  await page.click(inputSel)
+  await page.waitFor(500)
 
-    // Check if the list is visible now
-    try {
-      await page.waitFor(selector, { visible: true, timeout: 1000 })
-      break
-    } catch (e) {}
+  // To populate the list, we just keep typing in letters (a-z)
+  const selector = '#results-origin'
+  for (let i = 0; i < 26; i++) {
+    const letter = String.fromCharCode(97 + i)
+    await page.keyboard.type(letter)
+    await page.waitFor(selector, { visible: true })
+
+    // Get the list of cities from the auto-complete list
+    const idList = await page.$$eval(selector + ' > li', items => (
+      items.map(li => li.getAttribute('data-airportcode'))
+    ))
+    idList.forEach(x => airports.add(x))
+    await engine.clear(inputSel)
   }
-
-  // Get list of cities
-  const reAirportCode = /\(([A-Z]{3})\)(?!.*\([A-Z]{3}\))/
-  const items = await page.$$eval(selector + ' > li', items => (
-    items.map(li => li.innerText)
-  ))
-  items.forEach(text => {
-    const match = reAirportCode.exec(text)
-    if (match) {
-      airports.add(match[1])
-    }
-  })
 
   return { airports }
 }

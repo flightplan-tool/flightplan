@@ -123,6 +123,14 @@ class Engine {
       return ret
     }
 
+    // Set Round-Trip or One-Way
+    if (oneWaySupported) {
+      ret = await this.setOneWay(page, query.oneWay)
+      if (ret && ret.error) {
+        return ret
+      }
+    }
+
     // Set origin and destination
     ret = await this.setFromCity(page, query.fromCity)
     if (ret && ret.error) {
@@ -131,14 +139,6 @@ class Engine {
     ret = await this.setToCity(page, query.toCity)
     if (ret && ret.error) {
       return ret
-    }
-
-    // Set Round-Trip or One-Way
-    if (oneWaySupported) {
-      ret = await this.setOneWay(page, query.oneWay)
-      if (ret && ret.error) {
-        return ret
-      }
     }
 
     // Set departure and return dates
