@@ -66,7 +66,7 @@ export default class SearchStore {
       fares = fares.filter(code => {
         const fare = map.get(code.slice(0, -1))
         return (
-          (showNonSaver || fare.saver) ||
+          (showNonSaver || fare.saver) &&
           (showWaitlisted || !code.includes('@'))
         )
       })
