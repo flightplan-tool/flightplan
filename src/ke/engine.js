@@ -74,6 +74,7 @@ module.exports = class extends Engine {
         if (!await page.$('div.award-cal')) {
           // Open the in-line search form
           await page.click(modifySearchSel)
+          await page.waitFor(500)
           this.useInlineForm = true
         }
       }
@@ -156,7 +157,7 @@ module.exports = class extends Engine {
       ? '#award-avenue > div.change-avail div.booking-ct-btn > input[value="Search"'
       : '#submit'
     const [response] = await Promise.all([
-      page.waitForNavigation({waitUntil: 'networkidle0'}),
+      page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 60000 }),
       submitForm(this, submitSel)
     ])
     await settle(this)

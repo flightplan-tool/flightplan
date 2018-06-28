@@ -195,7 +195,7 @@ class Engine {
   }
 
   async throttle () {
-    let { requests = 0, lastRequest = null, checkpoint = null } = this.throttling
+    let { lastRequest = null, checkpoint = null } = this.throttling
     const { delayBetweenRequests, requestsPerHour, restPeriod } = this.config.throttling
 
     // Insert delay between requests
@@ -209,14 +209,13 @@ class Engine {
     lastRequest = moment()
 
     // Check if we are at a resting checkpoint
-    if (checkpoint && requests >= checkpoint.limit) {
+    if (checkpoint && checkpoint.remaining === 0) {
       const restMillis = checkpoint.until.diff()
       if (restMillis > 0) {
         this.warn(`Cool-down period, resuming ${checkpoint.until.fromNow()}`)
         await this.page.waitFor(restMillis)
       }
       checkpoint = null
-      requests = 0
     }
 
     // If next resting checkpoint is unknown or past, compute new one
@@ -224,13 +223,13 @@ class Engine {
       const dur = utils.randomDuration(restPeriod)
       checkpoint = {
         until: moment().add(dur),
-        limit: Math.max(1, Math.floor(requestsPerHour * dur.asMilliseconds() / (3600 * 1000)))
+        remaining: Math.max(1, Math.floor(requestsPerHour * dur.asMilliseconds() / (3600 * 1000)))
       }
     }
 
     // Update throttling state
-    requests++
-    this.throttling = { requests, lastRequest, checkpoint }
+    checkpoint.remaining--
+    this.throttling = { lastRequest, checkpoint }
   }
 
   async save (htmlFile, screenshot, index) {

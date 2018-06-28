@@ -20,11 +20,21 @@ module.exports = class extends Engine {
   }
 
   async isLoggedIn (page) {
-    await Promise.race([
-      page.waitFor('li.member-login-section', { visible: true }).catch(e => {}),
-      page.waitFor('li.member-section', { visible: true }).catch(e => {})
-    ])
-    return !!(await page.$('li.member-section'))
+    // Sometimes the page keeps reloading out from under us
+    let attempts = 0
+    while (attempts < 4) {
+      attempts++
+      try {
+        await Promise.race([
+          page.waitFor('li.member-login-section', { visible: true }).catch(e => {}),
+          page.waitFor('li.member-section', { visible: true }).catch(e => {})
+        ])
+        return !!(await page.$('li.member-section'))
+      } catch (e) {
+        await page.waitFor(3000)
+      }
+    }
+    return false
   }
 
   async login (page) {
@@ -136,26 +146,27 @@ module.exports = class extends Engine {
     // Move through each additional fare class
     while (true) {
       // Get the index of the tab after the currently active one
-      const tabIndex = await page.evaluate(sel => {
+      const tabIndex = await page.evaluate((itemSel, activeSel) => {
         let idx = 1
         let foundActive = false
-        for (const item of document.querySelectorAll(sel)) {
-          if (foundActive) {
-            return idx
-          } else if (item.querySelector('div.active')) {
-            // This is the active item
-            foundActive = true
+        const cabin = document.querySelector(activeSel + ' span.cabin-class').textContent.trim()
+        for (const item of document.querySelectorAll(itemSel)) {
+          if (item.querySelector('span.cabin-class').textContent.trim() === cabin) {
+            if (foundActive) {
+              // This is the item after the active one
+              return idx
+            } else if (item.querySelector(activeSel)) {
+              // This is the active item
+              foundActive = true
+            }
           }
           idx++
         }
         return 0
-      }, 'div.owl-item.active')
+      }, 'div.owl-item', 'div.cabin-ticket-card-wrapper-outer.active')
       if (tabIndex) {
-        // Insert a small wait
-        await this.waitBetween([4, 6])
-
         // Click the next tab
-        const tabSel = `div.owl-item.active:nth-child(${tabIndex}) div.cabin-ticket-card`
+        const tabSel = `div.owl-item:nth-child(${tabIndex}) div.cabin-ticket-card`
         ret = await saveResults(this, tabSel, htmlFile, screenshot)
         continue
       }
@@ -177,6 +188,9 @@ async function saveResults (engine, selector, htmlFile, screenshot) {
     await page.waitFor('div.owl-item.active', { visible: true, timeout: 5000 })
   } catch (e) {}
 
+  // Insert another small wait
+  await engine.waitBetween([4, 6])
+
   // Save the HTML and screenshot
   ret = await engine.save(htmlFile, screenshot)
   if (ret && ret.error) {
@@ -193,20 +207,43 @@ async function saveResults (engine, selector, htmlFile, screenshot) {
 async function settle (engine) {
   const { page } = engine
 
-  // Check for popup
-  try {
-    await page.waitFor('#change-ticket-type-modal', { visible: true, timeout: 1000 })
-    if (!await page.$('#change-ticket-type-dont-show-again:checked')) {
-      await page.click('label[for=change-ticket-type-dont-show-again]')
-      await page.waitFor(250)
-    }
-    await page.click('button.btn-confirm')
+  while (true) {
+    // Wait for loading overlay to disappear
     await page.waitFor(1000)
-  } catch (e) {}
+    await page.waitFor('.section-loading-overlay', { hidden: true })
 
-  // Wait for loading overlay to disappear
-  await page.waitFor('.section-loading-overlay', { hidden: true })
-  await page.waitFor(1000)
+    // Wait for individual flights to load
+    while (true) {
+      try {
+        await page.waitFor('img.icon-loading', { visible: true, timeout: 1000 })
+        await page.waitFor(1000)
+      } catch (e) {
+        break
+      }
+    }
+    await page.waitFor(500)
+
+    // Check for "changing ticket type" modal popup
+    try {
+      await page.waitFor('#change-ticket-type-modal', { visible: true, timeout: 2000 })
+      if (await page.$('#change-ticket-type-dont-show-again:not(:checked)')) {
+        await page.click('label[for=change-ticket-type-dont-show-again]')
+        await page.waitFor(250)
+      }
+      await page.click('#change-ticket-type-modal button.btn-confirm')
+      continue
+    } catch (e) {}
+
+    // Check for "flights not available" modal popup
+    try {
+      await page.waitFor('#flights-not-available-modal', { visible: true, timeout: 2000 })
+      await page.click('#flights-not-available-modal button.btn-close')
+      continue
+    } catch (e) {}
+
+    // Loading is done, and no modal popups detected
+    break
+  }
 }
 
 async function setCity (engine, inputSel, selectSel, value) {
