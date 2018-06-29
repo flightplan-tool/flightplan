@@ -133,7 +133,7 @@ module.exports = class extends Engine {
       this.clickAndWait('button.btn-facade-search'),
       this.page.waitFor('span.label-error', { visible: true, timeout: 0 })
     ])
-    if (response.constructor.name !== 'ElementHandle') {
+    if (response && response.constructor.name !== 'ElementHandle') {
       ret = this.validResponse(response)
       if (ret && ret.error) {
         return ret
