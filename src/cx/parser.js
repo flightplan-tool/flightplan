@@ -11,7 +11,8 @@ module.exports = class extends Parser {
     const fareMap = buildFareMap(this.config.fares)
 
     // Check if no available awards
-    if ($('.no-flights-header').length > 0) {
+    if ($('.no-flights-header').length > 0 ||
+      $('span.label-error').text().includes('no flights available')) {
       return { awards: [] }
     }
 
@@ -50,7 +51,7 @@ module.exports = class extends Parser {
       flight = flight[0]
 
       // TODO: Need to fetch flight details at search time, to get aircraft
-      const aircraft = 'Unknown'
+      const aircraft = '(Unknown Aircraft)'
 
       // Ensure the flight is available (should have a valid price)
       const price = rePrice.exec($(row).find('span.am-total').text())

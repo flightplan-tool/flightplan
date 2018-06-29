@@ -29,12 +29,19 @@ class Engine {
 
     // Create a new page
     this.page = await this.newPage(this.browser, options, this.config.searchURL)
+    let ret
+
+    // Get the page ready
+    ret = await this.prepare(this.page)
+    if (ret && ret.error) {
+      throw new Error(ret.error)
+    }
 
     // Login, and run implementation-specific initialization
     if (!await this._login()) {
       throw new Error(`Login failed`)
     }
-    const ret = await this.initialize(this.page)
+    ret = await this.initialize(this.page)
     if (ret && ret.error) {
       throw new Error(ret.error)
     }
@@ -52,6 +59,8 @@ class Engine {
 
     let attempts = 0
     while (true) {
+      let ret
+
       // Check whether we're logged in (or had too many attempts)
       const success = await this.isLoggedIn(page)
       if (success || attempts >= 4) {
@@ -72,13 +81,19 @@ class Engine {
       }
 
       // Call implementation-specific login
-      const ret = await this.login(page)
+      ret = await this.login(page)
       if (ret && ret.error) {
         throw new Error(ret.error)
       }
 
       // Go to the search page (which will show us if we're logged in or not)
       await page.goto(searchURL, { waitUntil })
+
+      // Get the page ready
+      ret = await this.prepare(page)
+      if (ret && ret.error) {
+        throw new Error(ret.error)
+      }
     }
   }
 
@@ -110,15 +125,22 @@ class Engine {
       await page.goto(searchURL, { waitUntil })
     }
 
+    // Get the page ready
+    ret = await this.prepare(page)
+    if (ret && ret.error) {
+      return ret
+    }
+
     // Make sure we're still logged in
     if (!await this.isLoggedIn(page)) {
-      if (!await this.login(page)) {
-        return { error: 'Login failed' }
+      ret = await this.login(page)
+      if (ret && ret.error) {
+        return ret
       }
     }
 
-    // Prepare the search form
-    ret = await this.prepare(page)
+    // Setup the search form
+    ret = await this.setup(page)
     if (ret && ret.error) {
       return ret
     }

@@ -17,9 +17,24 @@ module.exports = class extends Engine {
     this.info(`Found ${airports.size} airports`)
   }
 
+  async prepare (page) {
+    // Dismiss modal pop-up's
+    while (true) {
+      if (
+        await this.clickIfVisible('div.cookie-continue') ||
+        await this.clickIfVisible('div.insider-opt-in-disallow-button') ||
+        await this.clickIfVisible('div.ins-survey-435-close')
+      ) {
+        await page.waitFor(2000)
+        continue
+      }
+      break
+    }
+  }
+
   async isLoggedIn (page) {
     await page.waitFor(
-      '#membership-1, a.login, li.logged-in', {visible: true, timeout: 10000})
+      '#kfLoginPopup #membership-1, a.login, li.logged-in', {visible: true, timeout: 10000})
     return !!(await page.$('li.logged-in'))
   }
 
@@ -32,7 +47,7 @@ module.exports = class extends Engine {
     // Check if the login form is visible
     let formVisible = true
     try {
-      await page.waitFor('#membership-1', {visible: true, timeout: 1000})
+      await page.waitFor('#kfLoginPopup #membership-1', {visible: true, timeout: 1000})
     } catch (e) {
       formVisible = false
     }
@@ -41,28 +56,26 @@ module.exports = class extends Engine {
       // Click the login link
       const login = await page.waitFor('a.login', {visible: true})
       await login.asElement().click()
-      await page.waitFor('#membership-1', {visible: true})
+      await page.waitFor('#kfLoginPopup #membership-1', {visible: true})
       await page.waitFor(1000)
     }
 
     // Enter username and password
-    await page.click('#membership-1')
+    await page.click('#kfLoginPopup #membership-1')
     await page.waitFor(1000)
     await page.keyboard.type(username, { delay: 10 })
-    await page.click('#membership-2')
+    await page.click('#kfLoginPopup #membership-2')
     await page.waitFor(1000)
     await page.keyboard.type(password, { delay: 10 })
     await page.waitFor(250)
 
     // Check remember box, and submit the form
-    if (!await page.$('#checkbox-1:checked')) {
-      await page.click('#checkbox-1')
+    if (!await page.$('#kfLoginPopup #checkbox-1:checked')) {
+      await page.click('#kfLoginPopup #checkbox-1')
       await page.waitFor(250)
     }
-    this.clickAndWait('#submit-1')
-    await page.waitFor(500)
+    await this.clickAndWait('#kfLoginPopup #submit-1')
     await settle(this)
-    await page.waitFor(5000)
 
     // Bypass invisible captcha, if present
     const bypassed = await page.evaluate(() => {
@@ -84,7 +97,7 @@ module.exports = class extends Engine {
     return this.airports.has(airport)
   }
 
-  async prepare (page) {
+  async setup (page) {
     // Check the Redeem Flights radio button
     await page.waitFor('#travel-radio-2', { visible: true })
     await page.click('#travel-radio-2')
@@ -169,21 +182,8 @@ module.exports = class extends Engine {
 }
 
 async function settle (engine) {
-  const { page } = engine
-
-  while (true) {
-    // Wait a tiny bit, for things to run
-    await page.waitFor(250)
-    await page.waitFor('div.overlay-loading', { hidden: true })
-    page.waitFor(1000)
-
-    // Decline any popup's
-    const btnDecline = await page.$('div.insider-opt-in-disallow-button')
-    if (!btnDecline) {
-      break
-    }
-    btnDecline.click()
-  }
+  // Wait for spinner
+  await engine.settle('div.overlay-loading')
 }
 
 async function airportCodes (engine) {
@@ -193,6 +193,7 @@ async function airportCodes (engine) {
   // Make sure we're in redeem flights mode (to see all the *A cities)
   await page.waitFor('#travel-radio-2', {visible: true})
   await page.click('#travel-radio-2')
+  await settle(engine)
 
   // Wait for the selector to exist
   const selector = '#cib-flight3 > option'

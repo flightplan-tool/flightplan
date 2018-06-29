@@ -19,6 +19,8 @@ module.exports = class extends Engine {
     this.info(`Found ${airports.size} airports`)
   }
 
+  async prepare (page) {}
+
   async isLoggedIn (page) {
     await Promise.race([
       page.waitFor('#skypassLoginButton', { visible: true }).catch(e => {}),
@@ -84,7 +86,7 @@ module.exports = class extends Engine {
     return !this.useInlineForm
   }
 
-  async prepare (page) {
+  async setup (page) {
     if (!this.useInlineForm) {
       // Select "Award Booking"
       const awardSel = '#booking-type button[data-name="award"]'
@@ -193,8 +195,7 @@ async function settle (engine) {
 
   // While loading bar exists, keep waiting...
   while (true) {
-    await page.waitFor(250)
-    if (!await page.$('div.loading-bar')) {
+    if (await engine.settle('div.loading-bar', 500, 2000)) {
       break
     }
 

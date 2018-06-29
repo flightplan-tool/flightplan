@@ -19,22 +19,17 @@ module.exports = class extends Engine {
     this.info(`Found ${airports.size} airports`)
   }
 
+  async prepare (page) {}
+
   async isLoggedIn (page) {
     // Sometimes the page keeps reloading out from under us
-    let attempts = 0
-    while (attempts < 4) {
-      attempts++
-      try {
-        await Promise.race([
-          page.waitFor('li.member-login-section', { visible: true }).catch(e => {}),
-          page.waitFor('li.member-section', { visible: true }).catch(e => {})
-        ])
-        return !!(await page.$('li.member-section'))
-      } catch (e) {
-        await page.waitFor(3000)
-      }
-    }
-    return false
+    return this.retry(async () => {
+      await Promise.race([
+        page.waitFor('li.member-login-section', { visible: true }).catch(e => {}),
+        page.waitFor('li.member-section', { visible: true }).catch(e => {})
+      ])
+      return !!(await page.$('li.member-section'))
+    })
   }
 
   async login (page) {
@@ -58,21 +53,17 @@ module.exports = class extends Engine {
       await page.waitFor(250)
     }
 
-    // Submit form, and give the landing page up to 15 seconds to load
-    try {
-      await Promise.all([
-        page.waitForNavigation({waitUntil: 'networkidle0', timeout: 15000}),
-        page.click('#account-login div.form-login-wrapper button.btn-primary')
-      ])
-    } catch (e) {}
+    // Submit form
+    await this.clickAndWait('#account-login div.form-login-wrapper button.btn-primary')
   }
 
   validAirport (airport) {
     return this.airports.has(airport)
   }
 
-  async prepare (page) {
-    page.waitFor(1000)
+  async setup (page) {
+    // Make sure destination city is cleared
+    await clearCity(this, '#input-destination')
   }
 
   async setFromCity (page, city) {
@@ -138,112 +129,128 @@ module.exports = class extends Engine {
     }
 
     // Submit search form
-    ret = await saveResults(this, 'button.btn-facade-search', htmlFile, screenshot)
-    if (ret && ret.error) {
-      return ret
+    const response = await Promise.race([
+      this.clickAndWait('button.btn-facade-search'),
+      this.page.waitFor('span.label-error', { visible: true, timeout: 0 })
+    ])
+    if (response.constructor.name !== 'ElementHandle') {
+      ret = this.validResponse(response)
+      if (ret && ret.error) {
+        return ret
+      }
     }
 
-    // Move through each additional fare class
-    while (true) {
-      // Get the index of the tab after the currently active one
-      const tabIndex = await page.evaluate((itemSel, activeSel) => {
-        let idx = 1
-        let foundActive = false
-        const cabin = document.querySelector(activeSel + ' span.cabin-class').textContent.trim()
-        for (const item of document.querySelectorAll(itemSel)) {
-          if (item.querySelector('span.cabin-class').textContent.trim() === cabin) {
-            if (foundActive) {
-              // This is the item after the active one
-              return idx
-            } else if (item.querySelector(activeSel)) {
-              // This is the active item
-              foundActive = true
-            }
-          }
-          idx++
-        }
-        return 0
-      }, 'div.owl-item', 'div.cabin-ticket-card-wrapper-outer.active')
-      if (tabIndex) {
-        // Click the next tab
-        const tabSel = `div.owl-item:nth-child(${tabIndex}) div.cabin-ticket-card`
-        ret = await saveResults(this, tabSel, htmlFile, screenshot)
-        continue
+    // Check for error messages
+    const msg = await this.textContent('span.label-error')
+    if (msg.length > 0 && !msg.includes('no flights available')) {
+      // If session becomes invalid, logout
+      if (msg.includes('please login again')) {
+        await logout(this)
       }
-      break
+      return { error: msg }
+    }
+
+    // Save results for each award type (Standard / Choice / Tailored)
+    while (true) {
+      ret = await saveResults(this, htmlFile, screenshot)
+      if (ret && ret.error) {
+        return ret
+      }
+
+      // Find the next tab's selector
+      const tabSel = await nextTab(this)
+      if (!tabSel) {
+        break
+      }
+
+      // Click on the tab
+      await page.click(tabSel)
+
+      // Dismiss modal pop-up, warning us about changing award type
+      await dismissWarning(this)
     }
   }
 }
 
-async function saveResults (engine, selector, htmlFile, screenshot) {
-  let ret
+async function logout (engine) {
   const { page } = engine
 
-  // Click the button
-  const response = await page.click(selector)
+  // Logout if possible
+  const memberSel = 'li.member-section'
+  const logoutSel = `${memberSel} button.circle-link-arrow-btn`
+  try {
+    await page.waitFor(memberSel, { visible: true, timeout: 1000 })
+    await page.hover(memberSel)
+    await page.waitFor(logoutSel, { visible: true, timeout: 1000 })
+    await engine.clickAndWait(logoutSel)
+  } catch (e) {}
+}
+
+async function saveResults (engine, htmlFile, screenshot) {
+  // If there's a "No flights available" modal pop-up, dismiss it
+  await engine.clickIfVisible('#flights-not-available-modal button.btn-modal-close')
+
+  // Make sure results have finished loading
   await settle(engine)
 
-  // Wait reasonable amount of time for tabs to load
-  try {
-    await page.waitFor('div.owl-item.active', { visible: true, timeout: 5000 })
-  } catch (e) {}
-
-  // Insert another small wait
+  // Insert a small wait (to simulate throttling between tabs)
   await engine.waitBetween([4, 6])
 
   // Save the HTML and screenshot
-  ret = await engine.save(htmlFile, screenshot)
-  if (ret && ret.error) {
-    return ret
-  }
-
-  // Check response code
-  ret = engine.validResponse(response)
+  const ret = await engine.save(htmlFile, screenshot)
   if (ret && ret.error) {
     return ret
   }
 }
 
-async function settle (engine) {
+async function nextTab (engine) {
   const { page } = engine
 
-  while (true) {
-    // Wait for loading overlay to disappear
-    await page.waitFor(1000)
-    await page.waitFor('.section-loading-overlay', { hidden: true })
-
-    // Wait for individual flights to load
-    while (true) {
-      try {
-        await page.waitFor('img.icon-loading', { visible: true, timeout: 1000 })
-        await page.waitFor(1000)
-      } catch (e) {
-        break
+  // Calculate the index of the next tab (in same cabin) after currently selected one
+  const tabIndex = await page.evaluate((itemSel, activeSel) => {
+    let idx = 1
+    let foundActive = false
+    const activeTab = document.querySelector(activeSel + ' span.cabin-class')
+    if (activeTab) {
+      const cabin = activeTab.textContent.trim()
+      for (const item of document.querySelectorAll(itemSel)) {
+        if (item.querySelector('span.cabin-class').textContent.trim() === cabin) {
+          if (foundActive) {
+            // This is the item after the active one
+            return idx
+          } else if (item.querySelector(activeSel)) {
+            // This is the active item
+            foundActive = true
+          }
+        }
+        idx++
       }
     }
-    await page.waitFor(500)
+    return 0
+  }, 'div.owl-item', 'div.cabin-ticket-card-wrapper-outer.active')
+  return tabIndex ? `div.owl-item:nth-child(${tabIndex}) div.cabin-ticket-card` : null
+}
 
-    // Check for "changing ticket type" modal popup
-    try {
-      await page.waitFor('#change-ticket-type-modal', { visible: true, timeout: 2000 })
-      if (await page.$('#change-ticket-type-dont-show-again:not(:checked)')) {
-        await page.click('label[for=change-ticket-type-dont-show-again]')
-        await page.waitFor(250)
-      }
-      await page.click('#change-ticket-type-modal button.btn-confirm')
-      continue
-    } catch (e) {}
+async function dismissWarning (engine) {
+  const { page } = engine
 
-    // Check for "flights not available" modal popup
-    try {
-      await page.waitFor('#flights-not-available-modal', { visible: true, timeout: 2000 })
-      await page.click('#flights-not-available-modal button.btn-close')
-      continue
-    } catch (e) {}
+  // Warning modal present?
+  try {
+    await page.waitFor('#change-ticket-type-modal', { visible: true, timeout: 1000 })
 
-    // Loading is done, and no modal popups detected
-    break
-  }
+    // Check the "Don't show again" box and dismiss
+    if (await page.$('#change-ticket-type-dont-show-again:not(:checked)')) {
+      await page.click('label[for=change-ticket-type-dont-show-again]')
+      await page.waitFor(250)
+    }
+    await page.click('#change-ticket-type-modal button.btn-confirm')
+  } catch (e) {}
+}
+
+async function settle (engine) {
+  // Wait for spinner
+  await engine.settle('.section-loading-overlay')
+  await engine.settle('img.icon-loading')
 }
 
 async function setCity (engine, inputSel, selectSel, value) {
@@ -256,6 +263,17 @@ async function setCity (engine, inputSel, selectSel, value) {
   await page.waitFor(itemSel, { visible: true, timeout: 10000 })
   await page.click(itemSel)
   await page.waitFor(500)
+}
+
+async function clearCity (engine, inputSel) {
+  const { page } = engine
+  try {
+    await page.waitFor(inputSel, { visible: true })
+    await page.click(inputSel)
+    await page.waitFor(500)
+    await page.keyboard.press('Backspace')
+    await page.waitFor(500)
+  } catch (e) {}
 }
 
 async function setDate (engine, date) {
@@ -339,20 +357,26 @@ async function airportCodes (engine) {
   const { page } = engine
   const airports = new Set()
 
-  // Click to focus the input box for entering departure city
+  // Make sure page is loaded
   const inputSel = '#input-origin'
   await page.waitFor(inputSel, { visible: true })
+
+  // Make sure return city is cleared (or else it gets excluded from results)
+  await clearCity(engine, '#input-destination')
+
+  // Click to focus the input box for entering departure city
   await page.click(inputSel)
-  await page.waitFor(500)
+  await page.waitFor(100)
 
   // To populate the list, we just keep typing in letters (a-z)
   const selector = '#results-origin'
   for (let i = 0; i < 26; i++) {
     const letter = String.fromCharCode(97 + i)
     await page.keyboard.type(letter)
-    await page.waitFor(selector, { visible: true })
+    await page.waitFor(100)
 
     // Get the list of cities from the auto-complete list
+    await page.waitFor(selector, { visible: true })
     const idList = await page.$$eval(selector + ' > li', items => (
       items.map(li => li.getAttribute('data-airportcode'))
     ))

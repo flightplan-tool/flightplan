@@ -17,6 +17,8 @@ module.exports = class extends Engine {
     this.info(`Found ${airports.size} airports`)
   }
 
+  async prepare (page) {}
+
   async isLoggedIn (page) {
     await Promise.race([
       page.waitFor('li.btnLogoutArea', { visible: true }).catch(e => {}),
@@ -65,7 +67,7 @@ module.exports = class extends Engine {
     return this.airports.has(airport)
   }
 
-  async prepare (page) {
+  async setup (page) {
     // Make sure form is ready
     await settle(this)
 
@@ -148,11 +150,8 @@ module.exports = class extends Engine {
 }
 
 async function settle (engine) {
-  // Wait a tiny bit, for things to run
-  const { page } = engine
-  await page.waitFor(250)
-  await page.waitFor('div.loadingArea', { hidden: true })
-  await page.waitFor(1000)
+  // Wait for spinner
+  await engine.settle('div.loadingArea')
 }
 
 async function setCity (engine, selector, value) {
