@@ -18,6 +18,10 @@ module.exports = class extends Engine {
   }
 
   async prepare (page) {
+    // Ensure page is loaded, since we're only waiting until 'domcontentloaded' event
+    await page.waitFor(1000)
+    await settle(this)
+
     // Dismiss modal pop-up's
     while (true) {
       if (
@@ -74,7 +78,7 @@ module.exports = class extends Engine {
       await page.click('#kfLoginPopup #checkbox-1')
       await page.waitFor(250)
     }
-    await this.clickAndWait('#kfLoginPopup #submit-1')
+    await this.clickAndWait('#kfLoginPopup #submit-1', this.config.waitUntil)
     await settle(this)
 
     // Bypass invisible captcha, if present
