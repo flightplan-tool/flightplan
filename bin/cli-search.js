@@ -111,7 +111,7 @@ function validateArguments (args) {
 function generateQueries (args, engine, days) {
   const { start: startDate, end: endDate } = args
   const { roundtripOptimized, tripMinDays, oneWaySupported } = engine.config
-  const gap = args.oneway ? 0 : (roundtripOptimized ? Math.min(tripMinDays, days) : days)
+  const gap = (args.oneway || !roundtripOptimized) ? 0 : Math.min(tripMinDays, days)
   const validEnd = engine.validDateRange()[1]
   const queries = []
 
@@ -146,11 +146,16 @@ function generateQueries (args, engine, days) {
   // Compute segments in middle of search range
   for (let i = 0; i < days - gap; i++) {
     const date = startDate.clone().add(i, 'd')
-    queries.push({
-      ...departCities,
-      departDate: date,
-      returnDate: args.oneway ? null : date.clone().add(gap, 'd')
-    })
+    if (roundtripOptimized) {
+      queries.push({
+        ...departCities,
+        departDate: date,
+        returnDate: args.oneway ? null : date.clone().add(gap, 'd')
+      })
+    } else {
+      queries.push({...departCities, departDate: date})
+      queries.push({...returnCities, departDate: date})
+    }
   }
 
   // Compute the one-way segments going out at end of search range
