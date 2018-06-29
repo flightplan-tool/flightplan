@@ -2,7 +2,7 @@
   color: white;
   background-color: #02192b;
   box-shadow: 2px 2px 20px 0 rgba(0, 0, 0, 0.5);
-  padding: 15px;
+  padding: 15px 15px 0 15px;
   margin-bottom: auto;
   z-index: 10;
 }
@@ -24,6 +24,7 @@
   display: grid;
   grid-template-columns: 26px max-content 26px max-content;
   grid-row-gap: 10px;
+  margin-bottom: 15px;
 }
 
 .legend h2 {
