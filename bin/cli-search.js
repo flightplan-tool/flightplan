@@ -128,7 +128,7 @@ function generateQueries (args, engine, days) {
         departDate: date,
         returnDate: null
       })
-    } else if (date.add(tripMinDays, 'd').isBefore(validEnd)) {
+    } else if (date.clone().add(tripMinDays, 'd').isBefore(validEnd)) {
       queries.push({
         ...returnCities,
         departDate: date,
@@ -145,7 +145,7 @@ function generateQueries (args, engine, days) {
 
   // Compute segments in middle of search range
   for (let i = 0; i < days - gap; i++) {
-    const date = startDate.clone().add(gap + i, 'd')
+    const date = startDate.clone().add(i, 'd')
     queries.push({
       ...departCities,
       departDate: date,
@@ -162,7 +162,7 @@ function generateQueries (args, engine, days) {
         departDate: date,
         returnDate: null
       })
-    } else if (date.add(tripMinDays, 'd').isBefore(validEnd)) {
+    } else if (date.clone().add(tripMinDays, 'd').isBefore(validEnd)) {
       queries.push({
         ...departCities,
         departDate: date,
@@ -228,6 +228,14 @@ function redundantSegment (routes, query) {
   return false
 }
 
+async function safety (fn) {
+  try {
+    return await fn()
+  } catch (error) {
+    return { error }
+  }
+}
+
 const main = async (args) => {
   const { start: startDate, end: endDate, headless } = args
 
@@ -278,7 +286,7 @@ const main = async (args) => {
       routes.print(query)
 
       // Run the search query
-      const { fileCount, blocked, error } = await engine.search(query)
+      const { fileCount, blocked, error } = await safety(async () => engine.search(query))
       if (error) {
         console.error(error)
         continue
