@@ -14,52 +14,22 @@ program
   .option('-m, --maxage', 'Discard requests older than specified age (supports ISO 8601 durations), defaults to 1 year')
   .parse(process.argv)
 
-async function cleanupRequests (yes, verbose) {
-  console.log('Scanning search requests...')
-  const requests = []
+async function cleanupResources (yes, verbose) {
+  // Iterate over requests
+  console.log('Scanning data resources...')
   const associatedFiles = new Set()
   await db.db().each('SELECT * FROM awards_requests', (err, row) => {
     if (err) {
       throw new Error('Could not scan search requests: ' + err)
     }
 
-    // Check for any missing resources
-    const assets = utils.assetsForRequest(row)
-    const missing = !!assets.htmlFiles.find(x => !fs.existsSync(x))
-
     // Keep track of every file associated with a request
+    const assets = utils.assetsForRequest(row)
     assets.htmlFiles.forEach(x => associatedFiles.add(x))
     assets.screenshots.forEach(x => associatedFiles.add(x))
-
-    // If any files were missing, cleanup the request
-    if (missing) {
-      requests.push(row)
-      if (verbose) {
-        console.log(JSON.stringify(row, null, 4))
-      }
-    }
   })
 
-  // Check what we found
-  if (requests.length === 0) {
-    console.log('No incomplete requests were found!')
-    return { requests, associatedFiles }
-  }
-
-  // Prompt user to cleanup requests
-  if (yes || utils.promptYesNo(`Found ${requests.length} incomplete requests. Delete them from the database?`)) {
-    console.log('Cleaning up database entries and associated resources...')
-    for (const row of requests) {
-      await utils.cleanupRequest(row)
-    }
-    return { requests, associatedFiles }
-  }
-  return { requests: [], associatedFiles }
-}
-
-async function cleanupResources (yes, verbose, associatedFiles) {
   // Iterate over resources
-  console.log('Scanning data resources...')
   let resources = fs.readdirSync(paths.data)
 
   // Ignore hidden files
@@ -93,6 +63,44 @@ async function cleanupResources (yes, verbose, associatedFiles) {
     return { resources }
   }
   return { resources: [] }
+}
+
+async function cleanupRequests (yes, verbose) {
+  console.log('Scanning search requests...')
+  const requests = []
+  await db.db().each('SELECT * FROM awards_requests', (err, row) => {
+    if (err) {
+      throw new Error('Could not scan search requests: ' + err)
+    }
+
+    // Check for any missing resources
+    const assets = utils.assetsForRequest(row)
+    const missing = !!assets.htmlFiles.find(x => !fs.existsSync(x))
+
+    // If any files were missing, cleanup the request
+    if (missing) {
+      requests.push(row)
+      if (verbose) {
+        console.log(JSON.stringify(row, null, 4))
+      }
+    }
+  })
+
+  // Check what we found
+  if (requests.length === 0) {
+    console.log('No incomplete requests were found!')
+    return { requests }
+  }
+
+  // Prompt user to cleanup requests
+  if (yes || utils.promptYesNo(`Found ${requests.length} incomplete requests. Delete them from the database?`)) {
+    console.log('Cleaning up database entries and associated resources...')
+    for (const row of requests) {
+      await utils.cleanupRequest(row)
+    }
+    return { requests }
+  }
+  return { requests: [] }
 }
 
 async function cleanupRedundant (yes, verbose, cutoff) {
@@ -151,11 +159,11 @@ const main = async (args) => {
     console.log('Opening database...')
     await db.open()
 
-    // Cleanup requests
-    const { requests, associatedFiles } = await cleanupRequests(yes, verbose)
-
     // Cleanup resources
-    const { resources } = await cleanupResources(yes, verbose, associatedFiles)
+    const { resources } = await cleanupResources(yes, verbose)
+
+    // Cleanup requests
+    const { requests } = await cleanupRequests(yes, verbose)
 
     // Cleanup redundant requests
     const cutoff = moment().subtract(moment.duration(maxage))

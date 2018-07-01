@@ -59,16 +59,32 @@ const main = async (args) => {
     const fromDB = await sqlite.open(dbPath, { Promise })
     await db.open()
 
+    // Create set of existing resources, so we don't add duplicate requests
+    console.log('Checking existing resources...')
+    const existing = new Set()
+    await db.db().each('SELECT * FROM awards_requests', (err, row) => {
+      if (err) {
+        throw new Error('Could not scan search requests: ' + err)
+      }
+
+      existing.add(row.htmlFile)
+    })
+
     // Check how many routes / awards will be added
     const requestCount = await count(fromDB, 'awards_requests')
     const awardCount = await count(fromDB, 'awards')
+    let duplicates = 0
 
-    // Prompt user to cleanup requests
+    // Prompt user to import requests
     if (yes || utils.promptYesNo(`Import ${requestCount} requests and ${awardCount} awards?`)) {
       console.log(`Importing ${requestCount} requests...`)
       await fromDB.each('SELECT * FROM awards_requests', (err, row) => {
         if (err) {
           throw new Error('Could not import requests: ' + err)
+        }
+        if (existing.has(row.htmlFile)) {
+          duplicates++
+          return
         }
         if (verbose) {
           console.log(JSON.stringify(row, null, 4))
@@ -95,7 +111,7 @@ const main = async (args) => {
       }
     }
 
-    console.log('Import complete.')
+    console.log(`Import complete. Skipped ${duplicates} duplicate requests.`)
   } catch (e) {
     console.error(e)
     process.exit(1)
