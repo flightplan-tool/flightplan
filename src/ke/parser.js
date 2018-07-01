@@ -8,9 +8,9 @@ const reSeats = /(\d+)\s+Seats\s+\(([A-Z]+)\)/
 
 // Normalized aircraft names
 const aircraftNormalizations = {
-  'B747': 'Boeing 777',
+  'B747': 'Boeing 747',
   'B777': 'Boeing 777',
-  'B787': 'Boeing 777'
+  'B787': 'Boeing 787'
 }
 
 module.exports = class extends Parser {
