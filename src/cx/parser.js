@@ -5,6 +5,24 @@ const { cabins } = require('../consts')
 const reFlight = /CX\d+/
 const rePrice = /\d+,000/
 
+// Cached mapping of flight => aircraft
+const aircraftForFlight = {
+  'CX851': 'Airbus A350-900',
+  'CX870': 'Boeing 777-300',
+  'CX872': 'Boeing 777-300ER',
+  'CX873': 'Boeing 777-300ER',
+  'CX879': 'Boeing 777-300ER',
+  'CX892': 'Airbus A350-900',
+  'CX893': 'Airbus A350-900',
+  'CX895': 'Airbus A350-900',
+  'CX2873': 'Boeing 777-300ER',
+  'CX2892': 'Airbus A350-900',
+  'CX2893': 'Airbus A350-900',
+  'CX5660': 'Airbus A330-300',
+  'CX5662': 'Airbus A330-300',
+  'CX5668': 'Airbus A330-300'
+}
+
 module.exports = class extends Parser {
   parse (request, $, html) {
     const { fromCity, toCity, cabin, departDate } = request
@@ -39,6 +57,13 @@ module.exports = class extends Parser {
         return
       }
 
+      // Double-check the origin / destination
+      if ($(row).find('.flight-origin').text() !== fromCity) {
+        return { error: 'Wrong origin city detected' }
+      } else if ($(row).find('.flight-destination').text() !== toCity) {
+        return { error: 'Wrong destination city detected' }
+      }
+
       // Get flight number
       const segments = $(row).find('span.flight-number')
       if (segments.length !== 1) {
@@ -51,7 +76,7 @@ module.exports = class extends Parser {
       flight = flight[0]
 
       // TODO: Need to fetch flight details at search time, to get aircraft
-      const aircraft = '(Unknown Aircraft)'
+      const aircraft = aircraftForFlight[flight] || '(Unknown Aircraft)'
 
       // Ensure the flight is available (should have a valid price)
       const price = rePrice.exec($(row).find('span.am-total').text())
