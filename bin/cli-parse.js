@@ -62,11 +62,6 @@ const main = async (args) => {
       for (const award of awards) {
         const { fromCity, toCity, date, flight, aircraft, fares } = award
 
-        // Check if we had any fares
-        if (!fares) {
-          continue
-        }
-
         // Print the award fares for this segment
         if (verbose && fares) {
           console.log(`  [${fromCity} -> ${toCity}] - ${date} ${flight} (${aircraft}): ${fares}`)

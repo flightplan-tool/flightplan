@@ -183,7 +183,7 @@ class SearchForm extends Component {
       <CheckBox
         key={airline.code}
         label={airline.name}
-        checked={searchStore.getAirline(airline)}
+        checked={searchStore.getAirline(airline.code)}
         onChange={() => { searchStore.toggleAirline(airline) }}
       />
     ))
@@ -239,10 +239,12 @@ class SearchForm extends Component {
       const subCounts = counts.get(airline)
 
       // Update for each fare code
-      for (const code of fares.split(' ')) {
-        const count = subCounts.has(code) ? subCounts.get(code) : 0
-        subCounts.set(code, count + 1)
-        total++
+      if (fares.length > 0) {
+        for (const code of fares.split(' ')) {
+          const count = subCounts.has(code) ? subCounts.get(code) : 0
+          subCounts.set(code, count + 1)
+          total++
+        }
       }
     }
 

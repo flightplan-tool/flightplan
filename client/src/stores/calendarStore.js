@@ -104,7 +104,9 @@ export default class CalendarStore {
         if (!segment.awards) {
           segment.awards = []
         }
-        segment.awards.push(award)
+        if (award.fares.length > 0) {
+          segment.awards.push(award)
+        }
         segment.type = 'active'
       }
     }

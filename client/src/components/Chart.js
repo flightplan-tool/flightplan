@@ -380,6 +380,7 @@ class Chart extends Component {
       <div class="date">
         <h2>${date.format('ll')}</h2>
       </div>
+      ${flights.size === 0 ? '<div class="no-results"><p>Sorry, no awards found!</p></div>' : ''}
       ${[...flights.entries()].map(row => renderRow(row[1])).join('')}
     `
   }

@@ -41,6 +41,11 @@
   grid-row: 1;
 }
 
+.tooltip .no-results {
+  grid-column: 1 / 4;
+  grid-row: 2;
+}
+
 .tooltip .flight {
   font-size: 18px;
   font-weight: 200;

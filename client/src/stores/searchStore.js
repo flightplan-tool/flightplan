@@ -10,7 +10,7 @@ function flightKey(flight) {
 
 export default class SearchStore {
   // Query parameters
-  @observable fromCity = 'SIN'
+  @observable fromCity = 'SFO'
   @observable toCity = 'HKG'
   @observable quantity = 1
   @observable direction = 'roundtrip'
@@ -58,35 +58,30 @@ export default class SearchStore {
     })
 
     // Filter results
-    const ret = this._results.map(result => {
+    return this._results.map(result => {
       let { engine, fares } = result
       const map = fareInfo.get(engine)
 
-      fares = fares.split(' ')
-      fares = fares.filter(code => {
-        const fare = map.get(code.slice(0, -1))
-        return (
-          (showNonSaver || fare.saver) &&
-          (showWaitlisted || !code.includes('@'))
-        )
-      })
-      return {...result, fares: fares.join(' ')}
+      if (fares.length > 0) {
+        fares = fares.split(' ').filter(code => {
+          const fare = map.get(code.slice(0, -1))
+          return (
+            (showNonSaver || fare.saver) &&
+            (showWaitlisted || !code.includes('@'))
+          )
+        }).join(' ')
+      }
+      return { ...result, fares }
     })
-    
-    // Filter out results with no fares
-    return ret.filter(x => x.fares.length !== 0)
   }
 
   // Results, filtered by selected airlines / flights
   @computed get awards () {
-    return this.results.filter(x => (
-      this.getAirline(x.airline) &&
-      this.getFlight({
-        airline: x.airline,
-        flight: x.flight,
-        aircraft: x.aircraft
-      })
-    ))
+    // Results for filtered airlines are removed completely, while results
+    // for filtered flights have their awards cleared
+    return this.results.filter(x => this.getAirline(x.airline)).map(x => {
+      return !this.getFlight(x) ? { ...x, fares: '' } : x
+    })
   }
 
   @computed get airlineInfo () {
@@ -102,7 +97,7 @@ export default class SearchStore {
 
   @computed get airlines () {
     const { airlineInfo } = this
-    let ret = new Set([...this.results.map(x => x.airline)])
+    let ret = new Set([...this.results.map(x => x.airline).filter(x => !!x)])
     ret = [...ret.values()].map(x => (
       {code: x, name: airlineInfo.get(x).name}
     ))
@@ -117,6 +112,9 @@ export default class SearchStore {
         airline: result.airline,
         flight: result.flight,
         aircraft: result.aircraft
+      }
+      if (Object.values(f).findIndex(x => !x) !== -1) {
+        continue
       }
       if (!ret.find(x => (
         x.flight === f.flight && x.aircraft === f.aircraft
@@ -136,6 +134,11 @@ export default class SearchStore {
     for (const award of this.awards) {
       const { airline } = award
       const { name, fares } = airlineInfo.get(airline)
+
+      // If empty, skip
+      if (award.fares.length === 0) {
+        continue
+      }
 
       // Initialize the data for an airline
       if (!map.has(airline)) {
@@ -199,7 +202,9 @@ export default class SearchStore {
 
     // Propagate to flights
     for (const flight of this.flights) {
-      this.selectedFlights.set(flightKey(flight), val)
+      if (flight.airline === airline.code) {
+        this.selectedFlights.set(flightKey(flight), val)
+      }
     }
   }
 
@@ -232,14 +237,13 @@ export default class SearchStore {
 
   getAirline (airline) {
     const { selectedAirlines: sel } = this
-    const key = airline.code
-    return sel.has(key) ? sel.get(key) : true
+    return (airline && sel.has(airline)) ? sel.get(airline) : true
   }
 
   getFlight (flight) {
     const { selectedFlights: sel } = this
     const key = flightKey(flight)
-    return sel.has(key) ? sel.get(key) : true
+    return (flight.flight && sel.has(key)) ? sel.get(key) : true
   }
 
   validQuery () {
