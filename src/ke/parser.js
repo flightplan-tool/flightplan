@@ -18,7 +18,11 @@ module.exports = class extends Parser {
     const { fromCity, toCity, cabin, departDate, returnDate } = request
 
     // Check if no available awards
-    if ($('div.alert-message').text().includes('Seats are unavailable on the date')) {
+    const alertMsg = $('div.alert-message').text()
+    if (
+      alertMsg.includes('Seats are unavailable on the date') ||
+      alertMsg.includes('We are unable to find recommendations for your search')
+    ) {
       return { awards: [] }
     }
 
