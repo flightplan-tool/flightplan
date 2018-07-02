@@ -231,7 +231,7 @@ class Engine {
     lastRequest = moment()
 
     // Check if we are at a resting checkpoint
-    if (checkpoint && checkpoint.remaining === 0) {
+    if (checkpoint && checkpoint.remaining <= 0) {
       const restMillis = checkpoint.until.diff()
       if (restMillis > 0) {
         this.warn(`Cool-down period, resuming ${checkpoint.until.fromNow()}`)
@@ -360,6 +360,13 @@ class Engine {
     if (response) {
       // 304's (cached response) are OK too
       if (!response.ok() && response.status() !== 304) {
+        // Trigger an immediate cool-down period
+        const { checkpoint = null } = this.throttling
+        if (checkpoint) {
+          checkpoint.remaining = 0
+        }
+
+        // Return error message
         return { error: `Received non-OK HTTP Status Code: ${response.status()}` }
       }
     }
