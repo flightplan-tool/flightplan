@@ -2,7 +2,7 @@ const Parser = require('../base/parser')
 const { cabins } = require('../consts')
 
 // Regex patterns
-const reFlight = /CX\d+/
+const reFlight = /([A-Z]+)\d+/
 const rePrice = /\d+,000/
 
 // Cached mapping of flight => aircraft
@@ -20,7 +20,12 @@ const aircraftForFlight = {
   'CX2893': 'Airbus A350-900',
   'CX5660': 'Airbus A330-300',
   'CX5662': 'Airbus A330-300',
-  'CX5668': 'Airbus A330-300'
+  'CX5668': 'Airbus A330-300',
+  'KA660': 'Airbus A330-300',
+  'KA661': 'Airbus A330-300',
+  'KA662': 'Airbus A330-300',
+  'KA663': 'Airbus A330-300',
+  'KA668': 'Airbus A330-300'
 }
 
 module.exports = class extends Parser {
@@ -49,19 +54,13 @@ module.exports = class extends Parser {
     }
 
     // Get list of flights
+    let error = null
     const awards = []
     const table = $('.col-select-flight-wrap')
     $(table).find('.row-flight-card').each((_, row) => {
       // Check if flight is not available
       if ($(row).hasClass('inactive') || $(row).hasClass('flight-full')) {
         return
-      }
-
-      // Double-check the origin / destination
-      if ($(row).find('.flight-origin').text() !== fromCity) {
-        return { error: 'Wrong origin city detected' }
-      } else if ($(row).find('.flight-destination').text() !== toCity) {
-        return { error: 'Wrong destination city detected' }
       }
 
       // Get flight number
@@ -71,9 +70,19 @@ module.exports = class extends Parser {
       }
       let flight = reFlight.exec(segments.text())
       if (!flight) {
+        error = `Failed to parse valid flight number: ${segments.text()}`
+        return
+      }
+      if (flight[1] !== 'CX' && flight[1] !== 'KA') {
         return // Only interested in CX flights
       }
       flight = flight[0]
+
+      // Double-check the origin / destination
+      error = checkCities($, row, 'div.flight-origin', 'div.flight-destination', request)
+      if (error) {
+        return
+      }
 
       // TODO: Need to fetch flight details at search time, to get aircraft
       const aircraft = aircraftForFlight[flight] || '(Unknown Aircraft)'
@@ -93,6 +102,11 @@ module.exports = class extends Parser {
       // Add the award
       awards.push({ fromCity, toCity, date: departDate, cabin, flight, aircraft, fares })
     })
+
+    // Check for any errors
+    if (error) {
+      return { error }
+    }
 
     // Create final list of awards, and return it
     return { awards }
@@ -116,4 +130,17 @@ function buildFareMap (fares) {
     map.set(`${cabinStr[fare.cabin]} ${typeStr[fare.code[1]]}`, fare)
   }
   return map
+}
+
+function checkCities ($, row, selOrigin, selDestination, request) {
+  const { fromCity, toCity } = request
+  const origin = $(row).find(selOrigin).text().trim()
+  const destination = $(row).find(selDestination).text().trim()
+  if (origin !== fromCity) {
+    return `Incorrect origin city detected: ${origin} (expected: ${fromCity})`
+  }
+  if (destination !== toCity) {
+    return `Incorrect destination city detected: ${destination} (expected: ${toCity})`
+  }
+  return null
 }
