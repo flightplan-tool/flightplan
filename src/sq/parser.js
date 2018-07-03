@@ -10,6 +10,11 @@ module.exports = class extends Parser {
   parse (request, $, html) {
     const { fromCity, toCity, cabin, departDate, returnDate } = request
 
+    // Check if no available awards
+    if ($('h2.main-heading').text().includes('Select alternative date')) {
+      return { awards: [] }
+    }
+
     // Find the awards table
     const tables = $('#redemptionChooseFlightsForm > fieldset > div.flights__searchs')
     if (tables.length === 0) {

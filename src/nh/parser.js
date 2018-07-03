@@ -8,6 +8,11 @@ module.exports = class extends Parser {
   parse (request, $, html) {
     const { fromCity, toCity, cabin, departDate, returnDate } = request
 
+    // Check if no available awards
+    if ($('div.dialogMessage').text().includes('There are no results that match')) {
+      return { awards: [] }
+    }
+
     // Request parameters for each direction
     const departRequest = {fromCity, toCity, date: departDate, cabin}
     const returnRequest = {fromCity: toCity, toCity: fromCity, date: returnDate, cabin}
