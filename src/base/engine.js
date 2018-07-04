@@ -199,7 +199,7 @@ class Engine {
 
   async newBrowser (options) {
     const { headless = false } = options
-    return puppeteer.launch({ args: ['--remote-debugging-port=9222'], headless })
+    return puppeteer.launch({ headless })
   }
 
   async newPage (browser, options, url) {
