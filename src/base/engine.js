@@ -199,12 +199,12 @@ class Engine {
 
   async newBrowser (options) {
     const { headless = false } = options
-    return puppeteer.launch({ args: ['--use-gl'], headless })
+    return puppeteer.launch({ args: ['--remote-debugging-port=9222'], headless })
   }
 
   async newPage (browser, options, url) {
     const page = await browser.newPage()
-    page.setViewport({width: 1200, height: 1400})
+    page.setViewport({width: utils.randomInt(1200, 1280), height: utils.randomInt(1400, 1440)})
     page.setDefaultNavigationTimeout(options.timeout)
     await applyEvasions(page)
     if (options.cookies) {
