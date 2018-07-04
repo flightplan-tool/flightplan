@@ -8,7 +8,7 @@ module.exports = {
   profiles: {
     slow: {
       delayBetweenRequests: ['00:00:30', '00:00:45'],
-      requestsPerHour: 30,
+      requestsPerHour: 45,
       restPeriod: ['00:10', '00:25']
     },
     normal: {
