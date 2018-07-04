@@ -37,7 +37,9 @@ module.exports = class {
     if (!this._engine) {
       throw new Error(`Missing Engine implementation for: ${this.config.id}`)
     }
-    return this._engine._search(query)
+    const ret = this._engine._search(query)
+    this._engine.lastError = ret.Error
+    return ret
   }
 
   getCookies () {

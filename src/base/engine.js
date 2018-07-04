@@ -98,7 +98,7 @@ class Engine {
   }
 
   async _search (query) {
-    const { page, config } = this
+    const { page, config, lastError } = this
     const { searchURL, waitUntil, oneWaySupported } = config
 
     // Store the query, so it can be accessed by the subclass
@@ -121,7 +121,7 @@ class Engine {
     await this.throttle()
 
     // Check if we should reload the search page
-    if (!this.reloadSearch || await this.reloadSearch(page)) {
+    if (lastError || !this.reloadSearch || await this.reloadSearch(page)) {
       await page.goto(searchURL, { waitUntil })
     }
 
