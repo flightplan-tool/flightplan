@@ -9,7 +9,12 @@ module.exports = class extends Parser {
     const { fromCity, toCity, cabin, departDate, returnDate } = request
 
     // Check if no available awards
-    if ($('div.dialogMessage').text().includes('There are no results that match')) {
+    const dialogMsg = $('div.dialogMessage').text()
+    if (
+      dialogMsg.includes('There are no results that match') ||
+      dialogMsg.includes('The application deadline has passed') ||
+      dialogMsg.includes('The class you selected is not available')
+    ) {
       return { awards: [] }
     }
 
