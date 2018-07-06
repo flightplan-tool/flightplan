@@ -51,10 +51,12 @@ function parseTable ($, table, request, codes) {
   $(table).find('td.flight-part').each((_, row) => {
     // Confirm the cabin being displayed matches what we searched for
     if (cabinDisplayed($, row) === cabin) {
+      // Get flight number
       let flight = reFlight.exec($(row).find('span[id^=originFlight-]').text())
-      let aircraft = reAircraft.exec($(row).find('div.details > p').text())
+      let aircraft = reAircraft.exec($(row).find('div.details > p').first().text())
       flight = flight ? flight[1] : null
       aircraft = aircraft ? aircraft[1] : ''
+
       let fares = [
         parseAward($, codes, $(row).find('td.hidden-mb.package-1')),
         parseAward($, codes, $(row).find('td.hidden-mb.package-2'))
