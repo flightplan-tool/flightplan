@@ -63,6 +63,11 @@ module.exports = class extends Parser {
         return
       }
 
+      // Check if it's a downgrade
+      if ($(row).find('.flight-notice').text().includes('class is suggested')) {
+        return
+      }
+
       // Get flight number
       const segments = $(row).find('span.flight-number')
       if (segments.length !== 1) {
