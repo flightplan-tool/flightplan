@@ -30,6 +30,29 @@ To use Flightplan, there are a few prerequisites that must be installed:
 1. Node.js (Installation instructions: [Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows) | [Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac) | [Linux](http://blog.teamtreehouse.com/install-node-js-npm-linux))
 2. Yarn ([Installation instructions](https://yarnpkg.com/lang/en/docs/install/#mac-stable))
 
+If you simply wish to install and run the Flightplan tools, run:
+
+```bash
+yarn global add flightplan-tool
+
+# Create a directory to store data in
+mkdir flightplan && cd flightplan
+
+# Explain all available commands
+flightplan --help
+```
+
+Before running the search tool, you will need to create a `config/accounts.json` file. Use the template below:
+
+```json
+{
+  "CX": [{"username": "XXXXXXXXXX", "password": "password"}],
+  "KE": [{"username": "XXXXXXXXXXXX", "password": "password"}],
+  "NH": [{"username": "XXXXXXXXXX", "password": "password"}],
+  "SQ": [{"username": "XXXXXXXXXX", "password": "123456"}]
+}
+```
+
 To add Flightplan to an existing Javascript project, simply use:
 
 ```bash
@@ -37,22 +60,13 @@ yarn add flightplan-tool
 # or "npm i flightplan-tool"
 ```
 
-If using Flightplan stand-alone, then run:
-
-```bash
-# Create a directory for Flightplan
-mkdir flightplan && cd flightplan
-
-# Initialize a new project
-yarn init -y
-
-# Install Flightplan
-yarn add flightplan-tool
-```
-
 **Note:** When you install Flightplan, it will be bundled with a recent version of Chromium automatically (so you do not need Chrome installed on your machine to use Flightplan).
 
-## Usage ##
+## Running the tools ##
+
+If you'd simply like to run Flightplan as a stand-alone tool, there are a set of scripts included in the bin directory. 
+
+## Library usage ##
 
 With Flightplan, you specify an airline and get back an *engine*, which supports two operations: searching and parsing.
 
