@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Setup sub-commands
 require('commander')
   .version(require('../package.json').version)
