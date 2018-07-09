@@ -154,7 +154,9 @@ function generateQueries (args, engine, days) {
       })
     } else {
       queries.push({...departCities, departDate: date})
-      queries.push({...returnCities, departDate: date})
+      if (!args.oneway) {
+        queries.push({...returnCities, departDate: date})
+      }
     }
   }
 
