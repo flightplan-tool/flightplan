@@ -35,7 +35,6 @@ If you simply wish to install and run the Flightplan tools, use:
 
 ```bash
 yarn global add flightplan-tool
-# Windows users: you must restart after installing Flightplan!
 
 # Create a directory to store data in
 mkdir flightplan
