@@ -2,6 +2,8 @@
 
 Flightplan is a Javascript library that makes it easy to scrape and parse airline websites for award inventory. It uses Puppeteer for scraping, which is built on top of headless Chrome, meaning it behaves just like a full-fledged Chrome browser, but it can be run from the command line with no visible window (allowing you to use your computer for other things). Furthermore, it can run on any platform supported by headless Chrome, which is just about everything (Windows, Mac, or Linux).
 
+![Flightplan Web UI](https://media.giphy.com/media/3JOyfG4DUoh4bpqUvY/giphy.gif)
+
 ### Why?
 
 If you're sitting on a pile of airline miles or credit card points, you know that redeeming them can be difficult. Often, planning for my own trips, I would spend hours clicking through an airline's website, searching for available awards, while writing down what I found in a notebook. Eventually, I decided to automate that process, so I could free up my time. Flightplan doesn't scrape much faster than a human would, it simply will do it for hours on end without complaining or making mistakes. This can make planning complex award itineraries much less stressful!
