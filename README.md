@@ -55,7 +55,9 @@ yarn add flightplan-tool
 
 ## Running the tools ##
 
-For developers who wish to use Flightplan in their own Javascript projects, skip to the [Library Usage](#library-usage) section below. For everyone else, you're in the right place! If you'd like a video introduction to using Flightplan, check out this tutorial:
+For developers who wish to use Flightplan in their own Javascript projects, skip to the [Library Usage](#library-usage) section below. For everyone else, you're in the right place! If you'd like a video introduction to using Flightplan, check out the tutorial on YouTube:
+
+http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs" target="_blank"><img src="http://img.youtube.com/vi/QMtiucIPOxs/0.jpg" 
 alt="Screencast: Install and use Flightplan" width="240" height="180" border="10" /></a>
