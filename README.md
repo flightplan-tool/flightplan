@@ -24,8 +24,6 @@ SQ (Singapore Airlines) | [KrisFlyer][4]        | :white_check_mark: | :white_ch
 [3]: https://www.ana.co.jp/en/us/amc/
 [4]: http://www.singaporeair.com/en_UK/us/ppsclub-krisflyer/
 
-**Notes:** CX searches are being blocked aggressively, needs more investigation as to the cause.
-
 # Geting Started
 
 To use Flightplan, there are a few prerequisites that must be installed:
