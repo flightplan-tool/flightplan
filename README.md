@@ -29,31 +29,23 @@ SQ (Singapore Airlines) | [KrisFlyer][4]        | :white_check_mark: | :white_ch
 To use Flightplan, there are a few prerequisites that must be installed:
 1. Node.js (Installation instructions: ([Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows) | [Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac) | [Linux](http://blog.teamtreehouse.com/install-node-js-npm-linux))
 2. Yarn ([Installation instructions](https://yarnpkg.com/lang/en/docs/install/#mac-stable))
+3. **Windows Only:** Open an elevated PowerShell prompt (in taskbar search, type `powershell`, right-click on "Windows PowerShell" and select "Run as Administrator"). Then run `npm install --add-python-to-path --global --production windows-build-tools`. Once the install is complete, you must restart your computer.
 
-If you simply wish to install and run the Flightplan tools, run:
+If you simply wish to install and run the Flightplan tools, use:
 
 ```bash
 yarn global add flightplan-tool
+# Windows users: you must restart after installing Flightplan!
 
 # Create a directory to store data in
-mkdir flightplan && cd flightplan
+mkdir flightplan
+cd flightplan
 
 # Explain all available commands
-flightplan --help
+flightplan
 ```
 
-Before running the search tool, you will need to create a `config/accounts.json` file. Use the template below:
-
-```json
-{
-  "CX": [{"username": "XXXXXXXXXX", "password": "password"}],
-  "KE": [{"username": "XXXXXXXXXXXX", "password": "password"}],
-  "NH": [{"username": "XXXXXXXXXX", "password": "password"}],
-  "SQ": [{"username": "XXXXXXXXXX", "password": "123456"}]
-}
-```
-
-To add Flightplan to an existing Javascript project, simply use:
+If you're a developer, you can install Flightplan to an existing Javascript project with:
 
 ```bash
 yarn add flightplan-tool
@@ -64,7 +56,28 @@ yarn add flightplan-tool
 
 ## Running the tools ##
 
-If you'd simply like to run Flightplan as a stand-alone tool, there are a set of scripts included in the bin directory. 
+For developers who wish to use Flightplan in their own Javascript projects, skip to the [Library Usage](#library-usage) section below. For everyone else, you're in the right place! If you'd like a video introduction to using Flightplan, check out this tutorial:
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs" target="_blank"><img src="http://img.youtube.com/vi/QMtiucIPOxs/0.jpg" 
+alt="Screencast: Install and use Flightplan" width="240" height="180" border="10" /></a>
+
+```bash
+# Create a directory to store data in
+mkdir flightplan
+cd flightplan
+
+# Explain all available commands
+flightplan
+
+# Run a search
+flightplan search
+```
+
+The first time you run the `search` command, you will be prompted to create a `config/accounts.json` file. You must enter valid credentials in this file, for any engine you will be using, or login will fail.
+
+After you've run a search, you should see the raw HTML and screenshots in the `data` subdirectory. To extract award fares from the HTML and populate the database, run `flightplan parse`.
+
+When you are ready to run the React web UI, run both `flightplan server` and `flightplan client`. When the React app has finished loading, a browser will automatically be opened, pointing to `http://localhost:3000/`.
 
 ## Library usage ##
 
