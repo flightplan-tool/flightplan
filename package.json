@@ -1,6 +1,6 @@
 {
   "name": "flightplan-tool",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Search for award inventory using Node.js and Headless Chrome!",
   "main": "src/index.js",
   "bin": {

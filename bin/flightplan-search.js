@@ -47,7 +47,7 @@ function populateArguments (args) {
     args.to = prompt('Arrival city (3-letter code)? ')
   }
   if (!args.cabin) {
-    args.cabin = prompt(`Desired cabin class (${Object.keys(fp.cabins).join('/')}})? `)
+    args.cabin = prompt(`Desired cabin class (${Object.keys(fp.cabins).join('/')})? `)
   }
   if (!args.start) {
     args.start = parseDate(prompt('Start date of search range (YYYY-MM-DD)? '))
