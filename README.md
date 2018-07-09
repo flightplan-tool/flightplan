@@ -27,7 +27,7 @@ SQ (Singapore Airlines) | [KrisFlyer][4]        | :white_check_mark: | :white_ch
 # Geting Started
 
 To use Flightplan, there are a few prerequisites that must be installed:
-1. Node.js (Installation instructions: [Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows) | [Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac) | [Linux](http://blog.teamtreehouse.com/install-node-js-npm-linux))
+1. Node.js (Installation instructions: ([Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows) | [Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac) | [Linux](http://blog.teamtreehouse.com/install-node-js-npm-linux))
 2. Yarn ([Installation instructions](https://yarnpkg.com/lang/en/docs/install/#mac-stable))
 
 If you simply wish to install and run the Flightplan tools, run:
