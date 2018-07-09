@@ -1,15 +1,29 @@
 const fs = require('fs')
+const path = require('path')
+
 const paths = require('./paths')
+const utils = require('../shared/utils')
 
 let accounts = null
 
 function loadAccounts () {
   if (!fs.existsSync(paths.credentials)) {
-    console.log(`
+    // Ask if the user would like us to create the file, from the template
+    if (utils.promptYesNo(`
 ERROR: Airline website credentials not found at "${paths.credentials}"
 
-Please create the file, using "config/accounts-example.json" as a template,
-and filling out valid account information for the airlines you're searching.`)
+Would you like to create the file?`)) {
+      const src = path.resolve(__dirname, '../config/accounts-example.json')
+      const destDir = path.dirname(paths.credentials)
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir)
+      }
+      fs.copyFileSync(src, paths.credentials)
+      console.log(`
+The file has been created, using "config/accounts-example.json" as a template.
+Please edit the file, to contain valid account information for the airlines
+you're searching.`)
+    }
     process.exit(1)
   }
 
