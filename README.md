@@ -14,15 +14,21 @@ If you're sitting on a pile of airline miles or credit card points, you know tha
 
 Airline                 | Website               | Search             | Parse
 ------------------------|-----------------------|:------------------:|:------------------:
-CX (Cathay Pacific)     | [AsiaMiles][1]        | :white_check_mark: | :white_check_mark:
-KE (Korean Air)         | [SKYPASS][2]          | :white_check_mark: | :white_check_mark:
-NH (All Nippon Airways) | [ANA Mileage Club][3] | :white_check_mark: | :white_check_mark:
-SQ (Singapore Airlines) | [KrisFlyer][4]        | :white_check_mark: | :white_check_mark:
+AC (Air Canada)         | [Aeroplan][1]         | :construction:     | :construction:
+BA (British Airways)    | [Executive Club][2]   | :construction:     | :construction:
+CX (Cathay Pacific)     | [AsiaMiles][3]        | :white_check_mark: | :white_check_mark:
+KE (Korean Air)         | [SKYPASS][4]          | :white_check_mark: | :white_check_mark:
+NH (All Nippon Airways) | [ANA Mileage Club][5] | :white_check_mark: | :white_check_mark:
+QF (Qantas)             | [Frequent Flyer][6]   | :construction:     | :construction:
+SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_check_mark:
 
-[1]: https://www.asiamiles.com/
-[2]: https://www.koreanair.com/global/en/skypass/
-[3]: https://www.ana.co.jp/en/us/amc/
-[4]: http://www.singaporeair.com/en_UK/us/ppsclub-krisflyer/
+[1]: https://www.aeroplan.com/
+[2]: https://www.britishairways.com/en-us/executive-club
+[3]: https://www.asiamiles.com/
+[4]: https://www.koreanair.com/global/en/skypass/
+[5]: https://www.ana.co.jp/en/us/amc/
+[6]: https://www.qantas.com/fflyer/dyn/program/welcome
+[7]: http://www.singaporeair.com/en_UK/us/ppsclub-krisflyer/
 
 # Geting Started
 
