@@ -317,9 +317,9 @@ commander@2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.6.0.tgz#9df7e52fb2a0cb0fb89058ee80c3104225f37e1d"
 
-commander@^2.15.1:
-  version "2.15.1"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
+"commander@github:jd20/commander.js#bin_name_fallback":
+  version "2.16.0"
+  resolved "https://codeload.github.com/jd20/commander.js/tar.gz/908c0e21e7c61f1434b3b7c2f12a1e6643bf94e8"
 
 component-emitter@^1.2.1:
   version "1.2.1"
