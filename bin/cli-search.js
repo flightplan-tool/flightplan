@@ -13,6 +13,7 @@ const utils = require('../shared/utils')
 
 program
   .option('-w, --website <airline>', 'IATA 2-letter code of the airline whose website to search')
+  .option('-P, --no-partners', `Only search awards on airline's own metal (default: false)`)
   .option('-f, --from <city>', `IATA 3-letter code of the departure airport`)
   .option('-t, --to <city>', `IATA 3-letter code of the arrival airport`)
   .option('-o, --oneway', `Searches for one-way award inventory only (default: search both directions)`)
@@ -22,6 +23,7 @@ program
   .option('-q, --quantity <n>', `# of passengers traveling`, (x) => parseInt(x), 1)
   .option('-a, --account <n>', `Index of account to use`, (x) => parseInt(x), 0)
   .option('-h, --headless', `Run Chrome in headless mode`)
+  .option('--force', 'Re-run queries, even if already in the database')
   .on('--help', () => {
     console.log('')
     console.log('  Supported Websites:')
@@ -55,8 +57,10 @@ function populateArguments (args) {
   if (!args.end) {
     args.end = parseDate(prompt('End date of search range (YYYY-MM-DD)? '))
   }
+  args.partners = !!args.partners
   args.oneway = !!args.oneway
   args.headless = !!args.headless
+  args.force = !!args.force
 }
 
 function validateArguments (args) {
@@ -78,11 +82,15 @@ function validateArguments (args) {
   }
 
   // Instantiate engine, and do further validation
-  const engine = fp.new(args.website)
+  const { partners } = args
+  const engine = fp.new(args.website, { partners })
   const fares = engine.config.fares
   const cabins = new Set([...fares.map(x => x.cabin)])
   if (!cabins.has(args.cabin)) {
     return `Selected engine (${args.website}) does not support the cabin: ${args.cabin}`
+  }
+  if (!partners && !engine.config.nonPartnerSearchSupported) {
+    return `Selected engine (${args.website}) does not support non-partner searches`
   }
   if (args.oneway && !engine.config.oneWaySupported) {
     return `Selected engine (${args.website}) does not support one-way searches`
@@ -187,6 +195,7 @@ function generateQueries (args, engine, days) {
   // Fill in info that's universal for each query
   queries.forEach(q => {
     q.engine = engine.config.id
+    q.partners = args.partners
     q.cabin = args.cabin
     q.quantity = args.quantity
     const routePath = routes.path(q)
@@ -247,7 +256,8 @@ const main = async (args) => {
   const { start: startDate, end: endDate, headless } = args
 
   // Create engine
-  const engine = fp.new(args.website)
+  const { partners, force } = args
+  const engine = fp.new(args.website, { partners })
   let initialized = false
 
   try {
@@ -272,7 +282,7 @@ const main = async (args) => {
     console.log(`Searching ${days} days of award inventory: ${startDate.format('L')} - ${endDate.format('L')}`)
     for (const query of queries) {
       // Check if the query's results are already stored
-      if (await redundant(query)) {
+      if (!force && await redundant(query)) {
         skipped++
         continue
       }

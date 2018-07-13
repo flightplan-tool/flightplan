@@ -8,6 +8,7 @@ module.exports = {
     website: 'KrisFlyer',
     searchURL: 'https://www.singaporeair.com/en_UK/ppsclub-krisflyer/flightsearch/',
     waitUntil: 'domcontentloaded',
+    nonPartnerSearchSupported: false,
     roundtripOptimized: true,
     tripMinDays: 3,
     validation: {

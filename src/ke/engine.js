@@ -3,8 +3,6 @@ const { cabins } = require('../consts')
 
 module.exports = class extends Engine {
   async initialize (page) {
-    this.prevQuery = {}
-
     // Load airport codes
     this.info('Loading airports...')
     const { airports, error } = await airportCodes(this)
@@ -65,37 +63,48 @@ module.exports = class extends Engine {
     return this.airports.has(airport)
   }
 
-  async reloadSearch (page) {
-    this.useInlineForm = false
-    const modifySearchSel = '#award-avenue > div.change-avail div.booking-ct-btn > button'
+  async setup (page, query) {
+    // Check if we're modifying existing form
+    if (this.isModifying()) {
+      // Check if only changing dates, and directly selectable
+      this.usingDateTabs = false
+      if (!('fromCity' in query || 'toCity' in query)) {
+        // Get old and new dates
+        const { departDate, returnDate } = this.query
+        const { departDate: oldDepartDate, returnDate: oldReturnDate } = this.prevQuery
 
-    // Check if we can reuse search results page from previous query
-    if (canReuseQuery(this.prevQuery, this.query)) {
+        // Attempt to choose the dates directly
+        if (await chooseDateTab(this, 'ul.date-outbound-column', oldDepartDate, departDate)) {
+          if (!returnDate || await chooseDateTab(this, 'ul.date-inbound-column', oldReturnDate, returnDate)) {
+            this.usingDateTabs = true
+            return
+          }
+        }
+      }
+
+      // Couldn't select dates directly, open the inline form
+      const modifySearchSel = `${this.query.partners ? '#inter-avenue' : '#award-avenue'} > div.change-avail div.booking-ct-btn > button`
       if (await page.$(modifySearchSel)) {
         // Make sure we're not stuck on flexible dates calendar
         if (!await page.$('div.award-cal')) {
-          // Open the in-line search form
+          // Click to open the inline search form
           await page.click(modifySearchSel)
           await page.waitFor(500)
-          this.useInlineForm = true
+          return
         }
       }
+
+      // Couldn't open the inline form
+      return { modified: false }
     }
-    this.prevQuery = {} // Clear previous query
 
-    return !this.useInlineForm
-  }
+    // Select "Award Booking"
+    const awardSel = '#booking-type button[data-name="award"]'
+    await page.waitFor(awardSel)
+    await page.click(awardSel)
 
-  async setup (page) {
-    if (!this.useInlineForm) {
-      // Select "Award Booking"
-      const awardSel = '#booking-type button[data-name="award"]'
-      await page.waitFor(awardSel)
-      await page.click(awardSel)
-
-      // Select "Korean Air award" (not SkyTeam)
-      await page.click('#sta-kr')
-    }
+    // Select "SkyTeam" or "Korean Air" award type based on whether we're searching partners
+    await page.click(this.query.partners ? '#sta-sk' : '#sta-kr')
   }
 
   async setFromCity (page, city) {
@@ -107,12 +116,16 @@ module.exports = class extends Engine {
   }
 
   async setOneWay (page, oneWay) {
-    if (!this.useInlineForm) {
-      await page.click(`#from-to-chooser input[value="${oneWay ? 'oneway' : 'roundtrip'}"]`)
-    }
+    await page.click(`#from-to-chooser input[value="${oneWay ? 'oneway' : 'roundtrip'}"]`)
   }
 
   async setDepartDate (page, departDate) {
+    // If we already selected the new dates from tabs, nothing to do
+    if (this.isModifying() && this.usingDateTabs) {
+      return
+    }
+
+    // Fill out the normal date selector
     const dateInputSel = 'div.dateholder input.tripdetail-input'
     await page.click(dateInputSel)
     await this.clear(dateInputSel)
@@ -127,40 +140,42 @@ module.exports = class extends Engine {
   }
 
   async setCabin (page, cabin) {
-    if (!this.useInlineForm) {
-      const cabinOptions = {
-        [cabins.economy]: 'economy',
-        [cabins.business]: 'prestige',
-        [cabins.first]: 'first'
-      }
-      if (!(cabin in cabinOptions)) {
-        return { error: `Invalid cabin class: ${cabin}` }
-      }
-      const cabinSel = `div.cabin-class input[value="${cabinOptions[cabin]}"]`
-      await page.click(cabinSel)
-      if (!await page.$(cabinSel + ':checked')) {
-        return { error: `Could not set cabin to: ${cabin}` }
-      }
+    const cabinOptions = {
+      [cabins.economy]: 'economy',
+      [cabins.business]: 'prestige',
+      [cabins.first]: 'first'
+    }
+    if (!(cabin in cabinOptions)) {
+      return { error: `Invalid cabin class: ${cabin}` }
+    }
+    const cabinSel = `div.cabin-class input[value="${cabinOptions[cabin]}"]`
+    await page.click(cabinSel)
+    if (!await page.$(cabinSel + ':checked')) {
+      return { error: `Could not set cabin to: ${cabin}` }
     }
   }
 
   async setQuantity (page, quantity) {
-    if (!this.useInlineForm) {
-      // Set the # of passengers
-      // TODO: Account will need multiple family members registered to enable this
-    }
+    // Set the # of passengers
+    // TODO: Account will need multiple family members registered to enable this
   }
 
   async submit (page, htmlFile, screenshot) {
     let ret
 
+    // Don't submit if we used the date tabs to modify search
+    if (this.isModifying() && this.usingDateTabs) {
+      return
+    }
+
     // Submit the search form
-    const submitSel = this.useInlineForm
-      ? '#award-avenue > div.change-avail div.booking-ct-btn > input[value="Search"'
+    const { partners } = this.query
+    const submitSel = this.isModifying()
+      ? `${partners ? '#inter-avenue' : '#award-avenue'} > div.change-avail > div > div.booking-ct-btn > input`
       : '#submit'
     const [response] = await Promise.all([
       page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 60000 }),
-      submitForm(this, submitSel)
+      clickSubmit(this, submitSel)
     ])
     await settle(this)
 
@@ -184,9 +199,6 @@ module.exports = class extends Engine {
     if (ret && ret.error) {
       return ret
     }
-
-    // Update previous query
-    this.prevQuery = {...this.query}
   }
 }
 
@@ -206,11 +218,6 @@ async function settle (engine) {
   }
 }
 
-function canReuseQuery (prevQuery, query) {
-  const fields = ['fromCity', 'toCity', 'cabin', 'quantity', 'oneWay']
-  return !fields.find(x => query[x] !== prevQuery[x])
-}
-
 async function setCity (engine, selector, value) {
   const { page } = engine
   await page.click(selector)
@@ -220,7 +227,40 @@ async function setCity (engine, selector, value) {
   await page.keyboard.press('Tab')
 }
 
-async function submitForm (engine, submitSel) {
+async function chooseDateTab (engine, selector, oldDate, newDate) {
+  const { page } = engine
+
+  const tabs = await page.$(selector)
+  if (!tabs) {
+    return false
+  }
+
+  // Find the index of the selected tab
+  const [ selIndex, selDate ] = await tabs.$eval('li.selected-date a', item => {
+    return [ item.getAttribute('data-index'), item.getAttribute('data-name') ]
+  })
+  if (selDate !== oldDate.format('MM/DD')) {
+    return false // Something's not right...
+  }
+
+  // Now we can locate the right tab
+  let tabData = await tabs.$$eval('li.include-btn a', items => {
+    items.map(x => [ x.getAttribute('data-index'), x.getAttribute('data-name') ])
+  })
+  const newSel = tabData.find(([ tabIndex, tabDate ]) => {
+    const m = oldDate.clone().add(tabIndex - selIndex, 'd')
+    return m.isSame(newDate, 'd') && m.format('MM/DD') === tabDate
+  })
+  if (!newSel) {
+    return false
+  }
+
+  // Click the tab
+  await tabs.click(`li.selected-date a[data-index="${newSel[0]}"]`)
+  return true
+}
+
+async function clickSubmit (engine, submitSel) {
   const { page } = engine
 
   // Hit submit first
@@ -228,28 +268,41 @@ async function submitForm (engine, submitSel) {
 
   // Check for popups
   while (true) {
-    // Check if we got a popup
-    const dontShowAgainSel = '#popsession-checkbox'
-    const confirmSel = '#cboxLoadedContent div.btn-area.tcenter > button'
-    try {
-      await page.waitFor(confirmSel, { visible: true, timeout: 5000 })
-    } catch (e) {}
+    const confirm1 = '#cboxLoadedContent #btnModalPopupYes'
+    const dontShowAgain1 = '#airpmessage-checkbox'
+    const confirm2 = '#cboxLoadedContent div.btn-area.tcenter > button'
+    const dontShowAgain2 = '#popsession-checkbox'
 
-    // Check the box to not show again, then dismiss the popup
     try {
+      await Promise.race([
+        page.waitFor(confirm1, { visible: true, timeout: 5000 }),
+        page.waitFor(confirm2, { visible: true, timeout: 5000 })
+      ])
+    } catch (e) {
+      break
+    }
+
+    await dismissPopup(engine, dontShowAgain1, confirm1)
+    await dismissPopup(engine, dontShowAgain2, confirm2)
+  }
+}
+
+async function dismissPopup (engine, dontShowAgainSel, confirmSel) {
+  const { page } = engine
+
+  try {
+    if (await page.$(confirmSel)) {
+      // Check the box to not show again, then dismiss the popup
       if (await page.$(dontShowAgainSel)) {
         await page.click(dontShowAgainSel)
-        await page.waitFor(1000)
+        await page.waitFor(500)
       }
-      if (await page.$(confirmSel)) {
-        await page.click(confirmSel)
-      } else {
-        // No popup detected, break out
-        break
-      }
-    } catch (e) {
-      console.error(e)
+      await page.click(confirmSel)
+      await page.waitFor(1000)
     }
+  } catch (e) {
+    // Spurious context errors arise here sometimes, just try again...
+    console.error(e)
   }
 }
 

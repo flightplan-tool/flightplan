@@ -9,6 +9,10 @@ const helpers = require('../helpers')
 const logging = require('../logging')
 const utils = require('../../shared/utils')
 
+// Search can be in several states
+const STATE_SEARCH = 'search'
+const STATE_MODIFY = 'modify'
+
 class Engine {
   constructor (parent) {
     this.parent = parent
@@ -21,26 +25,27 @@ class Engine {
     // Initialize throttling
     this.throttling = {}
 
+    // Cache modifiable field set
+    this.modifiable = new Set(this.config.modifiable || [])
+
     // Default locale to "en"
     moment.locale('en')
 
-    // Setup browser
+    // Setup browser and new page
     this.browser = await this.newBrowser(options)
 
-    // Create a new page
+    // Setup a new page
     this.page = await this.newPage(this.browser, options, this.config.searchURL)
+
     let ret
 
     // Get the page ready
-    ret = await this.prepare(this.page)
+    ret = await this.checkPage(true)
     if (ret && ret.error) {
       throw new Error(ret.error)
     }
 
-    // Login, and run implementation-specific initialization
-    if (!await this._login()) {
-      throw new Error(`Login failed`)
-    }
+    // Run implementation-specific initialization
     ret = await this.initialize(this.page)
     if (ret && ret.error) {
       throw new Error(ret.error)
@@ -54,7 +59,7 @@ class Engine {
     const { loginRequired, searchURL, waitUntil } = config
 
     if (!loginRequired) {
-      return true
+      return {}
     }
 
     let attempts = 0
@@ -65,7 +70,7 @@ class Engine {
       const success = await this.isLoggedIn(page)
       if (success || attempts >= 4) {
         this.info(`Login ${success ? 'success' : 'failure'}!`)
-        return success
+        return success ? {} : { error: 'Login failure' }
       }
 
       // Do another attempt
@@ -83,7 +88,7 @@ class Engine {
       // Call implementation-specific login
       ret = await this.login(page)
       if (ret && ret.error) {
-        throw new Error(ret.error)
+        return ret
       }
 
       // Go to the search page (which will show us if we're logged in or not)
@@ -92,21 +97,42 @@ class Engine {
       // Get the page ready
       ret = await this.prepare(page)
       if (ret && ret.error) {
-        throw new Error(ret.error)
+        return ret
       }
     }
   }
 
+  async checkPage () {
+    const { page } = this
+    let ret
+
+    // Make sure page is ready to be used
+    ret = await this.prepare(page)
+    if (ret && ret.error) {
+      return ret
+    }
+
+    // Make sure we're still logged in
+    if (!await this.isLoggedIn(page)) {
+      ret = await this._login()
+      if (ret && ret.error) {
+        return ret
+      }
+    }
+
+    return {}
+  }
+
   async _search (query) {
     const { page, config, lastError } = this
-    const { searchURL, waitUntil, oneWaySupported } = config
-
-    // Store the query, so it can be accessed by the subclass
-    this.query = query
+    const { searchURL, waitUntil } = config
 
     // Results will be stored by here, and populated by save()
     this.results = { responses: [], htmlFiles: [], screenshots: [], fileCount: 0 }
     let ret
+
+    // Save the previous query
+    this.prevQuery = lastError ? null : this.query
 
     // Normalize the query
     query = this.normalizeQuery(query)
@@ -120,81 +146,126 @@ class Engine {
     // Apply rate throttling
     await this.throttle()
 
-    // Check if we should reload the search page
-    if (lastError || !this.reloadSearch || await this.reloadSearch(page)) {
-      await page.goto(searchURL, { waitUntil })
+    // Attempt to modify the current search
+    if (await this.modify(query)) {
+      return this.results
     }
 
-    // Get the page ready
-    ret = await this.prepare(page)
+    // Reload search page
+    await page.goto(searchURL, { waitUntil })
+    ret = await this.checkPage()
     if (ret && ret.error) {
       return ret
     }
 
-    // Make sure we're still logged in
-    if (!await this.isLoggedIn(page)) {
-      ret = await this.login(page)
-      if (ret && ret.error) {
-        return ret
-      }
-    }
-
-    // Setup the search form
-    ret = await this.setup(page)
-    if (ret && ret.error) {
-      return ret
-    }
-
-    // Set Round-Trip or One-Way
-    if (oneWaySupported) {
-      ret = await this.setOneWay(page, query.oneWay)
-      if (ret && ret.error) {
-        return ret
-      }
-    }
-
-    // Set origin and destination
-    ret = await this.setFromCity(page, query.fromCity)
-    if (ret && ret.error) {
-      return ret
-    }
-    ret = await this.setToCity(page, query.toCity)
-    if (ret && ret.error) {
-      return ret
-    }
-
-    // Set departure and return dates
-    ret = await this.setDepartDate(page, query.departDate)
-    if (ret && ret.error) {
-      return ret
-    }
-    if (query.returnDate) {
-      ret = await this.setReturnDate(page, query.returnDate)
-      if (ret && ret.error) {
-        return ret
-      }
-    }
-
-    // Set cabin
-    ret = await this.setCabin(page, query.cabin)
-    if (ret && ret.error) {
-      return ret
-    }
-
-    // Set quantity
-    ret = await this.setQuantity(page, query.quantity)
-    if (ret && ret.error) {
-      return ret
-    }
-
-    // Submit the form
-    ret = await this.submit(page, query.htmlFile, query.screenshot)
+    // Fill out the form and submit
+    this.state = STATE_SEARCH
+    ret = await this.submitForm(query)
     if (ret && ret.error) {
       return ret
     }
 
     // Success!
     return this.results
+  }
+
+  async modify (query) {
+    const { modifiable, prevQuery } = this
+    let ret
+
+    // Compute how the query has changed
+    const diff = this.diffQuery(query, prevQuery)
+
+    // Check if diff is valid, and engine supports this operation
+    if (!diff || [...Object.keys(diff)].filter(x => !modifiable.has(x)).length > 0) {
+      return false
+    }
+
+    // Make sure page is ready to use first
+    ret = await this.checkPage()
+    if (!ret || !ret.error) {
+      // Attempt to modify and submit form
+      this.state = STATE_MODIFY
+      ret = await this.submitForm(diff)
+    }
+
+    // Check result
+    if (ret && ret.error) {
+      this.error(`Current search failed to be modified, resetting search state: ${ret.error}`)
+      return false
+    }
+
+    // Operation was successful if we did not receive { modified: false }
+    return !ret || ret.modified !== false
+  }
+
+  async submitForm (query) {
+    const { page, config } = this
+    const { oneWaySupported } = config
+    const failed = () => ((ret && ret.error) || (ret && ret.modified === false))
+    let ret
+
+    // Setup the search form
+    ret = await this.setup(page, query)
+    if (failed()) {
+      return ret
+    }
+
+    // Set Round-Trip or One-Way
+    if (oneWaySupported && 'oneWay' in query) {
+      ret = await this.setOneWay(page, query.oneWay)
+      if (failed()) {
+        return ret
+      }
+    }
+
+    // Set origin and destination
+    if (query.fromCity) {
+      ret = await this.setFromCity(page, query.fromCity)
+      if (failed()) {
+        return ret
+      }
+    }
+    if (query.toCity) {
+      ret = await this.setToCity(page, query.toCity)
+      if (failed()) {
+        return ret
+      }
+    }
+
+    // Set departure and return dates
+    if (query.departDate) {
+      ret = await this.setDepartDate(page, query.departDate)
+      if (failed()) {
+        return ret
+      }
+    }
+    if (query.returnDate) {
+      ret = await this.setReturnDate(page, query.returnDate)
+      if (failed()) {
+        return ret
+      }
+    }
+
+    // Set cabin
+    if (query.cabin) {
+      ret = await this.setCabin(page, query.cabin)
+      if (failed()) {
+        return ret
+      }
+    }
+
+    // Set quantity
+    if (query.quantity) {
+      ret = await this.setQuantity(page, query.quantity)
+      if (failed()) {
+        return ret
+      }
+    }
+
+    // Submit the form
+    const { htmlFile, screenshot } = this.query
+    return this.submit(page, htmlFile, screenshot)
   }
 
   async newBrowser (options) {
@@ -371,6 +442,29 @@ class Engine {
       }
     }
     return {}
+  }
+
+  diffQuery (query, prevQuery) {
+    if (!prevQuery) {
+      return null
+    }
+
+    // Create a copy of query, and strip htmlFile and screenshot
+    query = {...query}
+    delete query.htmlFile
+    delete query.screenshot
+
+    // Populate object with all keys whose values have changed
+    const diff = Object.keys(query)
+      .filter(key => query[key] !== prevQuery[key])
+      .reduce((obj, key) => { obj[key] = query[key]; return obj }, {})
+
+    // Return result
+    return Object.keys(diff).length ? diff : null
+  }
+
+  isModifying () {
+    return this.state === STATE_MODIFY
   }
 }
 

@@ -9,14 +9,14 @@ const engines = {
 }
 
 module.exports = {
-  new: (airline) => {
+  new: (airline, options = {}) => {
     const engine = engines[airline.toLowerCase()]
     if (!engine) {
       throw new Error(`No supported engine found for airline: ${airline}`)
     }
 
     // Wrap it in a class that implements the common functionality
-    return new Engine(airline.toUpperCase(), engine)
+    return new Engine(airline.toUpperCase(), engine, options)
   },
 
   supported: (airline) => {

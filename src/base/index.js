@@ -5,16 +5,20 @@ const utils = require('../../shared/utils')
 const configs = new Map()
 
 module.exports = class {
-  constructor (id, module) {
+  constructor (id, module, options) {
     const { engine: Engine, parser: Parser } = module
 
     // Setup config
     if (!configs.has(id)) {
-      const config = {...module.config}
+      const config = typeof module.config === 'function' ? module.config(options) : {...module.config}
       config.id = id
-      config.loginRequired = Engine && !!(Engine.prototype.login || Engine.prototype.isLoggedIn)
-      config.oneWaySupported = Engine && !!Engine.prototype.setOneWay
       config.waitUntil = config.waitUntil || 'networkidle0'
+      if (!('loginRequired' in config)) {
+        config.loginRequired = Engine && !!(Engine.prototype.login || Engine.prototype.isLoggedIn)
+      }
+      if (!('oneWaySupported' in config)) {
+        config.oneWaySupported = Engine && !!Engine.prototype.setOneWay
+      }
 
       // Prevent further modification to the config, and cache it
       configs.set(id, utils.deepFreeze(config))
