@@ -4,12 +4,12 @@
   "description": "Search for award inventory using Node.js and Headless Chrome!",
   "main": "src/index.js",
   "bin": {
-    "flightplan": "bin/flightplan.js"
+    "flightplan": "bin/cli.js"
   },
   "scripts": {
     "postinstall": "cd client && yarn",
     "client": "cd client && yarn start",
-    "server": "nodemon bin/flightplan-server.js",
+    "server": "nodemon bin/cli-server.js",
     "dev": "concurrently --kill-others-on-fail -p \"[{name}]\" -n \"CLIENT,SERVER\" -c \"black.bgBlue.bold,black.bgGreen.bold\" \"yarn client\" \"yarn server\""
   },
   "repository": "https://github.com/jd20/flightplan",
