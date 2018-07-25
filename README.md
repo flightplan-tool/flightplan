@@ -15,7 +15,7 @@ If you're sitting on a pile of airline miles or credit card points, you know tha
 Airline                 | Website               | Search             | Parse
 ------------------------|-----------------------|:------------------:|:------------------:
 AC (Air Canada)         | [Aeroplan][1]         | :construction:     | :construction:
-BA (British Airways)    | [Executive Club][2]   | :construction:     | :construction:
+BA (British Airways)    | [Executive Club][2]   | :white_check_mark: | :construction:
 CX (Cathay Pacific)     | [AsiaMiles][3]        | :white_check_mark: | :white_check_mark:
 KE (Korean Air)         | [SKYPASS][4]          | :white_check_mark: | :white_check_mark:
 NH (All Nippon Airways) | [ANA Mileage Club][5] | :white_check_mark: | :white_check_mark:
