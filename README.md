@@ -30,7 +30,7 @@ SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_ch
 [6]: https://www.qantas.com/fflyer/dyn/program/welcome
 [7]: http://www.singaporeair.com/en_UK/us/ppsclub-krisflyer/
 
-# Geting Started
+# Getting Started
 
 To use Flightplan, there are a few prerequisites that must be installed:
 1. Node.js 8.x or later (Installation instructions: ([Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows) | [Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac) | [Linux](http://blog.teamtreehouse.com/install-node-js-npm-linux))
