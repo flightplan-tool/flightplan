@@ -1617,9 +1617,9 @@ pstree.remy@^1.1.0:
   dependencies:
     ps-tree "^1.1.0"
 
-puppeteer@^1.5.0-next.1530061501767:
-  version "1.5.0-next.1530061501767"
-  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-1.5.0-next.1530061501767.tgz#5b3b58673535216e67f7a37852e0cbc9c09515e1"
+puppeteer@^1.6.0-next.1532381444032:
+  version "1.6.0-next.1532381444032"
+  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-1.6.0-next.1532381444032.tgz#c8255be305e76d97ec2f62fbf1ce01688a82e14c"
   dependencies:
     debug "^3.1.0"
     extract-zip "^1.6.6"
