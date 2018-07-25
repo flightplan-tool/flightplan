@@ -7,10 +7,13 @@ module.exports = (Base) => class extends Base {
     }, selector)
   }
 
-  async clickAndWait (selector, waitUntil = 'networkidle0') {
+  async clickAndWait (selector, waitUntil = this.config.waitUntil) {
+    const clickPromise = selector.constructor.name === 'ElementHandle'
+      ? selector.click()
+      : this.page.click(selector)
     const [response] = await Promise.all([
       this.page.waitForNavigation({ waitUntil }),
-      this.page.click(selector)
+      clickPromise
     ])
     return response
   }
@@ -41,7 +44,7 @@ module.exports = (Base) => class extends Base {
     throw new Error('Too many attempts failed')
   }
 
-  async select (selector, value, wait = 250) {
+  async select (selector, value, wait = 500) {
     await this.page.select(selector, value)
     await this.page.waitFor(wait)
     return value === await this.page.$eval(selector, x => x.value)
@@ -52,15 +55,13 @@ module.exports = (Base) => class extends Base {
       // Wait for the element to appear
       try {
         await this.page.waitFor(selector, { visible: true, timeout: timeout1 })
-      } catch (e) {
-        return true
-      }
+      } catch (e) { return }
 
       // Wait for the element to disappear
       try {
         await this.page.waitFor(selector, { hidden: true, timeout: timeout2 })
       } catch (e) {
-        return false
+        throw new Error('Stuck waiting for element to settle')
       }
     }
   }

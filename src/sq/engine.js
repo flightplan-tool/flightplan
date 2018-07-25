@@ -37,8 +37,10 @@ module.exports = class extends Engine {
   }
 
   async isLoggedIn (page) {
-    await page.waitFor(
-      '#kfLoginPopup #membership-1, a.login, li.logged-in', {visible: true, timeout: 10000})
+    try {
+      await page.waitFor(
+        '#kfLoginPopup #membership-1, a.login, li.logged-in', {visible: true, timeout: 10000})
+    } catch (e) {}
     return !!(await page.$('li.logged-in'))
   }
 
@@ -78,7 +80,7 @@ module.exports = class extends Engine {
       await page.click('#kfLoginPopup #checkbox-1')
       await page.waitFor(250)
     }
-    await this.clickAndWait('#kfLoginPopup #submit-1', this.config.waitUntil)
+    await this.clickAndWait('#kfLoginPopup #submit-1')
     await settle(this)
 
     // Bypass invisible captcha, if present
@@ -168,7 +170,7 @@ module.exports = class extends Engine {
     let ret
 
     // Submit the form
-    const response = await this.clickAndWait('#form-book-travel-1 #city-travel-input-2', this.config.waitUntil)
+    const response = await this.clickAndWait('#form-book-travel-1 #city-travel-input-2')
     await settle(this)
 
     // Save the HTML and screenshot

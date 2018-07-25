@@ -2,6 +2,7 @@ const consts = require('./consts')
 const Engine = require('./base')
 
 const engines = {
+  ba: require('./ba'),
   cx: require('./cx'),
   ke: require('./ke'),
   nh: require('./nh'),

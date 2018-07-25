@@ -24,10 +24,9 @@ module.exports = class extends Engine {
   async isLoggedIn (page) {
     // Sometimes the page keeps reloading out from under us
     return this.retry(async () => {
-      await Promise.race([
-        page.waitFor('li.member-login-section', { visible: true }).catch(e => {}),
-        page.waitFor('li.member-section', { visible: true }).catch(e => {})
-      ])
+      try {
+        await page.waitFor('li.member-login-section, li.member-section', { visible: true })
+      } catch (e) {}
       return !!(await page.$('li.member-section'))
     })
   }
