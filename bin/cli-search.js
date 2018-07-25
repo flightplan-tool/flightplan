@@ -38,6 +38,11 @@ function parseDate (strDate) {
 }
 
 function populateArguments (args) {
+  // Default to one-day search if end date is not specified
+  if (args.start && !args.end) {
+    args.end = args.start
+  }
+
   // Fill in missing arguments
   if (!args.website) {
     args.website = prompt('Airline website to search (2-letter code)? ')
