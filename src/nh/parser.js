@@ -52,7 +52,7 @@ function parseTable ($, table, request, config) {
     }
 
     // Get flight details
-    const details = $(row).find('div.flightDetail span')
+    const details = $(row).find('div.detailInformation span')
     const flight = details.first().text().trim()
     const aircraft = $(details).find('a').first().prop('aria-label')
     const waitlisted = $(row).find('p.flagWait').length !== 0
