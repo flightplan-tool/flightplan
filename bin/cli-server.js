@@ -92,7 +92,7 @@ app.get('/api/search', async (req, res, next) => {
     }
 
     // Run SQL query
-    let awards = await db.db().all(query, ...params)
+    let awards = db.db().prepare(query).all(...params)
 
     res.send(awards)
   } catch (err) {

@@ -40,7 +40,7 @@ module.exports = class extends Engine {
     try {
       await page.waitFor(
         '#kfLoginPopup #membership-1, a.login, li.logged-in', {visible: true, timeout: 10000})
-    } catch (e) {}
+    } catch (err) {}
     return !!(await page.$('li.logged-in'))
   }
 
@@ -54,7 +54,7 @@ module.exports = class extends Engine {
     let formVisible = true
     try {
       await page.waitFor('#kfLoginPopup #membership-1', {visible: true, timeout: 1000})
-    } catch (e) {
+    } catch (err) {
       formVisible = false
     }
 

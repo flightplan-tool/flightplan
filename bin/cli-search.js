@@ -7,13 +7,14 @@ const sleep = require('await-sleep')
 const fp = require('../src')
 const accounts = require('../shared/accounts')
 const db = require('../shared/db')
+const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
 const utils = require('../shared/utils')
 
 program
   .option('-w, --website <airline>', 'IATA 2-letter code of the airline whose website to search')
-  .option('-P, --no-partners', `Only search awards on airline's own metal (default: false)`)
+  .option('-p, --partners', `Include partner awards (default: false)`)
   .option('-f, --from <city>', `IATA 3-letter code of the departure airport`)
   .option('-t, --to <city>', `IATA 3-letter code of the arrival airport`)
   .option('-o, --oneway', `Searches for one-way award inventory only (default: search both directions)`)
@@ -23,6 +24,7 @@ program
   .option('-q, --quantity <n>', `# of passengers traveling`, (x) => parseInt(x), 1)
   .option('-a, --account <n>', `Index of account to use`, (x) => parseInt(x), 0)
   .option('-h, --headless', `Run Chrome in headless mode`)
+  .option('-P, --no-parser', `Do not parse search results`)
   .option('--force', 'Re-run queries, even if already in the database')
   .on('--help', () => {
     console.log('')
@@ -35,6 +37,14 @@ program
 function parseDate (strDate) {
   const m = moment(strDate, 'YYYY-MM-DD', true)
   return m.isValid() ? m.startOf('d') : false
+}
+
+function fatal (message, err) {
+  logger.error(message)
+  if (err) {
+    console.error(err)
+  }
+  process.exit(1)
 }
 
 function populateArguments (args) {
@@ -65,41 +75,31 @@ function populateArguments (args) {
   args.partners = !!args.partners
   args.oneway = !!args.oneway
   args.headless = !!args.headless
+  args.parser = !!args.parser
   args.force = !!args.force
 }
 
 function validateArguments (args) {
   // Validate arguments
   if (!fp.supported(args.website)) {
-    return `Unsupported airline website to search: ${args.website}`
+    fatal(`Unsupported airline website to search: ${args.website}`)
   }
   if (!(args.cabin in fp.cabins)) {
-    return `Unrecognized cabin specified: ${args.cabin}`
+    fatal(`Unrecognized cabin specified: ${args.cabin}`)
   }
   if (!args.start) {
-    return `Invalid start date: ${args.start}`
+    fatal(`Invalid start date: ${args.start}`)
   }
   if (!args.end) {
-    return `Invalid end date: ${args.end}`
+    fatal(`Invalid end date: ${args.end}`)
   }
   if (args.end.isBefore(args.start)) {
-    return `Invalid date range: ${args.start} - ${args.end}`
+    fatal(`Invalid date range: ${args.start} - ${args.end}`)
   }
 
   // Instantiate engine, and do further validation
-  const { partners } = args
-  const engine = fp.new(args.website, { partners })
-  const fares = engine.config.fares
-  const cabins = new Set([...fares.map(x => x.cabin)])
-  if (!cabins.has(args.cabin)) {
-    return `Selected engine (${args.website}) does not support the cabin: ${args.cabin}`
-  }
-  if (!partners && !engine.config.nonPartnerSearchSupported) {
-    return `Selected engine (${args.website}) does not support non-partner searches`
-  }
-  if (args.oneway && !engine.config.oneWaySupported) {
-    return `Selected engine (${args.website}) does not support one-way searches`
-  }
+  const engine = fp.new(args.website)
+  const { id, website } = engine.config
 
   // Calculate the valid range allowed by the engine
   const { minDays, maxDays } = engine.config.validation
@@ -107,23 +107,23 @@ function validateArguments (args) {
 
   // Check if our search range is completely outside the valid range
   if (args.end.isBefore(a, 'd') || args.start.isAfter(b, 'd')) {
-    return `Selected engine (${args.website}) only supports searching within the range: ${a.format('L')} - ${b.format('L')}`
+    fatal(`${website} (${id}) only supports searching within the range: ${a.format('L')} - ${b.format('L')}`)
   }
 
   // If only start or end are outside the valid range, we can adjust them
   if (args.start.isBefore(a, 'd')) {
-    console.log(`This method can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.format('L')}`)
+    logger.warn(`${website} (${id}) can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.format('L')}`)
     args.start = a
   }
   if (args.end.isAfter(b, 'd')) {
-    console.log(`This method can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.format('L')}`)
+    logger.warn(`${website} (${id}) can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.format('L')}`)
     args.end = b
   }
 }
 
 function generateQueries (args, engine, days) {
   const { start: startDate, end: endDate } = args
-  const { roundtripOptimized, tripMinDays, oneWaySupported } = engine.config
+  const { roundtripOptimized = true, tripMinDays = 3, oneWaySupported = true } = engine.config
   const gap = (args.oneway || !roundtripOptimized) ? 0 : Math.min(tripMinDays, days)
   const validEnd = engine.validDateRange()[1]
   const queries = []
@@ -204,8 +204,9 @@ function generateQueries (args, engine, days) {
     q.cabin = args.cabin
     q.quantity = args.quantity
     const routePath = routes.path(q)
-    q.htmlFile = routePath + '.html.gz'
-    q.screenshot = routePath + '.jpg'
+    q.json = { path: routePath + '.json', gzip: true }
+    q.html = { path: routePath + '.html', gzip: true }
+    q.screenshot = { path: routePath + '.jpg' }
   })
 
   return queries
@@ -236,29 +237,21 @@ async function redundant (query) {
   return true
 }
 
-function redundantSegment (routes, query) {
+function redundantSegment (routeMap, query) {
   const { quantity } = query
-  if (routes) {
-    if (routes.requests.find(x => x.quantity === quantity)) {
+  if (routeMap) {
+    if (routeMap.requests.find(x => x.quantity === quantity)) {
       return true // We've already run a request for this segment
     }
-    if (routes.awards.find(x => x.fares === '' && x.quantity <= quantity)) {
+    if (routeMap.awards.find(x => x.fares === '' && x.quantity <= quantity)) {
       return true // We already know this segment has no availability for an equal or lesser quantity
     }
   }
   return false
 }
 
-async function safety (fn) {
-  try {
-    return await fn()
-  } catch (error) {
-    return { error }
-  }
-}
-
 const main = async (args) => {
-  const { start: startDate, end: endDate, headless } = args
+  const { start: startDate, end: endDate, headless, parser: parse } = args
 
   // Create engine
   const { partners, force } = args
@@ -272,11 +265,8 @@ const main = async (args) => {
     }
 
     // Create database if necessary, and then open
-    await db.migrate()
-    await db.open()
-
-    // Load cookies from database
-    const cookies = await db.loadCookies()
+    db.migrate()
+    db.open()
 
     // Generate queries
     const days = endDate.diff(startDate, 'd') + 1
@@ -286,6 +276,8 @@ const main = async (args) => {
     let skipped = 0
     console.log(`Searching ${days} days of award inventory: ${startDate.format('L')} - ${endDate.format('L')}`)
     for (const query of queries) {
+      const { id, loginRequired } = engine.config
+
       // Check if the query's results are already stored
       if (!force && await redundant(query)) {
         skipped++
@@ -294,13 +286,9 @@ const main = async (args) => {
 
       // Lazy load the search engine
       if (!initialized) {
-        const account = engine.config.loginRequired
-          ? accounts.getCredentials(engine.config.id, args.account) : {}
-        const ret = await engine.initialize({...account, cookies, headless, timeout: 5 * 60000})
-        if (ret && ret.error) {
-          engine.error(ret.error)
-          process.exit(1)
-        }
+        const credentials = loginRequired
+          ? accounts.getCredentials(id, args.account) : null
+        await engine.initialize({ credentials, parse, headless })
         initialized = true
       }
 
@@ -308,50 +296,46 @@ const main = async (args) => {
       routes.print(query)
 
       // Run the search query
-      const { fileCount, blocked, error } = await safety(async () => engine.search(query))
-      if (error) {
-        console.error(error)
+      let results
+      try {
+        results = await engine.search(query)
+      } catch (err) {
+        engine.error('Unexpected error occurred while searching!')
+        console.error(err)
         continue
       }
 
-      // Insert a delay if we've been blocked
-      if (blocked) {
-        const delay = utils.randomInt(65, 320)
-        console.log(`Blocked by server, waiting for ${moment().add(delay, 's').fromNow(true)}`)
-        await sleep(delay * 1000)
+      // Check for an error
+      if (results.error) {
+        continue
       }
 
-      // Write to database
-      const row = {...query, fileCount}
-      row.departDate = row.departDate ? row.departDate.format('YYYY-MM-DD') : null
-      row.returnDate = row.returnDate ? row.returnDate.format('YYYY-MM-DD') : null
-      const fields = [
-        'engine', 'fromCity', 'toCity', 'departDate', 'returnDate', 'cabin', 'quantity', 'htmlFile', 'fileCount'
-      ]
-      await db.insertRow('awards_requests', row, fields)
+      // Write request and awards (if parsed) to database
+      const requestId = utils.saveRequest(results)
+      if (results.awards) {
+        utils.addPlaceholders(results, { cabins: Object.values(fp.cabins) })
+        utils.saveAwards(requestId, results.awards)
+      }
+
+      // Insert a delay if we've been blocked
+      if (results.blocked) {
+        const delay = utils.randomInt(65, 320)
+        engine.warn(`Blocked by server, waiting for ${moment().add(delay, 's').fromNow(true)}`)
+        await sleep(delay * 1000)
+      }
     }
     if (skipped > 0) {
       console.log(`Skipped ${skipped} queries.`)
     }
-    console.log('Search complete!')
-
-    // Save cookies to database
-    if (engine) {
-      await db.saveCookies(await engine.getCookies())
-    }
-  } catch (e) {
-    console.error(e)
-    process.exit(1)
+    logger.success('Search complete!')
+  } catch (err) {
+    fatal('A fatal error occurred!', err)
   } finally {
     await engine.close()
-    await db.close()
+    db.close()
   }
 }
 
 populateArguments(program)
-const err = validateArguments(program)
-if (err) {
-  console.error(err)
-  process.exit(1)
-}
+validateArguments(program)
 main(program)

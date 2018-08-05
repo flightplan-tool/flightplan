@@ -5,6 +5,20 @@ module.exports = {
     premium: 'premium',
     economy: 'economy'
   },
+  defaults: {
+    config: {
+      waitUntil: 'networkidle0'
+    },
+    options: {
+      parse: true,
+      args: [],
+      headless: false,
+      proxy: undefined,
+      throttle: true,
+      timeout: 90000,
+      verbose: true
+    }
+  },
   profiles: {
     slow: {
       delayBetweenRequests: ['00:00:30', '00:00:45'],

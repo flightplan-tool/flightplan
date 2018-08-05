@@ -1,3 +1,5 @@
+const chalk = require('chalk')
+
 const db = require('./db')
 const paths = require('./paths')
 
@@ -29,15 +31,11 @@ function getOrSet (map, key) {
   return ret
 }
 
-async function find (route, database = db.db()) {
+function find (route, database = db.db()) {
   const map = new Map()
 
   // Update map with award requests
-  await requests(route, database, (err, row) => {
-    if (err) {
-      throw new Error('Could not find route: ' + err)
-    }
-
+  for (const row of requests(route, database)) {
     const { departDate, returnDate } = row
     let obj = getOrSet(map, key(row, departDate))
     obj.requests.push(row)
@@ -45,60 +43,58 @@ async function find (route, database = db.db()) {
       obj = getOrSet(map, key(row, returnDate, true))
       obj.requests.push(row)
     }
-  })
+  }
 
   // Now update with awards
-  await awards(route, database, (err, row) => {
-    if (err) {
-      throw new Error('Could not find awards: ' + err)
-    }
-
+  for (const row of awards(route, database)) {
     let obj = getOrSet(map, key(row, row.date))
     obj.awards.push(row)
-  })
+  }
 
   return map
 }
 
-function requests (route, database, cb) {
+function requests (route, database) {
   // If no route defined, just select all records
   if (!route) {
-    return database.each('SELECT * FROM awards_requests', cb)
+    return database.prepare('SELECT * FROM requests').all()
   }
 
   // Format dates
-  const { engine, cabin, quantity, fromCity, toCity, departDate, returnDate } = route
+  const { engine, partners, cabin, quantity, fromCity, toCity, departDate, returnDate } = route
   const departStr = departDate ? departDate.format('YYYY-MM-DD') : null
   const returnStr = returnDate ? returnDate.format('YYYY-MM-DD') : null
 
   // Select only the relevant segments
   if (returnDate) {
     // Round-Trip route
-    const sql = 'SELECT * FROM awards_requests WHERE ' +
-      'engine = ? AND cabin = ? AND quantity = ? AND (' +
+    const sql = 'SELECT * FROM requests WHERE ' +
+      'engine = ? AND partners = ? AND cabin = ? AND quantity = ? AND (' +
         '(fromCity = ? AND toCity = ? AND (departDate = ? OR returnDate = ?)) OR ' +
         '(fromCity = ? AND toCity = ? AND (departDate = ? OR returnDate = ?)))'
-    return database.each(sql, engine, cabin, quantity,
+    return database.prepare(sql).all(
+      engine, partners ? 1 : 0, cabin, quantity,
       fromCity, toCity, departStr, returnStr,
-      toCity, fromCity, returnStr, departStr,
-      cb)
+      toCity, fromCity, returnStr, departStr
+    )
   } else {
     // One-Way route
-    const sql = 'SELECT * FROM awards_requests WHERE ' +
-      'engine = ? AND cabin = ? AND quantity = ? AND (' +
+    const sql = 'SELECT * FROM requests WHERE ' +
+      'engine = ? AND partners = ? AND cabin = ? AND quantity = ? AND (' +
         '(fromCity = ? AND toCity = ? AND departDate = ?) OR ' +
         '(fromCity = ? AND toCity = ? AND returnDate = ?))'
-    return database.each(sql, engine, cabin, quantity,
+    return database.prepare(sql).all(
+      engine, partners ? 1 : 0, cabin, quantity,
       fromCity, toCity, departStr,
-      toCity, fromCity, departStr,
-      cb)
+      toCity, fromCity, departStr
+    )
   }
 }
 
-function awards (route, database, cb) {
+function awards (route, database) {
   // If no route defined, just select all records
   if (!route) {
-    return database.each('SELECT * FROM awards', cb)
+    return database.prepare('SELECT * FROM awards').all()
   }
 
   // Format dates
@@ -113,27 +109,25 @@ function awards (route, database, cb) {
       'engine = ? AND cabin = ? AND quantity <= ? AND (' +
         '(fromCity = ? AND toCity = ? AND date = ?) OR ' +
         '(fromCity = ? AND toCity = ? AND date = ?))'
-    return database.each(sql, engine, cabin, quantity,
+    return database.prepare(sql).all(
+      engine, cabin, quantity,
       fromCity, toCity, departStr,
-      toCity, fromCity, returnStr,
-      cb)
+      toCity, fromCity, returnStr
+    )
   } else {
     // One-Way route
     const sql = 'SELECT * FROM awards WHERE ' +
       'engine = ? AND cabin = ? AND quantity <= ? AND ' +
         'fromCity = ? AND toCity = ? AND date = ?'
-    return database.each(sql, engine, cabin, quantity,
-      fromCity, toCity, departStr,
-      cb)
+    return database.prepare(sql).all(
+      engine, cabin, quantity,
+      fromCity, toCity, departStr
+    )
   }
 }
 
 function print (route) {
   const { engine, fromCity, toCity, departDate, returnDate, quantity } = route
-
-  if (!departDate && !returnDate) {
-    console.log('Weird...')
-  }
 
   // Passenger details
   const strPax = `${quantity} ${quantity > 1 ? 'Passengers' : 'Passenger'}`
@@ -145,9 +139,10 @@ function print (route) {
     ? returnDate.format('L') : returnDate
 
   // Print departure and arrival routes
-  console.log(`${engine}: DEPARTURE [${fromCity} -> ${toCity}] - ${departStr} (${strPax})`)
+  const context = chalk.bold(`[${engine}]`)
+  console.log(chalk.blue(`${context} DEPARTURE [${fromCity} -> ${toCity}] - ${departStr} (${strPax})`))
   if (returnDate) {
-    console.log(`${engine}: ARRIVAL   [${toCity} -> ${fromCity}] - ${returnStr}`)
+    console.log(chalk.blue(`${context} ARRIVAL   [${toCity} -> ${fromCity}] - ${returnStr}`))
   }
 }
 

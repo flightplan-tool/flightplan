@@ -3,7 +3,7 @@ data/
 db/
 
 # User accounts
-config/accounts.json
+config/accounts.txt
 
 # Logs
 logs

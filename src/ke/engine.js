@@ -2,20 +2,7 @@ const Engine = require('../base/engine')
 const { cabins } = require('../consts')
 
 module.exports = class extends Engine {
-  async initialize (page) {
-    // Load airport codes
-    this.info('Loading airports...')
-    const { airports, error } = await airportCodes(this)
-
-    // Check for any errors
-    if (error) {
-      return { error }
-    }
-
-    // Save the results
-    this.airports = airports
-    this.info(`Found ${airports.size} airports`)
-  }
+  async initialize (page) {}
 
   async prepare (page) {}
 
@@ -183,7 +170,7 @@ module.exports = class extends Engine {
     try {
       await page.waitFor('#booking-gate-from-to-chooser-error p.error', { visible: true, timeout: 500 })
       return { error: 'An error was detected in form submission' }
-    } catch (e) {}
+    } catch (err) {}
 
     // Insert a small wait
     await this.waitBetween([5, 10])
@@ -278,7 +265,7 @@ async function clickSubmit (engine, submitSel) {
         page.waitFor(confirm1, { visible: true, timeout: 5000 }),
         page.waitFor(confirm2, { visible: true, timeout: 5000 })
       ])
-    } catch (e) {
+    } catch (err) {
       break
     }
 
@@ -300,9 +287,9 @@ async function dismissPopup (engine, dontShowAgainSel, confirmSel) {
       await page.click(confirmSel)
       await page.waitFor(1000)
     }
-  } catch (e) {
+  } catch (err) {
     // Spurious context errors arise here sometimes, just try again...
-    console.error(e)
+    console.error(err)
   }
 }
 

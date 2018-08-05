@@ -133,7 +133,7 @@ module.exports = class extends Engine {
       if (!await page.$('#selectAward01:checked')) {
         await page.click('#selectAward01')
       }
-    } catch (e) {}
+    } catch (err) {}
 
     // Save the HTML and screenshot
     ret = await this.save(htmlFile, screenshot)

@@ -1,9 +1,10 @@
 const program = require('commander')
+const Database = require('better-sqlite3')
 const fs = require('fs')
 const path = require('path')
-const sqlite = require('sqlite')
 
 const db = require('../shared/db')
+const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const utils = require('../shared/utils')
 
@@ -42,27 +43,27 @@ const main = async (args) => {
     const dataPath = path.join(directory, paths.data)
     const dbPath = path.join(directory, paths.database)
     if (!fs.existsSync(directory)) {
-      console.error(`Import directory does not exist: ${path.resolve(program.directory)}`)
+      logger.error(`Import directory does not exist: ${path.resolve(program.directory)}`)
       return
     }
     if (!fs.existsSync(dataPath)) {
-      console.error(`Import directory is missing "data" subdirectory: ${path.resolve(dataPath)}`)
+      logger.error(`Import directory is missing "data" subdirectory: ${path.resolve(dataPath)}`)
       return
     }
     if (!fs.existsSync(dbPath)) {
-      console.error(`Import directory is missing database: ${path.resolve(dbPath)}`)
+      logger.error(`Import directory is missing database: ${path.resolve(dbPath)}`)
       return
     }
 
     // Open destination database
     console.log('Opening source and destination databases...')
-    const fromDB = await sqlite.open(dbPath, { Promise })
-    await db.open()
+    const fromDB = new Database(dbPath)
+    db.open()
 
     // Create set of existing resources, so we don't add duplicate requests
     console.log('Checking existing resources...')
     const existing = new Set()
-    await db.db().each('SELECT * FROM awards_requests', (err, row) => {
+    db.db().each('SELECT * FROM requests', (err, row) => {
       if (err) {
         throw new Error('Could not scan search requests: ' + err)
       }
@@ -71,14 +72,14 @@ const main = async (args) => {
     })
 
     // Check how many routes / awards will be added
-    const requestCount = await count(fromDB, 'awards_requests')
-    const awardCount = await count(fromDB, 'awards')
+    const requestCount = count(fromDB, 'requests')
+    const awardCount = count(fromDB, 'awards')
     let duplicates = 0
 
     // Prompt user to import requests
     if (yes || utils.promptYesNo(`Import ${requestCount} requests and ${awardCount} awards?`)) {
       console.log(`Importing ${requestCount} requests...`)
-      await fromDB.each('SELECT * FROM awards_requests', (err, row) => {
+      fromDB.each('SELECT * FROM requests', (err, row) => {
         if (err) {
           throw new Error('Could not import requests: ' + err)
         }
@@ -92,14 +93,14 @@ const main = async (args) => {
 
         // Insert the request into the database
         delete row.id
-        db.insertRow('awards_requests', row)
+        db.insertRow('requests', row)
 
         // Copy assets from import directory
         copyAssets(row, directory, verbose)
       })
 
       console.log(`Importing ${awardCount} awards...`)
-      const rows = await fromDB.all('SELECT * FROM awards')
+      const rows = fromDB.all('SELECT * FROM awards')
       for (const row of rows) {
         if (verbose) {
           console.log(JSON.stringify(row, null, 4))
@@ -107,19 +108,20 @@ const main = async (args) => {
 
         // Insert the request into the database
         delete row.id
-        await db.insertRow('awards', row)
+        db.insertRow('awards', row)
       }
     }
 
-    console.log(`Import complete. Skipped ${duplicates} duplicate requests.`)
-  } catch (e) {
-    console.error(e)
+    logger.success(`Import complete. Skipped ${duplicates} duplicate requests.`)
+  } catch (err) {
+    logger.error(err.message)
+    console.error(err)
     process.exit(1)
   } finally {
     if (fromDB) {
-      await fromDB.close()
+      fromDB.close()
     }
-    await db.close()
+    db.close()
   }
 }
 

@@ -26,7 +26,7 @@ module.exports = class extends Engine {
     return this.retry(async () => {
       try {
         await page.waitFor('li.member-login-section, li.member-section', { visible: true })
-      } catch (e) {}
+      } catch (err) {}
       return !!(await page.$('li.member-section'))
     })
   }
@@ -182,7 +182,7 @@ async function logout (engine) {
     await page.hover(memberSel)
     await page.waitFor(logoutSel, { visible: true, timeout: 1000 })
     await engine.clickAndWait(logoutSel)
-  } catch (e) {}
+  } catch (err) {}
 }
 
 async function saveResults (engine, htmlFile, screenshot) {
@@ -243,7 +243,7 @@ async function dismissWarning (engine) {
       await page.waitFor(250)
     }
     await page.click('#change-ticket-type-modal button.btn-confirm')
-  } catch (e) {}
+  } catch (err) {}
 }
 
 async function settle (engine) {
@@ -272,7 +272,7 @@ async function clearCity (engine, inputSel) {
     await page.waitFor(500)
     await page.keyboard.press('Backspace')
     await page.waitFor(500)
-  } catch (e) {}
+  } catch (err) {}
 }
 
 async function setDate (engine, date) {

@@ -1,4 +1,5 @@
 const fs = require('fs')
+const parse = require('csv-parse/lib/sync')
 const path = require('path')
 
 const paths = require('./paths')
@@ -13,30 +14,33 @@ function loadAccounts () {
 ERROR: Airline website credentials not found at "${paths.credentials}"
 
 Would you like to create the file?`)) {
-      const src = path.resolve(__dirname, '../config/accounts-example.json')
+      const src = path.resolve(__dirname, '../config/accounts-example.txt')
       const destDir = path.dirname(paths.credentials)
       if (!fs.existsSync(destDir)) {
         fs.mkdirSync(destDir)
       }
       fs.copyFileSync(src, paths.credentials)
       console.log(`
-The file has been created, using "config/accounts-example.json" as a template.
+The file has been created, using "config/accounts-example.txt" as a template.
 Please edit the file, to contain valid account information for the airlines
 you're searching.`)
     }
     process.exit(1)
   }
 
-  // Load JSON
+  // Load credentials
   const contents = fs.readFileSync(paths.credentials)
-  const json = JSON.parse(contents)
+  const rows = parse(contents, { delimiter: ':', relax_column_count: true })
 
-  // Make sure keys are uppercase
-  const ret = {}
-  for (const [method, list] of Object.entries(json)) {
-    ret[method.toUpperCase()] = list
-  }
-  return ret
+  // Convert rows to map, grouped by engine
+  return rows.reduce((map, row) => {
+    const key = row[0].toUpperCase()
+    if (!map[key]) {
+      map[key] = []
+    }
+    map[key].push(row.slice(1))
+    return map
+  }, {})
 }
 
 function getCredentials (engine, account = 0) {

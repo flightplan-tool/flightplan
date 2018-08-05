@@ -18,14 +18,18 @@
   "private": false,
   "dependencies": {
     "await-sleep": "^0.0.1",
+    "better-sqlite3": "^4.1.4",
+    "chalk": "^2.4.1",
     "cheerio": "^1.0.0-rc.2",
     "commander": "github:jd20/commander.js#bin_name_fallback",
+    "csv-parse": "^2.5.0",
     "express": "^4.16.3",
+    "jspath": "^0.4.0",
     "moment": "^2.22.1",
+    "parse-duration": "^0.1.1",
     "puppeteer": "^1.6.0-next.1532381444032",
     "react-spinkit": "^3.0.0",
     "shelljs": "^0.8.2",
-    "sqlite": "^2.9.1",
     "syncprompt": "^2.0.0"
   },
   "devDependencies": {

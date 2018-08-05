@@ -104,10 +104,10 @@ const fp = require('flightplan');
 const cx = fp.new('cx');
 
 (async () => {
-  // Must call initialize before searching
-  await cx.initialize({ username: '1234567890', 'password': 'passw0rd' });
+  // Must call initialize before searching (replace credentials with real ones below)
+  await cx.initialize({ credentials: ['1234567890', 'passw0rd'] });
 
-  // Do a one-way search (replace credentials with real ones below)
+  // Do a one-way search
   const { responses, error } = await cx.search({
     fromCity: 'HKG', toCity: 'LHR',
     departDate: '2019-03-06', cabin: 'first'

@@ -2,6 +2,7 @@ const program = require('commander')
 
 const fp = require('../src')
 const db = require('../shared/db')
+const logger = require('../shared/logger')
 const routes = require('../shared/routes')
 const utils = require('../shared/utils')
 
@@ -9,14 +10,27 @@ program
   .option('-w, --website <airline>', 'Limit parsing to the specified airline (IATA 2-letter code)')
   .option('-v, --verbose', 'Verbose logging')
   .option('-y, --yes', 'Automatically confirm deletion of failed requests')
+  .option('--force', 'Re-parse requests, even if they have already been parsed previously')
   .parse(process.argv)
 
-function filter (sql, engine) {
-  return engine ? [sql + ' WHERE engine = ?', engine] : [sql]
+function getRequests (engine, force) {
+  const bind = []
+
+  // Select only those requests without corresponding entries in awards table
+  let sql = force
+    ? 'SELECT * FROM requests'
+    : 'SELECT requests.* FROM requests LEFT JOIN awards ON requests.id = awards.requestId WHERE requestId IS NULL'
+  if (engine) {
+    sql += `${force ? ' WHERE' : ' AND'} requests.engine = ?`
+    bind.push(engine)
+  }
+
+  // Evaluate the SQL
+  return db.db().prepare(sql).all(...bind)
 }
 
 const main = async (args) => {
-  const { verbose, yes } = args
+  const { verbose, yes, force } = args
   let numRequests = 0
   let numAwards = 0
   const parsers = new Map()
@@ -24,17 +38,16 @@ const main = async (args) => {
   try {
     // Open the database
     console.log('Opening database...')
-    await db.open()
+    db.open()
 
-    // Clear the awards table
-    console.log('Clearing old awards...')
-    await db.db().run(...filter('DELETE FROM awards', args.website))
-
-    // Iterate over awards requests
+    // Iterate over search requests
     console.log('Parsing search requests...')
     const failed = []
-    const rows = await db.db().all(...filter('SELECT * FROM awards_requests', args.website))
-    for (const row of rows) {
+    for (const row of getRequests(args.website, force)) {
+      // First delete all awards associated with this request
+      const oldAwards = db.db().prepare('SELECT id FROM awards WHERE requestId = ?').all(row.id)
+      utils.cleanupAwards(oldAwards)
+
       // Create the parser if necessary
       const { engine } = row
       if (!parsers.has(engine)) {
@@ -42,9 +55,12 @@ const main = async (args) => {
       }
       const parser = parsers.get(engine)
 
+      // Load all the request's resources
+      const request = utils.loadRequest(row)
+
       // Process the request
       numRequests++
-      const { awards, error } = parser.parse(row)
+      const { awards, error } = parser.parse(request)
 
       // Print the route
       if (verbose || error) {
@@ -53,24 +69,23 @@ const main = async (args) => {
 
       // Handle errors by cleaning up the request
       if (error) {
-        console.error('Error:', error)
+        logger.error('Error:', error)
         failed.push(row)
         continue
       }
 
-      // Update the database
-      for (const award of awards) {
-        const { fromCity, toCity, date, flight, aircraft, fares } = award
-
-        // Print the award fares for this segment
-        if (verbose && fares) {
-          console.log(`  [${fromCity} -> ${toCity}] - ${date} ${flight} (${aircraft}): ${fares}`)
+      // Print the award fares for this route
+      if (verbose) {
+        for (const award of awards) {
+          const { fromCity, toCity, departure, fares, mileage } = award
+          const segments = award.segments.map(x => x.flight).join('-')
+          console.log(`    [${fromCity} -> ${toCity}] - ${departure.format('YYYY-MM-DD')} ${segments} (${mileage} Miles): ${fares}`)
         }
-        numAwards++
-
-        // Update the awards table
-        await db.insertRow('awards', award)
       }
+
+      // Update the database
+      utils.saveAwards(row.id, awards)
+      numAwards += awards.length
     }
 
     if (failed.length > 0) {
@@ -84,17 +99,18 @@ const main = async (args) => {
 
     console.log(`Search requests processed: ${numRequests}`)
     console.log(`Total awards found: ${numAwards}`)
-  } catch (e) {
-    console.error(e)
+  } catch (err) {
+    logger.error(err.message)
+    console.error(err)
     process.exit(1)
   } finally {
-    await db.close()
+    db.close()
   }
 }
 
 // Validate arguments
 if (!fp.supported(program.website)) {
-  console.error(`Unsupported airline website to parse: ${program.website}`)
+  logger.error(`Unsupported airline website to parse: ${program.website}`)
   process.exit(1)
 }
 main(program)

@@ -1,23 +1,23 @@
 const moment = require('moment')
 
+const { defaults } = require('../consts')
 const utils = require('../../shared/utils')
 
 const configs = new Map()
 
 module.exports = class {
-  constructor (id, module, options) {
+  constructor (id, module) {
     const { engine: Engine, parser: Parser } = module
 
     // Setup config
     if (!configs.has(id)) {
-      const config = typeof module.config === 'function' ? module.config(options) : {...module.config}
+      const config = { ...defaults.config, ...module.config }
       config.id = id
-      config.waitUntil = config.waitUntil || 'networkidle0'
       if (!('loginRequired' in config)) {
         config.loginRequired = Engine && !!(Engine.prototype.login || Engine.prototype.isLoggedIn)
       }
-      if (!('oneWaySupported' in config)) {
-        config.oneWaySupported = Engine && !!Engine.prototype.setOneWay
+      if (!('modifiable' in config)) {
+        config.modifiable = (Engine && !!Engine.prototype.modify) ? [] : undefined
       }
 
       // Prevent further modification to the config, and cache it
@@ -30,37 +30,71 @@ module.exports = class {
     this._parser = Parser ? new Parser(this) : undefined
   }
 
-  initialize (options) {
+  async initialize (options = {}) {
     if (!this._engine) {
       throw new Error(`Missing Engine implementation for: ${this.config.id}`)
     }
-    return this._engine._initialize(options)
+    await this._engine._initialize({ ...defaults.options, ...options })
   }
 
-  search (query) {
+  async search (query) {
     if (!this._engine) {
       throw new Error(`Missing Engine implementation for: ${this.config.id}`)
     }
-    const ret = this._engine._search(query)
-    this._engine.lastError = ret.Error
+
+    let ret
+    const { options } = this._engine
+    try {
+      // Run the search
+      ret = await this._engine._search(query)
+      this._engine.lastError = ret.error
+      if (ret.error) {
+        this._engine.error(ret.error)
+      }
+    } catch (err) {
+      // Record the error that occurred
+      this._engine.lastError = err
+      throw err
+    } finally {
+      // Make sure at least one screenshot was saved
+      const { results = {} } = this._engine
+      if (query.screenshot) {
+        if ((results.screenshots || []).length === 0) {
+          await this._engine.screenshot()
+        }
+      }
+    }
+
+    // Parse search results
+    if (ret && options.parse) {
+      ret = { ...ret, ...this.parse(ret) }
+    }
+
     return ret
   }
 
-  getCookies () {
-    return (this._engine && this._engine.page) ? this._engine.page.cookies() : []
+  async getCookies () {
+    const cookies = (this._engine && this._engine.page)
+      ? await this._engine.page.cookies()
+      : []
+    return cookies
   }
 
-  close () {
+  async close () {
     if (this._engine) {
-      return this._engine.close()
+      await this._engine.close()
     }
   }
 
-  parse (request) {
+  parse (results) {
     if (!this._parser) {
       throw new Error(`Missing Parser implementation for: ${this.config.id}`)
     }
-    return this._parser._parse(request)
+    let ret = this._parser._parse(results)
+    if (ret && ret.error) {
+      this._parser.error(ret.error)
+    }
+    return ret
   }
 
   validDateRange () {
@@ -71,4 +105,10 @@ module.exports = class {
       now.clone().add(maxDays, 'd')
     ]
   }
+
+  // Logging functions forward to engine
+  success () { this._engine.success(...arguments) }
+  info () { this._engine.info(...arguments) }
+  warn () { this._engine.warn(...arguments) }
+  error () { this._engine.error(...arguments) }
 }

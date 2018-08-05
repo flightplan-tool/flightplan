@@ -3,7 +3,7 @@ const { cabins, profiles } = require('../consts')
 module.exports = {
   engine: require('./engine'),
   parser: require('./parser'),
-  config: (options) => ({
+  config: {
     name: 'Korean Air',
     website: 'SKYPASS',
     searchURL: 'https://www.koreanair.com/global/en/booking/booking-gate.html?awa#domestic-award',
@@ -23,5 +23,5 @@ module.exports = {
       {code: 'O', cabin: cabins.business, saver: true, name: 'Prestige'},
       {code: 'X', cabin: cabins.economy, saver: true, name: 'Economy'}
     ]
-  })
+  }
 }

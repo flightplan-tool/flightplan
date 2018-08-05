@@ -9,24 +9,22 @@ const helpers = require('../helpers')
 const logging = require('../logging')
 const utils = require('../../shared/utils')
 
-// Search can be in several states
-const STATE_SEARCH = 'search'
-const STATE_MODIFY = 'modify'
-
 class Engine {
   constructor (parent) {
     this.parent = parent
     this.config = parent.config
   }
 
-  async _initialize (options = {}) {
+  async _initialize (options) {
+    const { modifiable } = this.config
+
     this.options = options
 
     // Initialize throttling
     this.throttling = {}
 
     // Cache modifiable field set
-    this.modifiable = new Set(this.config.modifiable || [])
+    this.modifiable = modifiable ? new Set(modifiable) : undefined
 
     // Default locale to "en"
     moment.locale('en')
@@ -35,28 +33,45 @@ class Engine {
     this.browser = await this.newBrowser(options)
 
     // Setup a new page
-    this.page = await this.newPage(this.browser, options, this.config.searchURL)
+    this.page = await this.newPage(this.browser, options)
+  }
 
-    let ret
+  _validate (query) {
+    const { fromCity, toCity, oneWay, departDate, returnDate, cabin, quantity } = query
 
-    // Get the page ready
-    ret = await this.checkPage(true)
-    if (ret && ret.error) {
-      throw new Error(ret.error)
+    // Validate from / to
+    if (!this.validAirportCode(fromCity)) {
+      return { error: `Invalid From city: ${fromCity}` }
+    } else if (!this.validAirportCode(toCity)) {
+      return { error: `Invalid To city: ${toCity}` }
     }
 
-    // Run implementation-specific initialization
-    ret = await this.initialize(this.page)
-    if (ret && ret.error) {
-      throw new Error(ret.error)
+    // Validate dates
+    const [ start, end ] = this.parent.validDateRange()
+    const strValidRange = `${start.format('L')} - ${end.format('L')}`
+    if (!departDate.isBetween(start, end, 'd', '[]')) {
+      return { error: `Departure date (${departDate}) is outside valid search range: ${strValidRange}` }
+    } else if (!oneWay && !returnDate.isBetween(start, end, 'd', '[]')) {
+      return { error: `Return date (${returnDate}) is outside valid search range: ${strValidRange}` }
     }
 
-    return true
+    // Validate cabin
+    const cabins = new Set([...this.config.fares.map(x => x.cabin)])
+    if (!cabins.has(cabin)) {
+      return { error: `Unsupported cabin: ${cabin}` }
+    }
+
+    // Validate quantity
+    if (quantity < 1) {
+      return { error: `Invalid quantity: ${quantity}` }
+    }
+
+    return this.validate(query)
   }
 
   async _login () {
-    const { page, config } = this
-    const { loginRequired, searchURL, waitUntil } = config
+    const { page, config, options } = this
+    const { loginRequired, searchURL } = config
 
     if (!loginRequired) {
       return {}
@@ -69,7 +84,9 @@ class Engine {
       // Check whether we're logged in (or had too many attempts)
       const success = await this.isLoggedIn(page)
       if (success || attempts >= 4) {
-        this.info(`Login ${success ? 'success' : 'failure'}!`)
+        if (attempts > 0) {
+          success ? this.success('Login succeeded') : this.error('Login failed')
+        }
         return success ? {} : { error: 'Login failure' }
       }
 
@@ -82,54 +99,30 @@ class Engine {
       } else if (attempts === 3) {
         this.info('3rd login attempt...')
       } else if (attempts === 4) {
-        this.info('4th and final login attempt...')
+        this.warn('4th and final login attempt...')
       }
 
       // Call implementation-specific login
-      ret = await this.login(page)
+      ret = await this.login(page, options.credentials)
       if (ret && ret.error) {
         return ret
       }
 
       // Go to the search page (which will show us if we're logged in or not)
-      await page.goto(searchURL, { waitUntil })
-
-      // Get the page ready
-      ret = await this.prepare(page)
+      ret = await this.goto(searchURL)
       if (ret && ret.error) {
         return ret
       }
     }
-  }
-
-  async checkPage () {
-    const { page } = this
-    let ret
-
-    // Make sure page is ready to be used
-    ret = await this.prepare(page)
-    if (ret && ret.error) {
-      return ret
-    }
-
-    // Make sure we're still logged in
-    if (!await this.isLoggedIn(page)) {
-      ret = await this._login()
-      if (ret && ret.error) {
-        return ret
-      }
-    }
-
-    return {}
   }
 
   async _search (query) {
     const { page, config, lastError } = this
-    const { searchURL, waitUntil } = config
-
-    // Results will be stored by here, and populated by save()
-    this.results = { responses: [], htmlFiles: [], screenshots: [], fileCount: 0 }
+    const { searchURL } = config
     let ret
+
+    // Results will be stored here
+    this.results = {}
 
     // Save the previous query
     this.prevQuery = lastError ? null : this.query
@@ -138,7 +131,7 @@ class Engine {
     query = this.normalizeQuery(query)
 
     // Validate the query
-    ret = this.validQuery(query)
+    ret = this._validate(query)
     if (ret && ret.error) {
       return ret
     }
@@ -147,20 +140,25 @@ class Engine {
     await this.throttle()
 
     // Attempt to modify the current search
-    if (await this.modify(query)) {
-      return this.results
+    ret = await this._modify(query)
+    if (ret && (ret.error || ret.success)) {
+      return ret
     }
 
     // Reload search page
-    await page.goto(searchURL, { waitUntil })
-    ret = await this.checkPage()
+    ret = this.goto(searchURL)
     if (ret && ret.error) {
       return ret
     }
 
-    // Fill out the form and submit
-    this.state = STATE_SEARCH
-    ret = await this.submitForm(query)
+    // Make sure we're logged-in
+    ret = await this._login()
+    if (ret && ret.error) {
+      return ret
+    }
+
+    // Perform the search
+    ret = await this.search(page, query)
     if (ret && ret.error) {
       return ret
     }
@@ -169,127 +167,79 @@ class Engine {
     return this.results
   }
 
-  async modify (query) {
-    const { modifiable, prevQuery } = this
-    let ret
+  async _modify (query) {
+    const { page, modifiable, prevQuery } = this
+
+    // Does the engine support modification?
+    if (!modifiable) {
+      return { success: false }
+    }
 
     // Compute how the query has changed
     const diff = this.diffQuery(query, prevQuery)
 
-    // Check if diff is valid, and engine supports this operation
+    // Check if diff is valid, and belongs to the modifiable subset
     if (!diff || [...Object.keys(diff)].filter(x => !modifiable.has(x)).length > 0) {
-      return false
+      return { success: false }
     }
 
-    // Make sure page is ready to use first
-    ret = await this.checkPage()
-    if (!ret || !ret.error) {
-      // Attempt to modify and submit form
-      this.state = STATE_MODIFY
-      ret = await this.submitForm(diff)
-    }
-
-    // Check result
-    if (ret && ret.error) {
-      this.error(`Current search failed to be modified, resetting search state: ${ret.error}`)
-      return false
-    }
-
-    // Operation was successful if we did not receive { modified: false }
-    return !ret || ret.modified !== false
-  }
-
-  async submitForm (query) {
-    const { page, config } = this
-    const { oneWaySupported } = config
-    const failed = () => ((ret && ret.error) || (ret && ret.modified === false))
-    let ret
-
-    // Setup the search form
-    ret = await this.setup(page, query)
-    if (failed()) {
-      return ret
-    }
-
-    // Set Round-Trip or One-Way
-    if (oneWaySupported && 'oneWay' in query) {
-      ret = await this.setOneWay(page, query.oneWay)
-      if (failed()) {
-        return ret
-      }
-    }
-
-    // Set origin and destination
-    if (query.fromCity) {
-      ret = await this.setFromCity(page, query.fromCity)
-      if (failed()) {
-        return ret
-      }
-    }
-    if (query.toCity) {
-      ret = await this.setToCity(page, query.toCity)
-      if (failed()) {
-        return ret
-      }
-    }
-
-    // Set departure and return dates
-    if (query.departDate) {
-      ret = await this.setDepartDate(page, query.departDate)
-      if (failed()) {
-        return ret
-      }
-    }
-    if (query.returnDate) {
-      ret = await this.setReturnDate(page, query.returnDate)
-      if (failed()) {
-        return ret
-      }
-    }
-
-    // Set cabin
-    if (query.cabin) {
-      ret = await this.setCabin(page, query.cabin)
-      if (failed()) {
-        return ret
-      }
-    }
-
-    // Set quantity
-    if (query.quantity) {
-      ret = await this.setQuantity(page, query.quantity)
-      if (failed()) {
-        return ret
-      }
-    }
-
-    // Submit the form
-    const { htmlFile, screenshot } = this.query
-    return this.submit(page, htmlFile, screenshot)
+    // Attempt to modify the search
+    return this.modify(page, diff, query, prevQuery)
   }
 
   async newBrowser (options) {
-    const { headless = false } = options
-    return puppeteer.launch({ headless })
+    const { headless, args, proxy } = options
+    if (proxy) {
+      args.push(`--proxy-server=${proxy.server}`)
+    }
+    return puppeteer.launch({ headless, args })
   }
 
-  async newPage (browser, options, url) {
+  async newPage (browser, options) {
     const page = await browser.newPage()
-    page.setViewport({width: utils.randomInt(1200, 1280), height: utils.randomInt(1400, 1440)})
+
+    // Set viewport size
+    const { viewport = { width: utils.randomInt(1200, 1280), height: utils.randomInt(1400, 1440) } } = options
+    page.setViewport(viewport)
+
+    // Setup page
     page.setDefaultNavigationTimeout(options.timeout)
     await applyEvasions(page)
+
+    // Authenticate proxy, if needed
+    if (options.proxy) {
+      const { username, password } = options.proxy
+      if (username || password) {
+        await page.authenticate({ username, password })
+      }
+    }
+
+    // Set cookies if provided
     if (options.cookies) {
       await page.setCookie(...options.cookies)
     }
-    if (url) {
-      await page.goto(url, {waitUntil: this.config.waitUntil})
-    }
+
     return page
+  }
+
+  async goto (url) {
+    const { waitUntil } = this.config
+    try {
+      const response = await this.page.goto(url, { waitUntil })
+      return this.validResponse(response)
+    } catch (err) {
+      return { error: `goto(${url}): ${err.message}` }
+    }
   }
 
   async throttle () {
     let { lastRequest = null, checkpoint = null } = this.throttling
     const { delayBetweenRequests, requestsPerHour, restPeriod } = this.config.throttling
+
+    // Check if throttling is enabled
+    if (!this.options.throttle) {
+      return
+    }
 
     // Insert delay between requests
     if (delayBetweenRequests && lastRequest) {
@@ -325,49 +275,74 @@ class Engine {
     this.throttling = { lastRequest, checkpoint }
   }
 
-  async save (htmlFile, screenshot, index) {
+  async saveJSON (name, contents) {
+    return this.saveAsset('json', name, contents)
+  }
+
+  async saveHTML (name, contents = undefined) {
+    // If no HTML provided, extract it from the page and take a screenshot
+    if (contents === undefined) {
+      this.screenshot(name)
+      contents = await this.page.content()
+    }
+
+    return this.saveAsset('html', name, contents)
+  }
+
+  async screenshot (name = 'default') {
+    return this.saveAsset('screenshot', name, null)
+  }
+
+  async saveAsset (type, name, contents) {
     const { page, results } = this
+    const options = this.query[type] || {}
+    const key = { html: 'html', json: 'json', screenshot: 'screenshots' }[type]
 
-    // If index not specified, determine it from # of responses so far
-    index = (index !== undefined) ? index : results.responses.length
+    try {
+      const entry = { name, contents }
 
-    // Update filenames based on index
-    if (index > 0) {
-      htmlFile = htmlFile ? utils.appendPath(htmlFile, '-' + index) : htmlFile
-      screenshot = screenshot ? utils.appendPath(screenshot, '-' + index) : screenshot
-    }
+      if (options.path) {
+        // Make path unique
+        const index = (results[key] || []).length
+        entry.path = (index > 0)
+          ? utils.appendPath(options.path, '-' + index)
+          : options.path
 
-    // Screenshot page if requested
-    if (screenshot) {
-      await page.screenshot({path: screenshot})
-      results.screenshots.push(screenshot)
-    }
+        // Convert contents to string
+        if (type === 'json') {
+          contents = JSON.stringify(contents)
+        }
 
-    // Get the full HTML content
-    if (!await page.$('html')) {
-      return { error: 'HTML element missing, invalid document' }
-    }
-    const html = await page.evaluate(() => document.querySelector('html').outerHTML)
+        // Write contents to disk
+        switch (type) {
+          case 'html':
+          case 'json':
+            // Compress contents
+            if (options.gzip) {
+              if (path.extname(entry.path) !== '.gz') {
+                entry.path += '.gz'
+              }
+              contents = zlib.gzipSync(contents)
+            }
 
-    // Compress HTML and write to disk
-    if (htmlFile) {
-      try {
-        const data = (path.extname(htmlFile) === '.gz') ? zlib.gzipSync(html) : html
-        fs.writeFileSync(htmlFile, data)
-        results.htmlFiles.push(htmlFile)
-        results.fileCount++
-      } catch (e) {
-        return { error: `Failed to write HTML output to disk: ${e.message}` }
+            // Write to disk
+            fs.writeFileSync(entry.path, contents)
+            break
+          case 'screenshot':
+            entry.contents = await page.screenshot({...options, path: entry.path})
+            break
+        }
       }
+
+      // Update results
+      if (!results[key]) {
+        results[key] = []
+      }
+      results[key].push(entry)
+    } catch (err) {
+      const strType = {html: 'HTML output', json: 'JSON output', screenshot: 'screenshot'}[type]
+      return { error: `Failed to write ${strType} to disk: ${err.message}` }
     }
-
-    // Append response
-    results.responses.push(html)
-
-    // Write to results whether it looks like we've been blocked
-    results.blocked = this.isBlocked(html)
-
-    return html
   }
 
   async close () {
@@ -378,6 +353,10 @@ class Engine {
   }
 
   normalizeQuery (query) {
+    // Ensure airport codes are uppercase
+    query.fromCity = query.fromCity.toUpperCase()
+    query.toCity = query.toCity.toUpperCase()
+
     // Ensure dates are in moment format
     query.departDate = this.normalizeDate(query.departDate)
     query.returnDate = this.normalizeDate(query.returnDate)
@@ -392,38 +371,12 @@ class Engine {
 
     // Freeze the query, and store it on this instance
     this.query = Object.freeze({...query})
+    this.results.query = this.query
     return this.query
   }
 
   normalizeDate (date) {
     return (date && typeof date === 'string') ? moment(date) : date
-  }
-
-  validQuery (query) {
-    const { fromCity, toCity, oneWay, departDate, returnDate } = query
-
-    // One-way supported?
-    if (oneWay && !this.config.oneWaySupported) {
-      return { error: `One-way searches are not supported` }
-    }
-
-    // Validate from / to
-    if (!this.validAirport(fromCity)) {
-      return { error: `Invalid From city: ${fromCity}` }
-    } else if (!this.validAirport(toCity)) {
-      return { error: `Invalid To city: ${toCity}` }
-    }
-
-    // Validate dates
-    const [ start, end ] = this.parent.validDateRange()
-    const strValidRange = `${start.format('L')} - ${end.format('L')}`
-    if (!departDate.isBetween(start, end, 'd', '[]')) {
-      return { error: `Departure date (${departDate}) is outside valid search range: ${strValidRange}` }
-    } else if (!oneWay && !returnDate.isBetween(start, end, 'd', '[]')) {
-      return { error: `Return date (${returnDate}) is outside valid search range: ${strValidRange}` }
-    }
-
-    return {}
   }
 
   validResponse (response) {
@@ -438,7 +391,7 @@ class Engine {
         }
 
         // Return error message
-        return { error: `Received non-OK HTTP Status Code: ${response.status()}` }
+        return { error: `Received non-OK HTTP Status Code: ${response.status()} (${response.url()})` }
       }
     }
     return {}
@@ -461,10 +414,6 @@ class Engine {
 
     // Return result
     return Object.keys(diff).length ? diff : null
-  }
-
-  isModifying () {
-    return this.state === STATE_MODIFY
   }
 }
 

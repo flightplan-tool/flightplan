@@ -4,6 +4,7 @@ const moment = require('moment')
 const path = require('path')
 
 const db = require('../shared/db')
+const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
 const utils = require('../shared/utils')
@@ -18,7 +19,7 @@ async function cleanupResources (yes, verbose) {
   // Iterate over requests
   console.log('Scanning data resources...')
   const associatedFiles = new Set()
-  await db.db().each('SELECT * FROM awards_requests', (err, row) => {
+  db.db().each('SELECT * FROM requests', (err, row) => {
     if (err) {
       throw new Error('Could not scan search requests: ' + err)
     }
@@ -68,7 +69,7 @@ async function cleanupResources (yes, verbose) {
 async function cleanupRequests (yes, verbose) {
   console.log('Scanning search requests...')
   const requests = []
-  await db.db().each('SELECT * FROM awards_requests', (err, row) => {
+  db.db().each('SELECT * FROM requests', (err, row) => {
     if (err) {
       throw new Error('Could not scan search requests: ' + err)
     }
@@ -157,7 +158,7 @@ const main = async (args) => {
   try {
     // Open the database
     console.log('Opening database...')
-    await db.open()
+    db.open()
 
     // Cleanup resources
     const { resources } = await cleanupResources(yes, verbose)
@@ -175,11 +176,12 @@ const main = async (args) => {
     console.log('    Deleted Requests: ' + requests.length)
     console.log('    Deleted Resources: ' + resources.length)
     console.log('    Redundant Requests: ' + redundant.length)
-  } catch (e) {
-    console.error(e)
+  } catch (err) {
+    logger.error(err.message)
+    console.error(err)
     process.exit(1)
   } finally {
-    await db.close()
+    db.close()
   }
 }
 

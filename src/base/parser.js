@@ -1,11 +1,8 @@
 const cheerio = require('cheerio')
-const fs = require('fs')
-const path = require('path')
-const zlib = require('zlib')
+const moment = require('moment')
 
 const helpers = require('../helpers')
 const logging = require('../logging')
-const utils = require('../../shared/utils')
 
 class Parser {
   constructor (parent) {
@@ -13,42 +10,147 @@ class Parser {
     this.config = parent.config
   }
 
-  _parse (request) {
-    const {
-      htmlFile,
-      fileCount,
-      fromCity,
-      toCity,
-      departDate,
-      returnDate,
-      quantity
-    } = request
+  _parse (results) {
+    const { query, json, html } = results
+    let ret
 
-    // Iterate through each HTML file in the request
-    let awards = []
-    for (let index = 0; index < fileCount; index++) {
-      let ret
+    // Parse any HTML assets
+    if (html) {
+      html.forEach(x => { x.$ = cheerio.load(x.contents) })
+    }
 
-      ret = this.loadFile(htmlFile, index)
-      if (ret && ret.error) {
-        return ret
-      }
+    // Call implementation-specific parser
+    ret = this.parse(query, { json, html })
+    if (ret && ret.error) {
+      return ret
+    }
 
-      // Load html into parser
-      const $ = cheerio.load(ret.html)
-
-      // Call implementation-specific parser
-      ret = this.parse(request, $, ret.html, index)
-      if (ret && ret.error) {
-        return ret
-      }
-      awards.push(...ret.awards)
+    // Normalize and validate awards
+    ret = this.normalizeAwards(query, ret.awards)
+    if (ret && ret.error) {
+      return ret
     }
 
     // Combine awards for the same flight
+    ret.awards = this.simplifyAwards(ret.awards)
+
+    return ret
+  }
+
+  normalizeAwards (query, awards) {
+    // Fill in awards with common info
+    for (const award of awards) {
+      const error = this.normalizeAward(query, award)
+      if (error) {
+        return { awards, error }
+      }
+    }
+    return { awards }
+  }
+
+  normalizeAward (query, award) {
+    const {
+      engine,
+      partner,
+      fromCity,
+      toCity,
+      departure,
+      arrival,
+      duration,
+      cabin,
+      mixed,
+      stops,
+      quantity,
+      fares,
+      segments
+    } = award
+
+    // Check that segments is not empty
+    if (!segments || !segments.length) {
+      return `Missing segments for award: ${award}`
+    }
+    const first = segments[0]
+    const last = segments[segments.length - 1]
+
+    // Check each segment first
+    for (const segment of segments) {
+      // Check required information
+      const {
+        airline,
+        flight,
+        aircraft,
+        fromCity,
+        toCity,
+        departure,
+        arrival,
+        duration,
+        connectionTime,
+        cabin,
+        stops,
+        lagDays
+      } = segment
+
+      // Check required information
+      if (!this.validAirlineCode(airline)) {
+        return `Award has invalid airline code in segment: ${segment}`
+      }
+      if (flight === undefined) {
+        return `Award is missing property 'flight' in segment: ${segment}`
+      }
+      if (aircraft === undefined) {
+        return `Award is missing property 'aircraft' in segment: ${segment}`
+      }
+      if (!this.validAirportCode(fromCity)) {
+        return `Award has invalid origin airport code in segment: ${segment}`
+      }
+      if (!this.validAirportCode(toCity)) {
+        return `Award has invalid destination airport code in segment: ${segment}`
+      }
+      if (departure === undefined || !departure.isValid()) {
+        return `Award has invalid departure in segment: ${segment}`
+      }
+      if (arrival === undefined || !arrival.isValid()) {
+        return `Award has invalid arrival in segment: ${segment}`
+      }
+      if (duration === undefined) {
+        return `Award is missing property 'duration' in segment: ${segment}`
+      }
+      if (cabin === undefined) {
+        return `Award is missing property 'cabin' in segment: ${segment}`
+      }
+
+      // Fill in defaults
+      segment.connectionTime = connectionTime || moment.duration(0)
+      segment.stops = stops || 0
+      segment.lagDays = lagDays || 0
+    }
+
+    // Check required information
+    if (duration === undefined) {
+      return `Award is missing property 'duration': ${award}`
+    }
+    if (fares === undefined) {
+      return `Award is missing property 'fares': ${award}`
+    }
+
+    // Fill in defaults
+    award.engine = engine || query.engine
+    award.partner = partner || this.partnerAward(query.engine, segments)
+    award.fromCity = fromCity || first.fromCity
+    award.toCity = toCity || last.toCity
+    award.departure = departure || first.departure
+    award.arrival = arrival || last.arrival
+    award.cabin = cabin || this.bestCabin(segments)
+    award.mixed = mixed || this.mixedCabin(segments)
+    award.stops = stops || this.totalStops(segments)
+    award.quantity = quantity || query.quantity
+  }
+
+  simplifyAwards (awards) {
+    // Group awards by list of segments and quantity
     const map = new Map()
     awards.forEach(award => {
-      const key = [award.flight, award.quantity].join('|')
+      const key = [...award.segments.map(x => x.flight), award.quantity, award.mileage].join('|')
       let arr = map.get(key)
       if (!arr) {
         arr = []
@@ -56,7 +158,9 @@ class Parser {
       }
       arr.push(award)
     })
-    awards = [...map.values()].map(arr => {
+
+    // Combine fare codes for all awards with the same key
+    return [...map.values()].map(arr => {
       const fares = []
       const set = new Set()
       for (const award of arr) {
@@ -69,75 +173,6 @@ class Parser {
       }
       arr[0].fares = fares.join(' ')
       return arr[0]
-    })
-
-    // If no awards were found for a segment, add a placeholder indicating so
-    this.noAwardFound(request, awards, fromCity, toCity, departDate)
-    this.noAwardFound(request, awards, toCity, fromCity, returnDate)
-
-    // Fill in awards with common info
-    awards.forEach(x => {
-      if (x.engine === undefined) {
-        x.engine = this.config.id
-      }
-      if (x.airline === undefined) {
-        x.airline = this.config.id
-      }
-      if (x.quantity === undefined) {
-        x.quantity = quantity
-      }
-    })
-
-    return { awards }
-  }
-
-  loadFile (htmlFile, index) {
-    // Update the filename based on index
-    if (index > 0) {
-      htmlFile = utils.appendPath(htmlFile, '-' + index)
-    }
-
-    // Does the file exist?
-    if (!fs.existsSync(htmlFile)) {
-      return { error: `Request is missing HTML file: ${htmlFile}` }
-    }
-
-    // Read file, and decompress if necessary
-    let html = fs.readFileSync(htmlFile)
-    if (path.extname(htmlFile) === '.gz') {
-      html = zlib.gunzipSync(html)
-    }
-
-    // Check if it was blocked
-    if (this.isBlocked(html)) {
-      return { error: 'Search was blocked' }
-    }
-
-    return { html }
-  }
-
-  noAwardFound (request, awards, fromCity, toCity, date) {
-    const { cabin } = request
-
-    // If no date, nothing to check...
-    if (!date) {
-      return
-    }
-
-    // Check if any awards for this segment were found
-    if (awards.find(x => (
-      x.fromCity === fromCity &&
-      x.toCity === toCity &&
-      x.date === date
-    ))) { return }
-
-    // If awards is empty, add a placeholder indicating nothing was found
-    awards.push({
-      fromCity,
-      toCity,
-      date,
-      cabin,
-      fares: ''
     })
   }
 }

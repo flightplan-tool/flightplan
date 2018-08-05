@@ -32,7 +32,7 @@ module.exports = class extends Engine {
     return this.retry(async () => {
       try {
         await page.waitFor('#navLoginForm, li.memberName', { visible: true, timeout: 1000 })
-      } catch (e) {}
+      } catch (err) {}
       return !(await page.$('#navLoginForm'))
     })
   }
@@ -189,7 +189,7 @@ async function setRegionLanguage (engine, region, lang) {
       await page.click(selModal + ' button[type="submit"]')
       await page.waitFor(1000)
     }
-  } catch (e) {}
+  } catch (err) {}
 }
 
 async function chooseDateTab (engine, selector, newDate) {

@@ -1,6 +1,6 @@
+const Database = require('better-sqlite3')
 const fs = require('fs')
 const path = require('path')
-const sqlite = require('sqlite')
 
 const paths = require('./paths')
 
@@ -10,14 +10,14 @@ function db () {
   return _db
 }
 
-async function open () {
+function open () {
   if (!_db) {
-    _db = await sqlite.open(paths.database, { Promise })
+    _db = new Database(paths.database)
   }
   return _db
 }
 
-async function migrate () {
+function migrate () {
   if (fs.existsSync(paths.database)) {
     return
   }
@@ -31,90 +31,119 @@ async function migrate () {
 
   // Create the database, and tables
   try {
-    _db = await open()
-    await createTable('awards_requests', [
+    _db = open()
+    createTable('requests', [
       'id INTEGER PRIMARY KEY ASC',
       'engine TEXT NOT NULL',
+      'partners BOOLEAN NOT NULL',
       'fromCity TEXT NOT NULL',
       'toCity TEXT NOT NULL',
       'departDate TEXT NOT NULL',
       'returnDate TEXT',
       'cabin TEXT',
       'quantity INTEGER DEFAULT 0',
-      'htmlFile TEXT NOT NULL',
-      'fileCount INTEGER DEFAULT 1',
+      'assets TEXT NOT NULL',
       'updatedAt TEXT DEFAULT CURRENT_TIMESTAMP'
     ])
-    await createTable('awards', [
+    createTable('awards', [
       'id INTEGER PRIMARY KEY ASC',
+      'requestId INTEGER',
       'engine TEXT NOT NULL',
+      'partner BOOLEAN NOT NULL',
       'fromCity TEXT NOT NULL',
       'toCity TEXT NOT NULL',
       'date TEXT NOT NULL',
+      'departure TEXT',
+      'arrival TEXT',
       'cabin TEXT NOT NULL',
-      'quantity INTEGER DEFAULT 0',
-      'airline TEXT',
-      'flight TEXT',
-      'aircraft TEXT',
+      'mixed BOOLEAN NOT NULL',
+      'duration TEXT',
+      'stops INTEGER DEFAULT 0',
+      'quantity INTEGER DEFAULT 1',
+      'mileage INTEGER',
+      'fees INTEGER',
       'fares TEXT',
       'updated_at TEXT DEFAULT CURRENT_TIMESTAMP'
     ])
-    await createTable('cookies', [
+    createTable('segments', [
       'id INTEGER PRIMARY KEY ASC',
-      'name TEXT NOT NULL',
-      'domain TEXT NOT NULL',
-      'path TEXT NOT NULL',
-      'value TEXT NOT NULL',
-      'updatedAt TEXT DEFAULT CURRENT_TIMESTAMP'
+      'awardId INTEGER',
+      'position INTEGER NOT NULL',
+      'airline TEXT NOT NULL',
+      'flight TEXT NOT NULL',
+      'aircraft TEXT',
+      'fromCity TEXT NOT NULL',
+      'toCity TEXT NOT NULL',
+      'date TEXT NOT NULL',
+      'departure TEXT NOT NULL',
+      'arrival TEXT NOT NULL',
+      'duration TEXT',
+      'connectionTime TEXT',
+      'cabin TEXT NOT NULL',
+      'stops INTEGER DEFAULT 0',
+      'lagDays INTEGER DEFAULT 0',
+      'bookingCode TEXT',
+      'updated_at TEXT DEFAULT CURRENT_TIMESTAMP'
     ])
-  } catch (e) {
-    throw new Error('Database migration failed')
+  } catch (err) {
+    throw new Error(`Database migration failed: ${err.message}`)
   }
 }
 
 function createTable (tableName, columns) {
-  return _db.run(`CREATE TABLE ${tableName} (${columns.join(',')})`)
+  return _db.prepare(`CREATE TABLE ${tableName} (${columns.join(',')})`).run()
 }
 
-async function loadCookies () {
-  return (await _db.all('select * from cookies')).map(x => JSON.parse(x.value))
-}
-
-async function saveCookies (cookies) {
-  // cookies = cookies.filter(x => !x.session)
-  for (const cookie of cookies) {
-    const { name, domain, path } = cookie
-    await _db.run('INSERT OR REPLACE INTO cookies (id, name, domain, path, value) VALUES ' +
-      '((SELECT id FROM cookies WHERE name = ? AND domain = ? AND path = ?), ?, ?, ?, ?)',
-      name, domain, path, name, domain, path, JSON.stringify(cookie))
-  }
-}
-
-function insertRow (table, row, filter) {
-  if (filter) {
-    row = Object.keys(row).filter(key => filter.includes(key))
-      .reduce((obj, key) => {
-        obj[key] = row[key]
-        return obj
-      }, {})
-  }
+function insertRow (table, row) {
   const entries = Object.entries(row)
   const colNames = entries.map(x => x[0])
-  const colVals = entries.map(x => x[1])
+  const colVals = entries.map(x => coerceType(x[1]))
   const sql = `INSERT INTO ${table} (${colNames.join(',')}) VALUES (${colVals.map(x => '?').join(',')})`
-  return _db.run(sql, ...colVals)
+  return _db.prepare(sql).run(...colVals)
 }
 
-async function count (table) {
-  const result = await _db.get(`SELECT count(*) FROM ${table}`)
+function coerceType (val) {
+  switch (typeof val) {
+    case 'boolean':
+      return val ? 1 : 0
+    case 'object':
+      if (val !== null && val.constructor) {
+        switch (val.constructor.name) {
+          case 'Moment':
+            return val.format('YYYY-MM-DD HH:mm:ss')
+          case 'Duration':
+            return val.toISOString()
+          default:
+            return val
+        }
+      }
+      return val
+  }
+  return val
+}
+
+function count (table) {
+  const result = _db.prepare(`SELECT count(*) FROM ${table}`).get()
   return result ? result['count(*)'] : undefined
 }
 
-async function close () {
+function close () {
   if (_db) {
-    await _db.close()
+    _db.close()
     _db = null
   }
+}
+
+function begin () {
+  _db.prepare('BEGIN').run()
+}
+
+function commit () {
+  _db.prepare('COMMIT').run()
+}
+
+function rollback () {
+  _db.prepare('ROLLBACK').run()
 }
 
 module.exports = {
@@ -122,9 +151,11 @@ module.exports = {
   open,
   migrate,
   createTable,
-  loadCookies,
-  saveCookies,
   insertRow,
+  coerceType,
   count,
-  close
+  close,
+  begin,
+  commit,
+  rollback
 }
