@@ -3,18 +3,22 @@ const moment = require('moment')
 
 const fp = require('../src')
 const db = require('../shared/db')
+const logger = require('../shared/logger')
 
 const app = express()
 const port = process.env.PORT || 5000
 
 app.get('/api/config', async (req, res, next) => {
   try {
-    // Insert each airline
-    const airlines = fp.supported().map((id) => {
+    // Insert each website engine
+    const engines = fp.supported().map((id) => {
       const config = fp.new(id).config
-      const { name, fares } = config
-      return { id, name, fares }
+      const { name, website, fares } = config
+      return { id, name, website, fares }
     })
+
+    // Get list of all airlines
+    const airlines = fp.airlines
 
     // Specify the available cabin options
     const cabins = [
@@ -24,7 +28,7 @@ app.get('/api/config', async (req, res, next) => {
       { value: fp.cabins.economy, label: 'Economy' }
     ]
 
-    res.send({airlines, cabins})
+    res.send({engines, airlines, cabins})
   } catch (err) {
     next(err)
   }
@@ -92,7 +96,15 @@ app.get('/api/search', async (req, res, next) => {
     }
 
     // Run SQL query
+    console.time('search')
     let awards = db.db().prepare(query).all(...params)
+
+    // Fetch segments for each award
+    const stmt = db.db().prepare('SELECT * FROM segments WHERE awardId = ?')
+    for (const award of awards) {
+      award.segments = stmt.all(award.id)
+    }
+    console.timeEnd('search')
 
     res.send(awards)
   } catch (err) {
@@ -100,17 +112,19 @@ app.get('/api/search', async (req, res, next) => {
   }
 })
 
-// Launch the Node.js app
-function run () {
-  console.log(`Running web server on port: ${port}`)
-  return app.listen(port)
+const main = async () => {
+  try {
+    // Open database
+    console.log('Opening database...')
+    db.open()
+
+    // Launch Express server
+    console.log(`Running web server on port: ${port}`)
+    await app.listen(port)
+    console.log('Success!')
+  } catch (err) {
+    logger.error(err)
+  }
 }
 
-// First, try to open the database
-console.log('Opening database...')
-db.open()
-  // Update db schema to the latest version using SQL-based migrations
-  // .then(() => db.migrate({ force: 'last' }))
-  .then(() => run())
-  .then(() => console.log('Success!'))
-  .catch((err) => console.error(err.stack))
+main()

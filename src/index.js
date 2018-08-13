@@ -1,4 +1,5 @@
 const consts = require('./consts')
+const data = require('./data')
 const Engine = require('./base')
 
 const engines = {
@@ -26,5 +27,6 @@ module.exports = {
     return airline ? set.includes(airline) : set
   },
 
-  ...consts
+  ...consts,
+  ...data
 }
