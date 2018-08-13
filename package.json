@@ -12,7 +12,7 @@
     "server": "nodemon bin/cli-server.js",
     "dev": "concurrently --kill-others-on-fail -p \"[{name}]\" -n \"CLIENT,SERVER\" -c \"black.bgBlue.bold,black.bgGreen.bold\" \"yarn client\" \"yarn server\""
   },
-  "repository": "https://github.com/jd20/flightplan",
+  "repository": "https://github.com/flightplan-tool/flightplan",
   "author": "JD",
   "license": "MIT",
   "private": false,
