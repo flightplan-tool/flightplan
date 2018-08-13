@@ -1,0 +1,212 @@
+.modal {
+  max-width: none;
+  padding: 20px 20px 0 20px;
+  background-color: #fff;
+}
+
+.modal img {
+  width: 49px;
+  height: 49px;
+}
+
+.modal h2, h3, h4 {
+  display: inline-block;
+  text-transform: none;
+  color: black;
+}
+
+.modal table {
+  margin-bottom: 20px;
+}
+
+.modal td {
+  padding: 15px;
+}
+
+.modal table, .modal td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+.modal thead {
+  background-color: #eaeaea;
+}
+
+.modal .heading {
+  display: flex;
+}
+
+.modal .heading div {
+  margin-left: 15px;
+}
+
+.modal .heading h2 {
+  font-weight: bold;
+  font-style: normal;
+  line-height: 24px;
+  margin: 0 0 6px 0;
+}
+
+.modal .heading p {
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0;
+}
+
+.modal .trip {
+  padding-bottom: 0;
+}
+
+.modal .flight {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.modal .overview {
+  min-width: 80px;
+}
+
+.modal .overview p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.modal .overview img {
+  margin-bottom: 5px;
+}
+
+.modal .overview .duration {
+  font-size: 18px;
+}
+
+.modal .identifier {
+  min-width: 130px;
+  text-align: center;
+  margin: 0 15px 0 15px;
+  padding-top: 2px;
+}
+
+.modal .identifier h1 {
+  font-size: 36px;
+  font-weight: bold;
+  font-style: normal;
+  color: black;
+  margin-bottom: 12px;
+}
+
+.modal .identifier p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.modal .identifier .mixed {
+  font-size: 14px;
+  margin: 0;
+}
+
+.modal .schedule {
+  min-width: 240px;
+  text-align: center;
+  padding-top: 14px;
+  margin-right: 10px;
+}
+
+.modal .times {
+  display: flex;
+  justify-content: center;
+}
+
+.modal .departure {
+  margin: 0 14px 12px 0;
+}
+
+.modal .arrival {
+  margin: 0 0 12px 14px;
+  position: relative;
+}
+
+.modal .departure, .modal .arrival, .modal .lag {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.modal .lag {
+  color: red;
+  position: absolute;
+  top: 0px;
+  text-align: left;
+  right: -30px;
+}
+
+.modal .schedule .cities {
+  display: flex;
+  justify-content: center;
+}
+
+.modal .origin, .destination {
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0;
+}
+
+.modal .schedule .duration {
+  width: 60px;
+  border-top: 3px solid black;
+  font-size: 14px;
+  font-weight: 300;
+  margin: 9px 10px 0 10px;
+  padding-top: 14px;
+}
+
+.modal .no-results {
+  min-width: 490px;
+  margin-bottom: 15px;
+}
+
+.modal .award {
+  color: white;
+  text-align: center;
+  width: 140px;
+}
+
+.modal .award .name {
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.modal .award h1 {
+  font-size: 36px;
+  line-height: 36px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.modal .award h2 {
+  font-size: 24px;
+  line-height: 8px;
+  font-weight: 600;
+  color: white;
+}
+
+.modal .award p {
+  font-size: 14px;
+  font-weight: 200;
+  line-height: 7px;
+}
+
+.modal .award h2 {
+  position: relative;
+}
+
+.modal .warning {
+  position: absolute;
+  width: 100px;
+  top: 30px;
+  font-size: 18px;
+  font-weight: normal;
+  font-style: normal;
+  line-height: normal;
+  color: black;
+}

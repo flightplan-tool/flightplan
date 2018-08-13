@@ -23,6 +23,15 @@ class SearchForm extends Component {
   render () {
     const { searchStore } = this.props
     const passengerOptions = [...Array(10).keys()].map(x => ({ value: x + 1, label: (x + 1).toString() }))
+    const stopsOptions = [
+      {value: -1, label: 'Any number of stops'},
+      {value: 0, label: 'Nonstop only'},
+      {value: 1, label: '1 stop or fewer'},
+      {value: 2, label: '2 stops or fewer'},
+      {value: 3, label: '3 stops or fewer'},
+      {value: 4, label: '4 stops or fewer'},
+      {value: 5, label: '5 stops or fewer'}
+    ]
 
     return (
       <form className='searchForm'>
@@ -96,7 +105,7 @@ class SearchForm extends Component {
           </div>
         </fieldset>
 
-        <fieldset className='classes'>
+        <fieldset className='cabins'>
           <h4>Cabin Classes</h4>
 
           <div className='grid'>
@@ -129,17 +138,10 @@ class SearchForm extends Component {
             />
 
             <CheckBox
-              label='Include Waitlisted Awards'
-              checked={searchStore.showWaitlisted}
-              onChange={(e) => { searchStore.update({ showWaitlisted: e.target.checked }) }}
-              style={{ gridArea: 'showWaitlisted' }}
-            />
-
-            <CheckBox
-              label='Include Non-Saver Awards'
-              checked={searchStore.showNonSaver}
-              onChange={(e) => { searchStore.update({ showNonSaver: e.target.checked }) }}
-              style={{ gridArea: 'showNonSaver' }}
+              label='Include Mixed Cabin Awards'
+              checked={searchStore.showMixedCabin}
+              onChange={(e) => { searchStore.update({ showMixedCabin: e.target.checked }) }}
+              style={{ gridArea: 'showMixedCabin' }}
             />
 
             <label style={{ gridArea: 'passengersLabel' }}>Passengers</label>
@@ -163,6 +165,58 @@ class SearchForm extends Component {
                   menu: (base, state) => ({
                     ...base,
                     width: '105px'
+                  }),
+                }}
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className='options'>
+          <div className='grid'>
+            <CheckBox
+              label='Include Partner Awards'
+              checked={searchStore.showPartner}
+              onChange={(e) => { searchStore.update({ showPartner: e.target.checked }) }}
+              style={{ gridArea: 'showPartner' }}
+            />
+
+            <CheckBox
+              label='Include Waitlisted Awards'
+              checked={searchStore.showWaitlisted}
+              onChange={(e) => { searchStore.update({ showWaitlisted: e.target.checked }) }}
+              style={{ gridArea: 'showWaitlisted' }}
+            />
+
+            <CheckBox
+              label='Include Non-Saver Awards'
+              checked={searchStore.showNonSaver}
+              onChange={(e) => { searchStore.update({ showNonSaver: e.target.checked }) }}
+              style={{ gridArea: 'showNonSaver' }}
+            />
+
+            <label style={{ gridArea: 'stopsLabel' }}>Stops</label>
+            <div style={{ gridArea: 'stops' }}>
+              <Select
+                name='stops'
+                defaultValue={stopsOptions.find(x => x.value === searchStore.maxStops)}
+                onChange={(e) => { searchStore.update({ maxStops: e.value }) }}
+                options={stopsOptions}
+                isSearchable={false}
+                styles={{
+                  control: (base, state) => ({
+                    ...base,
+                    fontSize: '13px',
+                    height: '25px',
+                    width: '187px',
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    fontSize: '13px'
+                  }),
+                  menu: (base, state) => ({
+                    ...base,
+                    width: '187px'
                   }),
                 }}
               />
@@ -226,17 +280,17 @@ class SearchForm extends Component {
 
   renderResultCount () {
     const { searchStore } = this.props
-    const { awards, airlineInfo } = searchStore
+    const { awards, engineInfo } = searchStore
 
     let total = 0
     const counts = new Map()
     for (const award of awards) {
       // Get counts for airline
-      const { airline, fares } = award
-      if (!counts.has(airline)) {
-        counts.set(airline, new Map())
+      const { engine, fares } = award
+      if (!counts.has(engine)) {
+        counts.set(engine, new Map())
       }
-      const subCounts = counts.get(airline)
+      const subCounts = counts.get(engine)
 
       // Update for each fare code
       if (fares.length > 0) {
@@ -250,10 +304,10 @@ class SearchForm extends Component {
 
     // Convert count map to an array
     const entries = []
-    for (const airline of [...counts.keys()].sort()) {
-      const subCounts = counts.get(airline)
+    for (const engine of [...counts.keys()].sort()) {
+      const subCounts = counts.get(engine)
       const awards = new Set([...subCounts.keys()].map(x => x.slice(0, -1)))
-      const fares = airlineInfo.get(airline).fares
+      const fares = engineInfo.get(engine).fares
       for (const fare of fares.filter(x => awards.has(x.code))) {
         for (const code of [fare.code + '+', fare.code + '@']) {
           if (subCounts.has(code)) {
@@ -262,8 +316,8 @@ class SearchForm extends Component {
             codeLbl += ` (${code})`
 
             entries.push(
-              <p key={airline + '|' + code}>
-                {airline + ' ' + codeLbl}:{' '}
+              <p key={engine + '|' + code}>
+                {engine + ' ' + codeLbl}:{' '}
                 <em>{subCounts.get(code)}</em>
               </p>
             )

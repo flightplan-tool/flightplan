@@ -10,24 +10,30 @@ function flightKey(flight) {
 
 export default class SearchStore {
   // Query parameters
-  @observable fromCity = 'SFO'
-  @observable toCity = 'HKG'
-  @observable quantity = 1
-  @observable direction = 'roundtrip'
-  @observable cabinClasses = ['first']
-  @observable showWaitlisted = true
-  @observable showNonSaver = true
-  @observable startDate = moment().add(1, 'd')
-  @observable endDate = moment().add(1, 'y')
+  @observable fromCity
+  @observable toCity
+  @observable showPartner
+  @observable showWaitlisted
+  @observable showNonSaver
+  @observable maxStops = -1
+  @observable quantity
+  @observable direction
+  @observable cabinClasses
+  @observable showMixedCabin
+  @observable startDate
+  @observable endDate
   @observable selectedAirlines = observable.map()
   @observable selectedFlights = observable.map()
 
   // Search state
   @observable loading = false
-  @observable _results = []
+  _results = observable.array([], {deep: false})
 
   constructor (configStore) {
     this.configStore = configStore
+
+    // Load saved settings from local storage
+    this.loadSettings()
 
     // Execute search query whenever it is updated, and valid
     autorun(() => {
@@ -37,9 +43,9 @@ export default class SearchStore {
     })
   }
 
-  // Results, filtered by cabin classes / waitlist / saver
+  // Results, filtered by cabin classes / options
   @computed get results () {
-    const { showWaitlisted, showNonSaver } = this
+    const { showPartner, showWaitlisted, showNonSaver, showMixedCabin, maxStops } = this
     const { configStore } = this
     
     // Check if config is loaded yet
@@ -49,7 +55,7 @@ export default class SearchStore {
 
     // Keep a map of fare info for faster lookup
     const fareInfo = new Map()
-    configStore.config.airlines.forEach((airline) => {
+    configStore.engines.forEach((airline) => {
       const { id, fares } = airline
       fareInfo.set(id, fares.reduce((map, fare) => {
         map.set(fare.code, fare)
@@ -58,30 +64,44 @@ export default class SearchStore {
     })
 
     // Filter results
-    return this._results.map(result => {
-      let { engine, fares } = result
-      const map = fareInfo.get(engine)
+    return this._results
+      .filter(result => (
+        (showPartner || result.partner === 0) &&
+        (showMixedCabin || result.mixed === 0) &&
+        (maxStops < 0 || result.stops <= maxStops)
+      ))
+      .map(result => {
+        let { engine, fares } = result
+        const map = fareInfo.get(engine)
 
-      if (fares.length > 0) {
-        fares = fares.split(' ').filter(code => {
-          const fare = map.get(code.slice(0, -1))
-          return (
-            (showNonSaver || fare.saver) &&
-            (showWaitlisted || !code.includes('@'))
-          )
-        }).join(' ')
-      }
-      return { ...result, fares }
-    })
+        if (fares.length > 0) {
+          fares = fares.split(' ').filter(code => {
+            const fare = map.get(code.slice(0, -1))
+            return (
+              (showNonSaver || fare.saver) &&
+              (showWaitlisted || !code.includes('@'))
+            )
+          }).join(' ')
+        }
+        return { ...result, fares }
+      })
   }
 
   // Results, filtered by selected airlines / flights
   @computed get awards () {
     // Results for filtered airlines are removed completely, while results
     // for filtered flights have their awards cleared
-    return this.results.filter(x => this.getAirline(x.airline)).map(x => {
-      return !this.getFlight(x) ? { ...x, fares: '' } : x
-    })
+    const filteredByAirline = (result) => {
+      return !result.segments.find(x => !this.getAirline(x.airline))
+    }
+    const filteredByFlight = (result) => {
+      return (result.segments.find(x => !this.getFlight(x)))
+        ? { ...result, fares: '' }
+        : result
+    }
+    return this.results
+      .filter(x => filteredByAirline(x))
+      .map(x => filteredByFlight(x))
   }
 
   @computed get airlineInfo () {
@@ -95,45 +115,49 @@ export default class SearchStore {
     return map
   }
 
-  @computed get airlines () {
-    const { airlineInfo } = this
-    let ret = new Set([...this.results.map(x => x.airline).filter(x => !!x)])
-    ret = [...ret.values()].map(x => (
-      {code: x, name: airlineInfo.get(x).name}
-    ))
-    ret.sort((x, y) => strcmp(x.name, y.name))
-    return ret
+  @computed get engineInfo () {
+    const map = new Map()
+    const engines = this.configStore.engines
+    if (engines) {
+      for (const engine of engines) {
+        map.set(engine.id, engine)
+      }
+    }
+    return map
   }
 
   @computed get flights () {
-    let ret = []
-    for (const result of this.results) {
+    const segments = this.results.reduce((arr, award) => arr.concat(award.segments), [])
+    const map = new Map()
+    for (const segment of segments) {
       let f = {
-        airline: result.airline,
-        flight: result.flight,
-        aircraft: result.aircraft
+        airline: segment.airline,
+        flight: segment.flight,
+        aircraft: segment.aircraft
       }
-      if (Object.values(f).findIndex(x => !x) !== -1) {
-        continue
-      }
-      if (!ret.find(x => (
-        x.flight === f.flight && x.aircraft === f.aircraft
-      ))) {
-        ret.push(f)
-      }
+      map.set([f.airline, f.flight, f.aircraft].join('|'), f)
     }
-    ret.sort((x, y) => strcmp(x.flight, y.flight, x.aircraft, y.aircraft))
+    return [...map.values()].sort((x, y) => strcmp(x.flight, y.flight, x.aircraft, y.aircraft))
+  }
+
+  @computed get airlines () {
+    const { airlineInfo } = this
+    let ret = new Set([...this.flights.map(x => x.airline).filter(x => !!x)])
+    ret = [...ret.values()].map(x => (
+      { code: x, name: airlineInfo.has(x) ? airlineInfo.get(x).name : x }
+    ))
+    ret.sort((x, y) => strcmp(x.name, y.name))
     return ret
   }
 
   // Build a legend, mapping fare codes to colors
   @computed get legend () {
     const map = new Map()
-    const { airlineInfo } = this
+    const { engineInfo } = this
 
     for (const award of this.awards) {
-      const { airline } = award
-      const { name, fares } = airlineInfo.get(airline)
+      const { engine } = award
+      const { website, fares } = engineInfo.get(engine)
 
       // If empty, skip
       if (award.fares.length === 0) {
@@ -141,14 +165,14 @@ export default class SearchStore {
       }
 
       // Initialize the data for an airline
-      if (!map.has(airline)) {
-        map.set(airline, {
-          key: airline, name, fares, awards: new Set()
+      if (!map.has(engine)) {
+        map.set(engine, {
+          key: engine, name: website, fares, awards: new Set()
         })
       }
 
       // Add the award
-      const { awards } = map.get(airline)
+      const { awards } = map.get(engine)
       award.fares.split(' ').forEach(code => {
         awards.add(code.slice(0, -1))
       })
@@ -161,8 +185,16 @@ export default class SearchStore {
       // Generate sorted list of awards, based on search results
       const { fares, awards } = data
       data.fares = []
-      for (const fare of fares.filter(x => awards.has(x.code))) {
+      for (const fare of fares) {
         const { code, name } = fare
+
+        // If we don't have awards for this fare, just increment the palette index and move on
+        if (!awards.has(code)) {
+          idx++
+          continue
+        }
+
+        // Add an entry to the legend
         data.fares.push({
           key: code + '+',
           name: `${name} (${code}+)`,
@@ -269,6 +301,9 @@ export default class SearchStore {
   }
 
   buildQuery () {
+    // Save the query parameters to local storage
+    this.saveSettings()
+
     // Build query object
     const { quantity, direction, cabinClasses } = this
     const query = {
@@ -301,5 +336,93 @@ export default class SearchStore {
       })
       .then(json => this.setResults(json))
       .catch(err => console.error(err))
+  }
+
+  loadSettings () {
+    const defaults = {
+      fromCity: '',
+      toCity: '',
+      showPartner: true,
+      showWaitlisted: true,
+      showNonSaver: true,
+      quantity: 1,
+      direction: 'roundtrip',
+      cabinClasses: ['first'],
+      showMixedCabin: true,
+      startDate: moment().add(1, 'd'),
+      endDate: moment().add(1, 'y')
+    }
+    for (const [key, defaultVal] of Object.entries(defaults)) {
+      let val = localStorage.getItem(key)
+      if (val) {
+        switch (key) {
+          case 'fromCity':
+          case 'toCity':
+            val = (typeof val === 'string') ? val : defaultVal
+            break
+          case 'showPartner':
+          case 'showWaitlisted':
+          case 'showNonSaver':
+          case 'showMixedCabin':
+            val = (typeof val === 'boolean') ? val : defaultVal
+            break
+          case 'quantity':
+            val = (typeof val === 'number') ? val : defaultVal
+            break
+          case 'direction':
+            val = ['roundtrip', 'oneway'].includes(val) ? val : defaultVal
+            break
+          case 'cabinClasses':
+            try {
+              val = JSON.parse(val)
+            } catch (err) {
+              val = defaultVal
+            }
+            break
+          case 'startDate':
+          case 'endDate':
+            val = moment(val, 'YYYY-MM-DD')
+            val = val.isValid() ? val : defaultVal
+            break
+          default:
+            val = defaultVal
+        }
+      } else {
+        val = defaultVal
+      }
+      this[key] = val
+    }
+  }
+
+  saveSettings (query) {
+    const values = [
+      'fromCity',
+      'toCity',
+      'showPartner',
+      'showWaitlisted',
+      'showNonSaver',
+      'quantity',
+      'direction',
+      'cabinClasses',
+      'showMixedCabin',
+      'startDate',
+      'endDate'
+    ].reduce((v, key) => {
+      v[key] = this[key]
+      return v
+    }, {})
+    for (let [key, val] of Object.entries(values)) {
+      switch (key) {
+        case 'cabinClasses':
+          val = JSON.stringify(val)
+          break
+        case 'startDate':
+        case 'endDate':
+          val = val.format('YYYY-MM-DD')
+          break
+        default:
+      }
+      localStorage.setItem(key, val)
+    }
   }
 }

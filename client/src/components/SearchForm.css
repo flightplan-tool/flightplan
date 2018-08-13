@@ -64,20 +64,31 @@
   width: 80px;
 }
 
-.classes .grid {
+.cabins .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-areas:  "firstClass       businessClass"
                         "premEconClass    econClass"
-                        "showWaitlisted   showWaitlisted"
-                        "showNonSaver     showNonSaver"
+                        "showMixedCabin   showMixedCabin"
                         "spacer           spacer"
                         "passengersLabel  passengers";
   grid-column-gap: 20px;
   grid-row-gap: 10px;
 }
 
-.classes label {
+.options .grid {
+  display: grid;
+  grid-template-columns: 1fr 3.5fr;
+  grid-template-areas:  "showPartner      showPartner"
+                        "showWaitlisted   showWaitlisted"
+                        "showNonSaver     showNonSaver"
+                        "spacer           spacer"
+                        "stopsLabel       stops";
+  grid-column-gap: 20px;
+  grid-row-gap: 10px;
+}
+
+.cabins label, .options label {
   align-self: center;
 }
 

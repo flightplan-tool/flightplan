@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
+import Modal from 'react-responsive-modal'
 import { autorun } from 'mobx'
 import { inject } from 'mobx-react'
 import * as d3 from 'd3'
 import d3Tip from "d3-tip"
 
 import * as utilities from '../lib/utilities'
+import Awards from './Awards'
 
 import './Chart.css'
 
@@ -15,8 +17,12 @@ import theme from './theme.json'
 const DURATION = 1000
 const OFFSET = 22
 
-@inject('calendarStore', 'searchStore')
+@inject('calendarStore', 'configStore', 'searchStore')
 class Chart extends Component {
+  state = {
+    showAwards: null
+  }
+
   componentDidMount () {
     const { data } = this.props.calendarStore
     this.applyTheme(data)
@@ -32,12 +38,27 @@ class Chart extends Component {
     })
   }
 
-  shouldComponentUpdate () {
+  shouldComponentUpdate (nextProps, nextState) {
+    if (nextState.showAwards !== this.state.showAwards) {
+      return true
+    }
     return false
   }
 
   render () {
-    return <div className='chart' ref={(x) => { this._ref = x }} />
+    const { showAwards } = this.state
+
+    return (
+      <div className='chart' ref={(x) => { this._ref = x }}>
+        <Modal
+          open={!!showAwards}
+          onClose={() => this.setState({ showAwards: null })}
+          classNames={{ modal: 'modal' }}
+        >
+          <Awards data={showAwards} />
+        </Modal>
+      </div>
+    )
   }
 
   // Apply theme colors to the data before transforming to SVG
@@ -65,17 +86,17 @@ class Chart extends Component {
       const { legend } = this.props.searchStore
 
       // For fill color, grab awards from the first airline alphabetically
-      const airline = segment.awards.map(x => x.airline).sort()[0]
+      const engine = segment.awards.map(x => x.engine).sort()[0]
 
-      // Merge all award codes for this airline
-      const awards = segment.awards.filter(x => x.airline === airline)
+      // Merge all award codes for this engine
+      const awards = segment.awards.filter(x => x.engine === engine)
       const codes = awards.reduce((set, award) => {
         award.fares.split(' ').forEach(x => set.add(x))
         return set
       }, new Set())
 
       // Lookup the color from the legend data
-      const section = legend.find(x => x.key === airline)
+      const section = legend.find(x => x.key === engine)
       if (section) {
         const match = section.fares.find(x => codes.has(x.key))
         if (match) {
@@ -160,6 +181,11 @@ class Chart extends Component {
             this.focusEvent(monthIndex, dayIndex, false)
           }
         })
+        .on('click', (d) => {
+          if (d.data.type === 'active') {
+            this.setState({ showAwards: d.data })
+          }
+        })
       group.selectAll('.segment-label text')
         .attr('fill', (d) => d.data.textColor)
       this.addMonthLabels(group, index)
@@ -237,6 +263,7 @@ class Chart extends Component {
       .selectAll('path.awards')
       .on('mouseover.tip', this.tip.show)
       .on('mouseout.tip', this.tip.hide)
+      .style('cursor', 'pointer')
     d3.select(this._ref)
       .selectAll('g.chart-ring')
       .selectAll('path.empty')
@@ -320,7 +347,7 @@ class Chart extends Component {
     const { date, awards } = data
 
     const renderRow = (awards) => {
-      const { airline, flight, fromCity, toCity, aircraft } = awards[0]
+      const { engine, fromCity, toCity } = awards[0]
       
       // Calculate highest quantity available for each fare code
       const fareMap = new Map()
@@ -337,7 +364,7 @@ class Chart extends Component {
         }
 
         // Lookup the color from the legend data
-        const section = legend.find(x => x.key === airline)
+        const section = legend.find(x => x.key === engine)
         if (section) {
           const match = section.fares.find(x => x.key === fareCode)
           if (match) {
@@ -350,16 +377,19 @@ class Chart extends Component {
         return fare
       })
 
+      const { engineInfo } = this.props.searchStore
+      const { name } = engineInfo.get(engine)
+
       return `
         <div class="logo">
-          <img srcset="/images/airlines/${airline.toLowerCase()}_small.png,
-                       /images/airlines/${airline.toLowerCase()}_small@2x.png 2x"
-               src="/images/airlines/${airline.toLowerCase()}_small.png"
+          <img srcset="/images/airlines/${engine.toLowerCase()}_small.png,
+                       /images/airlines/${engine.toLowerCase()}_small@2x.png 2x"
+               src="/images/airlines/${engine.toLowerCase()}_small.png"
                alt="Airline Logo">
         </div>
         <div>
-          <p class="flight"><b>${flight}:</b> ${fromCity} ✈ ${toCity}</p>
-          <p class="aircraft">${aircraft}</p>
+          <p class="flight"><b>${name}:</b></p>
+          <p class="aircraft"></p>
         </div>
         <div class="awards">
           ${fares.map(fare => `<div style="background-color:${fare.color}">${fare.text}</div>`).join('')}
@@ -367,11 +397,11 @@ class Chart extends Component {
       `
     }
 
-    // Convert awards to rows (grouped by flight)
-    const flights = awards.reduce((map, x) => {
-      const arr = map.get(x.flight) || []
+    // Convert awards to rows (grouped by engine)
+    const engines = awards.reduce((map, x) => {
+      const arr = map.get(x.engine) || []
       arr.push(x)
-      map.set(x.flight, arr)
+      map.set(x.engine, arr)
       return map
     }, new Map())
 
@@ -380,8 +410,8 @@ class Chart extends Component {
       <div class="date">
         <h2>${date.format('ll')}</h2>
       </div>
-      ${flights.size === 0 ? '<div class="no-results"><p>Sorry, no awards found!</p></div>' : ''}
-      ${[...flights.entries()].map(row => renderRow(row[1])).join('')}
+      ${engines.size === 0 ? '<div class="no-results"><p>Sorry, no awards found!</p></div>' : ''}
+      ${[...engines.entries()].map(row => renderRow(row[1])).join('')}
     `
   }
 }

@@ -17,9 +17,7 @@
 }
 
 .tooltip {
-  display: grid;
-  grid-template-columns: 49px auto auto;
-  grid-gap: 20px;
+  display: inline-block;
   padding: 20px;
   background-color: #fff;
   box-shadow: 4px 4px 30px 0 rgba(0, 0, 0, 0.6);
