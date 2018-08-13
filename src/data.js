@@ -42,7 +42,7 @@ module.exports = {
     { id: 'NH', name: 'All Nippon Airways' },
     { id: 'NZ', name: 'Air New Zealand' },
     { id: 'OK', name: 'Czech Airlines' },
-    { id: 'OS', name: 'Austrian Airlines AUSTRIAN  Austria ' },
+    { id: 'OS', name: 'Austrian Airlines' },
     { id: 'OU', name: 'Croatia Airlines' },
     { id: 'OZ', name: 'Asiana Airlines' },
     { id: 'PZ', name: 'LATAM Paraguay' },
