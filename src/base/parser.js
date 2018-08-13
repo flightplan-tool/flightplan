@@ -147,10 +147,11 @@ class Parser {
   }
 
   simplifyAwards (awards) {
-    // Group awards by list of segments and quantity
+    // Group awards by list of identifying attributes
     const map = new Map()
     awards.forEach(award => {
-      const key = [...award.segments.map(x => x.flight), award.quantity, award.mileage].join('|')
+      const { segments, cabin, mixed, quantity, mileage } = award
+      const key = [...segments.map(x => x.flight), cabin, mixed, quantity, mileage].join('|')
       let arr = map.get(key)
       if (!arr) {
         arr = []
