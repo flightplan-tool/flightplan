@@ -347,7 +347,7 @@ class Chart extends Component {
     const { date, awards } = data
 
     const renderRow = (awards) => {
-      const { engine, fromCity, toCity } = awards[0]
+      const { engine } = awards[0]
       
       // Calculate highest quantity available for each fare code
       const fareMap = new Map()

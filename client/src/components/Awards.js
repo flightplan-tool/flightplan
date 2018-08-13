@@ -94,7 +94,7 @@ class Awards extends Component {
 
     // Sort itineraries by total duration
     const itineraries = [...map.values()].map(awards => {
-      const { segments } = awards[0]
+      let { segments, duration } = awards[0]
 
       // Determine highest class of service on each award flight
       const { cabins } = this.props.configStore
@@ -102,7 +102,7 @@ class Awards extends Component {
       const bestCabin = awards.map(x => ord.indexOf(x.cabin))
 
       // Compute mixed cabin status for each segment
-      segments.map((segment, i) => {
+      segments = segments.map((segment, i) => {
         const mixedSet = new Set()
         awards.forEach((award, j) => {
           const segmentCabin = ord.indexOf(award.segments[i].cabin)
@@ -126,7 +126,7 @@ class Awards extends Component {
         return { fare, quantity, mileage, mixed, segments }
       })
 
-      return { awards, segments, awardFares }
+      return { awards, segments, awardFares, duration }
     }).sort((x, y) => (x.duration - y.duration))
 
     return (
@@ -194,7 +194,7 @@ class Awards extends Component {
   }
 
   renderSegment (segment, itinerary) {
-    const { airline, flight, aircraft, departure, arrival, fromCity, toCity, duration, stops, lagDays } = segment
+    const { airline, flight, aircraft, mixed, departure, arrival, fromCity, toCity, duration, stops, lagDays } = segment
     const { airlines, engines } = this.props.configStore
     const logo = engines.find(x => x.id === airline) ? airline.toLowerCase() : 'zz'
     const airlineInfo = airlines.find(x => x.id === airline)
@@ -221,6 +221,7 @@ class Awards extends Component {
           <h1>{flight}</h1>
           <p>{airlineName}</p>
           <p>{aircraft}</p>
+          {mixed.length > 0 && <p><span role="img" aria-label="warning">⚠️</span> <em>{mixed.join(', ')}</em></p>}
         </div>
         <div className="schedule">
           <div className="times">
@@ -254,7 +255,7 @@ class Awards extends Component {
             <h1>{quantity}x</h1>
             <h2>
               {mileage === null ? '???' : mileage.toLocaleString()}
-              {mixed && <div className="warning"><span role="img" aria-label="warning">⚠️</span><br />Mixed Cabin</div>}
+              {mixed && <div className="warning"><span role="img" aria-label="warning">⚠️</span><br /><em>Mixed Cabin</em></div>}
             </h2>
           </div>
         )

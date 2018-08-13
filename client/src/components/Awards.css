@@ -210,3 +210,8 @@
   line-height: normal;
   color: black;
 }
+
+.modal em {
+  font-weight: 300;
+  font-style: normal;
+}
