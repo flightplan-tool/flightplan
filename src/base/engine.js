@@ -255,7 +255,7 @@ class Engine {
     if (checkpoint && checkpoint.remaining <= 0) {
       const restMillis = checkpoint.until.diff()
       if (restMillis > 0) {
-        this.warn(`Cool-down period, resuming ${checkpoint.until.fromNow()}`)
+        this.info(`Cool-down period, resuming ${checkpoint.until.fromNow()}`)
         await this.page.waitFor(restMillis)
       }
       checkpoint = null
