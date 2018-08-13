@@ -57,7 +57,7 @@ function migrate () {
       'arrival TEXT',
       'cabin TEXT NOT NULL',
       'mixed BOOLEAN NOT NULL',
-      'duration TEXT',
+      'duration INTEGER',
       'stops INTEGER DEFAULT 0',
       'quantity INTEGER DEFAULT 1',
       'mileage INTEGER',
@@ -77,8 +77,8 @@ function migrate () {
       'date TEXT NOT NULL',
       'departure TEXT NOT NULL',
       'arrival TEXT NOT NULL',
-      'duration TEXT',
-      'connectionTime TEXT',
+      'duration INTEGER',
+      'connectionTime INTEGER',
       'cabin TEXT NOT NULL',
       'stops INTEGER DEFAULT 0',
       'lagDays INTEGER DEFAULT 0',
@@ -112,7 +112,7 @@ function coerceType (val) {
           case 'Moment':
             return val.format('YYYY-MM-DD HH:mm:ss')
           case 'Duration':
-            return val.toISOString()
+            return val.asSeconds()
           default:
             return val
         }

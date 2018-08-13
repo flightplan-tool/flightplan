@@ -188,7 +188,7 @@ module.exports = (Base) => class extends Base {
   }
 
   totalStops (segments) {
-    return segments.map(x => x.stops).reduce((acc, val) => acc + val, 0)
+    return (segments.length - 1) + segments.map(x => x.stops).reduce((acc, val) => acc + val, 0)
   }
 
   partnerAward (engine, segments) {
