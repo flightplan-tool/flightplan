@@ -9,8 +9,7 @@ module.exports = {
     mainURL: 'https://www.ana.co.jp/en/us/',
     searchURL: 'https://aswbe-i.ana.co.jp/international_asw/pages/award/search/roundtrip/award_search_roundtrip_input.xhtml?CONNECTION_KIND=JPN&LANG=en',
     waitUntil: 'networkidle0',
-    nonPartnerSearchSupported: false,
-    roundtripOptimized: true,
+    oneWaySupported: false,
     tripMinDays: 3,
     validation: {
       minDays: 3,

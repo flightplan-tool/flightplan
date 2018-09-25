@@ -9,7 +9,6 @@ module.exports = {
     mainURL: 'https://www.asiamiles.com'
     searchURL: 'https://www.asiamiles.com/en/redeem-awards/flight-awards/facade.html?recent_search=true',
     waitUntil: 'networkidle0',
-    nonPartnerSearchSupported: false,
     roundtripOptimized: false,
     tripMinDays: 3,
     validation: {

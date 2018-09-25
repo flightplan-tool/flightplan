@@ -61,7 +61,7 @@ function migrate () {
       'stops INTEGER DEFAULT 0',
       'quantity INTEGER DEFAULT 1',
       'mileage INTEGER',
-      'fees INTEGER',
+      'fees TEXT',
       'fares TEXT',
       'updated_at TEXT DEFAULT CURRENT_TIMESTAMP'
     ])

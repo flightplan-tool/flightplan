@@ -83,10 +83,10 @@ module.exports = class extends Engine {
 
     while (true) {
       // Wait for results to finish loading
-      await this.settle(page)
+      await this.settle()
 
       // Check for errors
-      ret = await this.checkPage(page)
+      ret = await this.checkPage()
       if (ret && ret.error) {
         return ret
       }
@@ -102,7 +102,9 @@ module.exports = class extends Engine {
     }
   }
 
-  async settle (page) {
+  async settle () {
+    const { page } = this
+
     // Give the interstitial page a chance to load
     await page.waitFor(2000)
 
@@ -173,7 +175,9 @@ module.exports = class extends Engine {
     }
   }
 
-  async checkPage (page) {
+  async checkPage () {
+    const { page } = this
+
     const msgError = await this.textContent('#blsErrors li')
     if (msgError) {
       return { error: msgError }

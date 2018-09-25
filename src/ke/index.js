@@ -9,9 +9,6 @@ module.exports = {
     mainURL: 'https://www.koreanair.com/global/en.html',
     searchURL: 'https://www.koreanair.com/global/en/booking/booking-gate.html?awa#domestic-award',
     waitUntil: 'networkidle0',
-    nonPartnerSearchSupported: true,
-    oneWaySupported: !options.partners,
-    roundtripOptimized: options.partners,
     tripMinDays: 3,
     validation: {
       minDays: 1,
