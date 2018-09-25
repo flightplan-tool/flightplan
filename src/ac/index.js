@@ -6,6 +6,7 @@ module.exports = {
   config: {
     name: 'Air Canada',
     website: 'Aeroplan',
+    mainURL: 'https://www.aeroplan.com/language.do?lang=E',
     searchURL: 'https://www.aeroplan.com/en/use-your-miles/travel.html',
     validation: {
       minDays: 0,

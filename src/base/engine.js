@@ -200,7 +200,7 @@ class Engine {
 
     // Set viewport size
     const { viewport = { width: utils.randomInt(1200, 1280), height: utils.randomInt(1400, 1440) } } = options
-    page.setViewport(viewport)
+    await page.setViewport(viewport)
 
     // Setup page
     page.setDefaultNavigationTimeout(options.timeout)
@@ -218,6 +218,9 @@ class Engine {
     if (options.cookies) {
       await page.setCookie(...options.cookies)
     }
+
+    // Initialize document referrer by browsing to website's main page
+    await page.goto(this.config.mainURL)
 
     return page
   }
@@ -282,7 +285,7 @@ class Engine {
   async saveHTML (name, contents = undefined) {
     // If no HTML provided, extract it from the page and take a screenshot
     if (contents === undefined) {
-      this.screenshot(name)
+      await this.screenshot(name)
       contents = await this.page.content()
     }
 
@@ -404,7 +407,8 @@ class Engine {
 
     // Create a copy of query, and strip htmlFile and screenshot
     query = {...query}
-    delete query.htmlFile
+    delete query.html
+    delete query.json
     delete query.screenshot
 
     // Populate object with all keys whose values have changed

@@ -6,6 +6,7 @@ module.exports = {
   config: {
     name: 'Korean Air',
     website: 'SKYPASS',
+    mainURL: 'https://www.koreanair.com/global/en.html',
     searchURL: 'https://www.koreanair.com/global/en/booking/booking-gate.html?awa#domestic-award',
     waitUntil: 'networkidle0',
     nonPartnerSearchSupported: true,

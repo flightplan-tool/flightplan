@@ -50,7 +50,7 @@ module.exports = (Base) => class extends Base {
     return value === await this.page.$eval(selector, x => x.value)
   }
 
-  async settle (selector, timeout1 = 1000, timeout2 = 300000) {
+  async monitor (selector, timeout1 = 1000, timeout2 = 300000) {
     while (true) {
       // Wait for the element to appear
       try {
@@ -84,13 +84,20 @@ module.exports = (Base) => class extends Base {
       for (var key in values) {
         if (values.hasOwnProperty(key)) {
           const ele = document.getElementsByName(key)[0]
+          if (!ele) {
+            throw new Error(`Missing form element: ${key}`)
+          }
           if (ele.tagName === 'SELECT') {
             const opt = document.createElement('option')
             opt.value = values[key]
             opt.innerHTML = values[key]
             ele.appendChild(opt)
           }
-          ele.value = values[key]
+          if (ele.type === 'checkbox') {
+            ele.checked = values[key]
+          } else {
+            ele.value = values[key]
+          }
         }
       }
     }, values)
@@ -101,7 +108,7 @@ module.exports = (Base) => class extends Base {
       capture,
       waitUntil = this.config.waitUntil,
       timeout = this.options.timeout
-    } = options
+    } = options || {}
     let fn = null
 
     try {

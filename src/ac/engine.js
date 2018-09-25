@@ -34,11 +34,12 @@ module.exports = class extends Engine {
   validate (query) {}
 
   async search (page, query) {
+    const { oneWay, fromCity, toCity, departDate, returnDate, cabin, quantity } = query
+
     // Wait a few seconds for the form to auto-fill itself
     await page.waitFor(3000)
 
     // Get cabin values
-    const { oneWay, fromCity, toCity, departDate, returnDate, cabin, quantity } = query
     const cabinVals = [cabins.first, cabins.business].includes(cabin)
       ? ['Business/First', 'Business']
       : ['Eco/Prem', 'Economy']

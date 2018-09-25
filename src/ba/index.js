@@ -2,13 +2,12 @@ const { cabins, profiles } = require('../consts')
 
 module.exports = {
   engine: require('./engine'),
+  parser: require('./parser'),
   config: {
     name: 'British Airways',
     website: 'Executive Club',
+    mainURL: 'https://www.britishairways.com/en-us/home#/',
     searchURL: 'https://www.britishairways.com/travel/redeem/execclub/_gf/en_us?eId=106019&tab_selected=redeem&redemption_type=STD_RED',
-    waitUntil: 'networkidle0',
-    roundtripOptimized: true,
-    tripMinDays: 3,
     validation: {
       minDays: 0,
       maxDays: 354
