@@ -108,6 +108,9 @@ module.exports = class extends Engine {
 
     // Wait for spinner
     await this.monitor('#interstitial-spinner', 5000)
+
+    // Give the results page a chance to load
+    await page.waitFor(3000)
   }
 
   async modify (page, diff, query, prevQuery) {
@@ -154,7 +157,7 @@ module.exports = class extends Engine {
     await this.fillForm(opts)
 
     // Submit form
-    let ret = this.submitForm('TabSelection')
+    let ret = await this.submitForm('TabSelection')
     if (ret && ret.error) {
       return ret
     }

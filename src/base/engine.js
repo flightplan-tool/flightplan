@@ -141,12 +141,12 @@ class Engine {
 
     // Attempt to modify the current search
     ret = await this._modify(query)
-    if (ret && (ret.error || ret.success)) {
-      return ret
+    if (!ret || ret.error || ret.success) {
+      return (ret && ret.error) ? ret : this.results
     }
 
     // Reload search page
-    ret = this.goto(searchURL)
+    ret = await this.goto(searchURL)
     if (ret && ret.error) {
       return ret
     }
