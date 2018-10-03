@@ -133,14 +133,14 @@ module.exports = class extends Engine {
 
   async setDepartDate (page, departDate) {
     // Multiple departure date inputs with same name, make sure they're all set
-    departDate = departDate.format('DD/MM/YYYY')
+    departDate = departDate.toFormat('dd/MM/yyyy')
     await this.setValue('#city1-travel-start-day', departDate)
     await this.setValue('#city1-travel-start-day-2', departDate)
     await settle(this)
   }
 
   async setReturnDate (page, returnDate) {
-    returnDate = returnDate.format('DD/MM/YYYY')
+    returnDate = returnDate.toFormat('dd/MM/yyyy')
     await this.setValue('#city1-travel-return-day', returnDate)
     await settle(this)
   }

@@ -1,7 +1,8 @@
-const moment = require('moment')
+const { DateTime, Duration, Interval } = require('luxon')
 const parse = require('parse-duration')
 
 const { cabins } = require('./consts')
+const { airports } = require('./data')
 const { randomInt } = require('../shared/utils')
 
 module.exports = (Base) => class extends Base {
@@ -182,7 +183,7 @@ module.exports = (Base) => class extends Base {
   }
 
   parseDuration (duration) {
-    return moment.duration(parse(duration))
+    return Duration.fromMillis(parse(duration)).as('minutes')
   }
 
   bestCabin (segments) {
@@ -192,6 +193,35 @@ module.exports = (Base) => class extends Base {
 
   mixedCabin (segments) {
     return !segments.map(x => x.cabin).every((val, i, arr) => val === arr[0])
+  }
+
+  duration (first, last = first) {
+    const start = this.departureDateTime(first)
+    const end = this.arrivalDateTime(last)
+    const interval = Interval.fromDateTimes(start, end)
+    if (!interval.isValid) {
+      throw new Error(`Invalid duration interval from segment: ${first}, ${last}`)
+    }
+    return interval.toDuration().as('minutes')
+  }
+
+  nextConnection (segment, segments) {
+    const idx = segments.indexOf(segment)
+    if (idx === segments.length - 1) {
+      return null
+    }
+    const next = segments[idx + 1]
+    const start = this.arrivalDateTime(segment)
+    const end = this.departureDateTime(next)
+    const interval = Interval.fromDateTimes(start, end)
+    if (!interval.isValid) {
+      throw new Error(`Invalid connection time interval from segments: ${segment}, ${next}`)
+    }
+    return interval.toDuration().as('minutes')
+  }
+
+  travelTime (segments) {
+    return segments.map(x => x.duration).reduce((acc, val) => (acc + val), 0)
   }
 
   totalStops (segments) {
@@ -208,5 +238,49 @@ module.exports = (Base) => class extends Base {
 
   validAirportCode (code) {
     return code ? !!/^[A-Z]{3}$/.exec(code) : false
+  }
+
+  validDate (date) {
+    return DateTime.fromFormat(date, 'yyyy-MM-dd').isValid
+  }
+
+  validTime (time) {
+    return DateTime.fromFormat(time, 'HH:mm').isValid
+  }
+
+  airportTimeZone (iataCode) {
+    const airport = airports[iataCode]
+    if (airport) {
+      const { timezone, offset } = airport
+      if (timezone && DateTime.local().setZone(timezone).isValid) {
+        return timezone
+      }
+      if (Number.isInteger(offset)) {
+        const fixed = (offset >= 0) ? `UTC+${offset}` : `UTC${offset}`
+        if (DateTime.local().setZone(fixed).isValid) {
+          return fixed
+        }
+      }
+    }
+    return 'utc'
+  }
+
+  departureDateTime (segment) {
+    // Create a timestamp, in the time zone of the departure airport
+    return DateTime.fromFormat(
+      `${segment.date} ${segment.departure}`,
+      'yyyy-MM-dd HH:mm',
+      { zone: this.airportTimeZone(segment.fromCity) }
+    )
+  }
+
+  arrivalDateTime (segment) {
+    // Create a timestamp, in the time zone of the arrival airport
+    const dt = DateTime.fromFormat(
+      `${segment.date} ${segment.arrival}`,
+      'yyyy-MM-dd HH:mm',
+      { zone: this.airportTimeZone(segment.toCity) }
+    )
+    return dt.plus({ days: segment.lagDays })
   }
 }

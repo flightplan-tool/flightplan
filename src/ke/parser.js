@@ -1,4 +1,4 @@
-const moment = require('moment')
+const { DateTime } = require('luxon')
 
 const Parser = require('../base/parser')
 
@@ -54,7 +54,7 @@ function parseTable ($, table, request, config) {
 
   // Confirm date matches
   const tabDate = $(table).find('li.selected-date a').data('name')
-  if (moment(date).format('MM/DD') !== tabDate) {
+  if (date.toFormat('MM/dd') !== tabDate) {
     return []
   }
 

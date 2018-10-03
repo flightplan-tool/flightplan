@@ -52,9 +52,6 @@ function migrate () {
       'partner BOOLEAN NOT NULL',
       'fromCity TEXT NOT NULL',
       'toCity TEXT NOT NULL',
-      'date TEXT NOT NULL',
-      'departure TEXT',
-      'arrival TEXT',
       'cabin TEXT NOT NULL',
       'mixed BOOLEAN NOT NULL',
       'duration INTEGER',
@@ -78,7 +75,7 @@ function migrate () {
       'departure TEXT NOT NULL',
       'arrival TEXT NOT NULL',
       'duration INTEGER',
-      'connectionTime INTEGER',
+      'nextConnection INTEGER',
       'cabin TEXT NOT NULL',
       'stops INTEGER DEFAULT 0',
       'lagDays INTEGER DEFAULT 0',
@@ -103,21 +100,8 @@ function insertRow (table, row) {
 }
 
 function coerceType (val) {
-  switch (typeof val) {
-    case 'boolean':
-      return val ? 1 : 0
-    case 'object':
-      if (val !== null && val.constructor) {
-        switch (val.constructor.name) {
-          case 'Moment':
-            return val.format('YYYY-MM-DD HH:mm:ss')
-          case 'Duration':
-            return val.asSeconds()
-          default:
-            return val
-        }
-      }
-      return val
+  if (typeof val === 'boolean') {
+    return val ? 1 : 0
   }
   return val
 }

@@ -1,5 +1,5 @@
 const fs = require('fs')
-const moment = require('moment')
+const { DateTime, Duration } = require('luxon')
 const path = require('path')
 const prompt = require('syncprompt')
 const zlib = require('zlib')
@@ -154,8 +154,8 @@ function loadRequest (row) {
   }
 
   // Transform attributes
-  request.departDate = request.departDate ? moment(request.departDate, 'YYYY-MM-DD') : null
-  request.returnDate = request.returnDate ? moment(request.returnDate, 'YYYY-MM-DD') : null
+  request.departDate = request.departDate ? DateTime.fromSQL(request.departDate) : null
+  request.returnDate = request.returnDate ? DateTime.fromSQL(request.returnDate) : null
 
   // Load HTML and JSON assets
   const { html = null, json = null, screenshots = null } = JSON.parse(row.assets)
@@ -228,8 +228,8 @@ function saveRequest (results) {
     'cabin',
     'quantity'
   ])
-  row.departDate = row.departDate ? row.departDate.format('YYYY-MM-DD') : null
-  row.returnDate = row.returnDate ? row.returnDate.format('YYYY-MM-DD') : null
+  row.departDate = row.departDate ? row.departDate.toSQLDate() : null
+  row.returnDate = row.returnDate ? row.returnDate.toSQLDate() : null
   row.assets = JSON.stringify(assets)
 
   // Insert the row
@@ -250,9 +250,6 @@ function saveAwards (requestId, awards) {
         'partner',
         'fromCity',
         'toCity',
-        'date',
-        'departure',
-        'arrival',
         'cabin',
         'mixed',
         'duration',
@@ -263,7 +260,6 @@ function saveAwards (requestId, awards) {
         'fares'
       ])
       row.requestId = requestId
-      row.date = (row.date || row.departure).format('YYYY-MM-DD')
 
       // Save the individual award and get it's ID
       const awardId = db.insertRow('awards', row).lastInsertROWID
@@ -294,7 +290,7 @@ function saveSegment (awardId, position, segment) {
     'departure',
     'arrival',
     'duration',
-    'connectionTime',
+    'nextConnection',
     'cabin',
     'stops',
     'lagDays',
@@ -302,15 +298,44 @@ function saveSegment (awardId, position, segment) {
   ])
   row.awardId = awardId
   row.position = position
-  row.date = (row.date || row.departure).format('YYYY-MM-DD')
 
   // Save the individual award and get it's ID
   return db.insertRow('segments', row).lastInsertROWID
 }
 
+function parseDurationISO8601 (text) {
+  const arr = text.split(':')
+  if (arr.length <= 0 || arr.length > 4) {
+    return Duration.invalid('unparsable')
+  }
+  const mult = [ 24, 60, 60, 1000 ]
+  const secs = arr.pop()
+  if (secs.includes('.')) {
+    mult.push(1)
+    const subarr = secs.split('.')
+    if (subarr.length !== 2) {
+      return Duration.invalid('unparsable')
+    }
+    arr.push(...subarr)
+  } else {
+    arr.push(secs)
+  }
+  let val = 0
+  let base = 1
+  while (arr.length > 0) {
+    base *= mult.pop()
+    const num = parseInt(arr.pop())
+    if (Number.isNaN(num) || (mult.length > 0 && num >= mult[mult.length - 1])) {
+      return Duration.invalid('unparsable')
+    }
+    val += num * base
+  }
+  return Duration.fromMillis(val)
+}
+
 function randomDuration (range) {
   const [min, max] = Array.isArray(range) ? range : [range, range]
-  return moment.duration(randomInt(...[min, max].map(x => moment.duration(x).asMilliseconds())))
+  return Duration.fromMillis(randomInt(...[min, max].map(x => parseDurationISO8601(x).valueOf())))
 }
 
 function randomInt (min, max) {

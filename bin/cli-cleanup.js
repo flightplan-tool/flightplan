@@ -1,6 +1,6 @@
 const program = require('commander')
 const fs = require('fs')
-const moment = require('moment')
+const { DateTime, Duration } = require('luxon')
 const path = require('path')
 
 const db = require('../shared/db')
@@ -115,10 +115,10 @@ async function cleanupRedundant (yes, verbose, cutoff) {
     // Compute most recent request for every quantity value
     const map = val.requests.reduce((map, x) => {
       requests.push(x)
-      const updatedAt = moment(x.updatedAt)
-      if (updatedAt.isSameOrAfter(cutoff)) {
+      const updatedAt = DateTime.fromSQL(x.updatedAt)
+      if (updatedAt >= cutoff) {
         const old = map.get(x.quantity)
-        if (!old || updatedAt.isAfter(moment(old.updatedAt))) {
+        if (!old || updatedAt > DateTime.fromSQL(old.updatedAt)) {
           map.set(x.quantity, x)
         }
       }
@@ -167,7 +167,7 @@ const main = async (args) => {
     const { requests } = await cleanupRequests(yes, verbose)
 
     // Cleanup redundant requests
-    const cutoff = moment().subtract(moment.duration(maxage))
+    const cutoff = DateTime.local().minus(Duration.fromISO(maxage))
     const { redundant } = await cleanupRedundant(yes, verbose, cutoff)
 
     // Print summary

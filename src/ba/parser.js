@@ -1,4 +1,3 @@
-const moment = require('moment')
 const jspath = require('jspath')
 
 const Parser = require('../base/parser')
@@ -37,23 +36,23 @@ module.exports = class extends Parser {
 
     // Get inbound and outbound flights
     const departures = this.getFlights(json, 0)
-    const returns = this.getFlights(json, 1)
+    const arrivals = this.getFlights(json, 1)
 
     // Transform flight data
-    const awards = [...departures, ...returns].map(f => {
+    const awards = [...departures, ...arrivals].map(f => {
       const award = {
         mileage: f.startingMileage,
-        duration: moment.duration(f.totalMinutes * 60000),
+        duration: f.totalMinutes,
         segments: f.segment.map(x => ({
           airline: x.airline,
           flight: x.flightNo,
           aircraft: x.aircraft in aircraftCodes ? aircraftCodes[x.aircraft] : x.aircraft,
           fromCity: x.origin,
           toCity: x.destination,
-          departure: moment.utc(x.departureDateTime),
-          arrival: moment.utc(x.arrivalDateTime),
+          departure: x.departureDateTime,
+          arrival: x.arrivalDateTime,
           duration: this.parseDuration(x.duration),
-          connectionTime: this.parseDuration(x.nextConnection),
+          nextConnection: this.parseDuration(x.nextConnection),
           cabin: cabinCodes[x.cabin],
           stops: parseInt(x.stop),
           lagDays: parseInt(x.lagDays),

@@ -1,4 +1,4 @@
-const moment = require('moment')
+const { DateTime } = require('luxon')
 
 const Engine = require('../base/engine')
 const { cabins } = require('../consts')
@@ -320,7 +320,7 @@ async function chooseDate (page, selector, date) {
   const str = await page.evaluate((sel) => {
     return document.querySelector(sel).textContent
   }, selector + ' .ui-datepicker-title')
-  const month = moment(str, 'MMM YYYY')
+  const month = DateTime.fromFormat(str, 'MMM yyyy')
 
   // Does the date belong to this month?
   if (!date.isSame(month, 'month')) {
@@ -330,8 +330,8 @@ async function chooseDate (page, selector, date) {
   // Find the right day, and click it
   for (const elem of await page.$$(selector + ' a')) {
     const text = await page.evaluate(x => x.textContent, elem)
-    const elemDate = moment(text, 'dddd MMMM D, YYYY')
-    if (elemDate.isValid() && elemDate.date() === date.date()) {
+    const elemDate = DateTime.fromFormat(text, 'EEEE MMMM d, yyyy')
+    if (elemDate.isValid && elemDate.day === date.day) {
       // Found the date, click it!
       await elem.click()
       await page.waitFor(500)

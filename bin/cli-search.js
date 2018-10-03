@@ -1,6 +1,7 @@
 const program = require('commander')
 const fs = require('fs')
-const moment = require('moment')
+const humanize = require('humanize-duration')
+const { DateTime } = require('luxon')
 const prompt = require('syncprompt')
 const sleep = require('await-sleep')
 
@@ -35,8 +36,8 @@ program
   .parse(process.argv)
 
 function parseDate (strDate) {
-  const m = moment(strDate, 'YYYY-MM-DD', true)
-  return m.isValid() ? m.startOf('d') : false
+  const dt = DateTime.fromFormat(strDate, 'yyyy-MM-dd')
+  return dt.isValid ? dt : false
 }
 
 function fatal (message, err) {
@@ -93,8 +94,8 @@ function validateArguments (args) {
   if (!args.end) {
     fatal(`Invalid end date: ${args.end}`)
   }
-  if (args.end.isBefore(args.start)) {
-    fatal(`Invalid date range: ${args.start} - ${args.end}`)
+  if (args.end < args.start) {
+    fatal(`Invalid date range: ${args.start.toSQLDate()} - ${args.end.toSQLDate()}`)
   }
 
   // Instantiate engine, and do further validation
@@ -106,17 +107,17 @@ function validateArguments (args) {
   const [a, b] = engine.validDateRange()
 
   // Check if our search range is completely outside the valid range
-  if (args.end.isBefore(a, 'd') || args.start.isAfter(b, 'd')) {
-    fatal(`${website} (${id}) only supports searching within the range: ${a.format('L')} - ${b.format('L')}`)
+  if (args.end < a || args.start > b) {
+    fatal(`${website} (${id}) only supports searching within the range: ${a.toSQLDate()} - ${b.toSQLDate()}`)
   }
 
   // If only start or end are outside the valid range, we can adjust them
-  if (args.start.isBefore(a, 'd')) {
-    logger.warn(`${website} (${id}) can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.format('L')}`)
+  if (args.start < a) {
+    logger.warn(`${website} (${id}) can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.toSQLDate()}`)
     args.start = a
   }
-  if (args.end.isAfter(b, 'd')) {
-    logger.warn(`${website} (${id}) can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.format('L')}`)
+  if (args.end > b) {
+    logger.warn(`${website} (${id}) can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.toSQLDate()}`)
     args.end = b
   }
 }
@@ -134,23 +135,23 @@ function generateQueries (args, engine, days) {
 
   // Compute the one-way segments coming back at beginning of search range
   for (let i = 0; i < gap; i++) {
-    const date = startDate.clone().add(i, 'd')
+    const date = startDate.plus({ days: i })
     if (oneWaySupported) {
       queries.push({
         ...returnCities,
         departDate: date,
         returnDate: null
       })
-    } else if (date.clone().add(tripMinDays, 'd').isBefore(validEnd)) {
+    } else if (date.plus({ days: tripMinDays }) < validEnd) {
       queries.push({
         ...returnCities,
         departDate: date,
-        returnDate: date.clone().add(tripMinDays, 'd')
+        returnDate: date.plus({ days: tripMinDays })
       })
     } else {
       queries.push({
         ...departCities,
-        departDate: date.clone().subtract(tripMinDays, 'd'),
+        departDate: date.minus({ days: tripMinDays }),
         returnDate: date
       })
     }
@@ -158,12 +159,12 @@ function generateQueries (args, engine, days) {
 
   // Compute segments in middle of search range
   for (let i = 0; i < days - gap; i++) {
-    const date = startDate.clone().add(i, 'd')
+    const date = startDate.plus({ days: i })
     if (roundtripOptimized) {
       queries.push({
         ...departCities,
         departDate: date,
-        returnDate: args.oneway ? null : date.clone().add(gap, 'd')
+        returnDate: args.oneway ? null : date.plus({ days: gap })
       })
     } else {
       queries.push({...departCities, departDate: date})
@@ -175,23 +176,23 @@ function generateQueries (args, engine, days) {
 
   // Compute the one-way segments going out at end of search range
   for (let i = gap - 1; i >= 0; i--) {
-    const date = endDate.clone().subtract(i, 'd')
+    const date = endDate.minus({ days: i })
     if (oneWaySupported) {
       queries.push({
         ...departCities,
         departDate: date,
         returnDate: null
       })
-    } else if (date.clone().add(tripMinDays, 'd').isBefore(validEnd)) {
+    } else if (date.plus({ days: tripMinDays }) < validEnd) {
       queries.push({
         ...departCities,
         departDate: date,
-        returnDate: date.clone().add(tripMinDays, 'd')
+        returnDate: date.plus({ days: tripMinDays })
       })
     } else {
       queries.push({
         ...returnCities,
-        departDate: date.clone().subtract(tripMinDays, 'd'),
+        departDate: date.minus({ days: tripMinDays }),
         returnDate: date
       })
     }
@@ -269,12 +270,12 @@ const main = async (args) => {
     db.open()
 
     // Generate queries
-    const days = endDate.diff(startDate, 'd') + 1
+    const days = endDate.diff(startDate, 'days') + 1
     const queries = generateQueries(args, engine, days)
 
     // Execute queries
     let skipped = 0
-    console.log(`Searching ${days} days of award inventory: ${startDate.format('L')} - ${endDate.format('L')}`)
+    console.log(`Searching ${days} days of award inventory: ${startDate.toSQLDate()} - ${endDate.toSQLDate()}`)
     for (const query of queries) {
       const { id, loginRequired } = engine.config
 
@@ -320,7 +321,7 @@ const main = async (args) => {
       // Insert a delay if we've been blocked
       if (results.blocked) {
         const delay = utils.randomInt(65, 320)
-        engine.warn(`Blocked by server, waiting for ${moment().add(delay, 's').fromNow(true)}`)
+        engine.warn(`Blocked by server, waiting for ${humanize(delay * 1000)}`)
         await sleep(delay * 1000)
       }
     }

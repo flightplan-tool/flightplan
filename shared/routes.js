@@ -9,7 +9,7 @@ function path (route) {
     engine,
     fromCity,
     toCity,
-    departDate.format('YYYY-MM-DD'),
+    departDate.toSQLDate(),
     (new Date()).getTime()
   ]
   return `${paths.data}/${fields.join('-')}`
@@ -18,7 +18,7 @@ function path (route) {
 function key (row, date, reverse = false) {
   let { engine, cabin, fromCity, toCity } = row
   const dateStr = (date && typeof date !== 'string')
-    ? date.format('YYYY-MM-DD') : date
+    ? date.toSQLDate() : date
   return [engine, cabin, reverse ? toCity : fromCity, reverse ? fromCity : toCity, dateStr].join('|')
 }
 
@@ -62,8 +62,8 @@ function requests (route, database) {
 
   // Format dates
   const { engine, partners, cabin, quantity, fromCity, toCity, departDate, returnDate } = route
-  const departStr = departDate ? departDate.format('YYYY-MM-DD') : null
-  const returnStr = returnDate ? returnDate.format('YYYY-MM-DD') : null
+  const departStr = departDate ? departDate.toSQLDate() : null
+  const returnStr = returnDate ? returnDate.toSQLDate() : null
 
   // Select only the relevant segments
   if (returnDate) {
@@ -99,8 +99,8 @@ function awards (route, database) {
 
   // Format dates
   const { engine, cabin, quantity, fromCity, toCity, departDate, returnDate } = route
-  const departStr = departDate ? departDate.format('YYYY-MM-DD') : null
-  const returnStr = returnDate ? returnDate.format('YYYY-MM-DD') : null
+  const departStr = departDate ? departDate.toSQLDate() : null
+  const returnStr = returnDate ? returnDate.toSQLDate() : null
 
   // Select only the relevant segments
   if (returnDate) {
@@ -134,9 +134,9 @@ function print (route) {
 
   // Format dates if necessary
   const departStr = (departDate && typeof departDate !== 'string')
-    ? departDate.format('L') : departDate
+    ? departDate.toSQLDate() : departDate
   const returnStr = (returnDate && typeof returnDate !== 'string')
-    ? returnDate.format('L') : returnDate
+    ? returnDate.toSQLDate() : returnDate
 
   // Print departure and arrival routes
   const context = chalk.bold(`[${engine}]`)

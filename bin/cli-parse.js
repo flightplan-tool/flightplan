@@ -79,7 +79,7 @@ const main = async (args) => {
         for (const award of awards) {
           const { fromCity, toCity, departure, fares, mileage } = award
           const segments = award.segments.map(x => x.flight).join('-')
-          console.log(`    [${fromCity} -> ${toCity}] - ${departure.format('YYYY-MM-DD')} ${segments} (${mileage} Miles): ${fares}`)
+          console.log(`    [${fromCity} -> ${toCity}] - ${departure.toSQLDate()} ${segments} (${mileage} Miles): ${fares}`)
         }
       }
 

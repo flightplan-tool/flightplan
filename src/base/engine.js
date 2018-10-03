@@ -1,7 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')
-const moment = require('moment')
+const humanize = require('humanize-duration')
+const { DateTime } = require('luxon')
 const puppeteer = require('puppeteer')
 
 const applyEvasions = require('../evasions')
@@ -26,9 +27,6 @@ class Engine {
     // Cache modifiable field set
     this.modifiable = modifiable ? new Set(modifiable) : undefined
 
-    // Default locale to "en"
-    moment.locale('en')
-
     // Setup browser and new page
     this.browser = await this.newBrowser(options)
 
@@ -48,10 +46,10 @@ class Engine {
 
     // Validate dates
     const [ start, end ] = this.parent.validDateRange()
-    const strValidRange = `${start.format('L')} - ${end.format('L')}`
-    if (!departDate.isBetween(start, end, 'd', '[]')) {
+    const strValidRange = `${start.toSQLDate()} - ${end.toSQLDate()}`
+    if (departDate < start || departDate > end) {
       return { error: `Departure date (${departDate}) is outside valid search range: ${strValidRange}` }
-    } else if (!oneWay && !returnDate.isBetween(start, end, 'd', '[]')) {
+    } else if (!oneWay && (returnDate < start || returnDate > end)) {
       return { error: `Return date (${returnDate}) is outside valid search range: ${strValidRange}` }
     }
 
@@ -247,29 +245,29 @@ class Engine {
     // Insert delay between requests
     if (delayBetweenRequests && lastRequest) {
       const delay = utils.randomDuration(delayBetweenRequests)
-      const delayMillis = lastRequest.clone().add(delay).diff()
+      const delayMillis = lastRequest.plus(delay).diffNow().valueOf()
       if (delayMillis > 0) {
         await this.page.waitFor(delayMillis)
       }
     }
-    lastRequest = moment()
+    lastRequest = DateTime.local()
 
     // Check if we are at a resting checkpoint
     if (checkpoint && checkpoint.remaining <= 0) {
-      const restMillis = checkpoint.until.diff()
+      const restMillis = checkpoint.until.diffNow().valueOf()
       if (restMillis > 0) {
-        this.info(`Cool-down period, resuming ${checkpoint.until.fromNow()}`)
+        this.info(`Cool-down period, resuming in ${humanize(restMillis)}`)
         await this.page.waitFor(restMillis)
       }
       checkpoint = null
     }
 
     // If next resting checkpoint is unknown or past, compute new one
-    if (!checkpoint || moment().isSameOrAfter(checkpoint.until)) {
+    if (!checkpoint || DateTime.local() >= checkpoint.until) {
       const dur = utils.randomDuration(restPeriod)
       checkpoint = {
-        until: moment().add(dur),
-        remaining: Math.max(1, Math.floor(requestsPerHour * dur.asMilliseconds() / (3600 * 1000)))
+        until: DateTime.local().plus(dur),
+        remaining: Math.max(1, Math.floor(requestsPerHour * dur.valueOf() / (3600 * 1000)))
       }
     }
 
@@ -360,7 +358,7 @@ class Engine {
     query.fromCity = query.fromCity.toUpperCase()
     query.toCity = query.toCity.toUpperCase()
 
-    // Ensure dates are in moment format
+    // Ensure dates are in DateTime format
     query.departDate = this.normalizeDate(query.departDate)
     query.returnDate = this.normalizeDate(query.returnDate)
 
@@ -379,7 +377,7 @@ class Engine {
   }
 
   normalizeDate (date) {
-    return (date && typeof date === 'string') ? moment(date) : date
+    return (date && typeof date === 'string') ? DateTime.fromSQL(date) : date
   }
 
   validResponse (response) {

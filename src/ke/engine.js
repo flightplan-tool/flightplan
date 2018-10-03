@@ -117,7 +117,7 @@ module.exports = class extends Engine {
     await page.click(dateInputSel)
     await this.clear(dateInputSel)
     const dates = this.query.oneWay ? [departDate] : [departDate, this.query.returnDate]
-    const strDates = dates.map(x => x.format('YYYY-MM-DD')).join('/')
+    const strDates = dates.map(x => x.toFormat('yyyy-MM-dd')).join('/')
     await page.keyboard.type(strDates, { delay: 10 })
     await page.keyboard.press('Tab')
   }
@@ -226,7 +226,7 @@ async function chooseDateTab (engine, selector, oldDate, newDate) {
   const [ selIndex, selDate ] = await tabs.$eval('li.selected-date a', item => {
     return [ item.getAttribute('data-index'), item.getAttribute('data-name') ]
   })
-  if (selDate !== oldDate.format('MM/DD')) {
+  if (selDate !== oldDate.toFormat('MM/dd')) {
     return false // Something's not right...
   }
 
@@ -236,7 +236,7 @@ async function chooseDateTab (engine, selector, oldDate, newDate) {
   })
   const newSel = tabData.find(([ tabIndex, tabDate ]) => {
     const m = oldDate.clone().add(tabIndex - selIndex, 'd')
-    return m.isSame(newDate, 'd') && m.format('MM/DD') === tabDate
+    return m.isSame(newDate, 'd') && m.toFormat('MM/dd') === tabDate
   })
   if (!newSel) {
     return false

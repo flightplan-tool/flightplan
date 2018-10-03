@@ -74,22 +74,22 @@ module.exports = class extends Engine {
     }
 
     // Weekday strings
-    const weekdays = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
+    const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 
     await this.fillForm({
       'hiddenSearchMode': 'ROUND_TRIP',
       'itineraryButtonCheck': 'roundTrip',
       'hiddenAction': 'AwardRoundTripSearchInputAction',
-      'roundTripOpenJawSelected:radioGroup': '0',
+      'roundTripOpenJawSelected': '0',
       'hiddenRoundtripOpenJawSelected': '0',
       'departureAirportCode:field': fromCity,
       'departureAirportCode:field_pctext': await this.airportName(fromCity),
       'arrivalAirportCode:field': toCity,
       'arrivalAirportCode:field_pctext': await this.airportName(toCity),
-      'awardDepartureDate:field': departDate.format('YYYYMMDD'),
-      'awardDepartureDate:field_pctext': departDate.format('MM/DD/YYYY') + ` (${weekdays[departDate.day()]})`,
-      'awardReturnDate:field': returnDate.format('YYYYMMDD'),
-      'awardReturnDate:field_pctext': returnDate.format('MM/DD/YYYY') + ` (${weekdays[returnDate.day()]})`,
+      'awardDepartureDate:field': departDate.toFormat('yyyyMMdd'),
+      'awardDepartureDate:field_pctext': departDate.toFormat('MM/dd/yyyy') + ` (${weekdays[departDate.weekday - 1]})`,
+      'awardReturnDate:field': returnDate.toFormat('yyyyMMdd'),
+      'awardReturnDate:field_pctext': returnDate.toFormat('MM/dd/yyyy') + ` (${weekdays[returnDate.weekday - 1]})`,
       'hiddenBoardingClassType': '0',
       'boardingClass': cabinCode[cabin],
       'adult:count': quantity.toString(),
@@ -122,18 +122,26 @@ module.exports = class extends Engine {
       return ret
     }
 
-    // Obtain the JSON data from the browser itself
+    // Save the results
+    ret = await this.saveHTML('results')
+    if (ret && ret.error) {
+      return ret
+    }
+
+    // Obtain JSON data from the browser itself (for pricing)
     const json = await page.evaluate(() => {
       const { recommendationList, awardExcludeList } = this
       const { inboundFlightInfoList, outboundFlightInfoList } = Asw.SummaryArea
+      const { airports } = Asw.AirportList
       return {
         recommendationList,
         awardExcludeList,
         inboundFlightInfoList,
-        outboundFlightInfoList
+        outboundFlightInfoList,
+        airports
       }
     })
-    ret = await this.saveJSON('results', json)
+    ret = await this.saveJSON('extra', json)
     if (ret && ret.error) {
       return ret
     }

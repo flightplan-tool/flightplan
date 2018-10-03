@@ -1,5 +1,4 @@
 const cheerio = require('cheerio')
-const moment = require('moment')
 
 const helpers = require('../helpers')
 const logging = require('../logging')
@@ -57,10 +56,12 @@ class Parser {
       departure,
       arrival,
       duration,
+      travelTime,
       cabin,
       mixed,
       stops,
       quantity,
+      mileage,
       fares,
       segments
     } = award
@@ -81,10 +82,11 @@ class Parser {
         aircraft,
         fromCity,
         toCity,
+        date,
         departure,
         arrival,
         duration,
-        connectionTime,
+        nextConnection,
         cabin,
         stops,
         lagDays
@@ -106,28 +108,29 @@ class Parser {
       if (!this.validAirportCode(toCity)) {
         return `Award has invalid destination airport code in segment: ${segment}`
       }
-      if (departure === undefined || !departure.isValid()) {
+      if (date === undefined || !this.validDate(date)) {
+        return `Award has invalid departure date in segment: ${segment}`
+      }
+      if (departure === undefined || !this.validTime(departure)) {
         return `Award has invalid departure in segment: ${segment}`
       }
-      if (arrival === undefined || !arrival.isValid()) {
+      if (arrival === undefined || !this.validTime(arrival)) {
         return `Award has invalid arrival in segment: ${segment}`
-      }
-      if (duration === undefined) {
-        return `Award is missing property 'duration' in segment: ${segment}`
       }
       if (cabin === undefined) {
         return `Award is missing property 'cabin' in segment: ${segment}`
       }
 
       // Fill in defaults
-      segment.connectionTime = connectionTime || moment.duration(0)
+      segment.duration = duration || this.duration(segment)
+      segment.nextConnection = nextConnection || this.nextConnection(segment, segments)
       segment.stops = stops || 0
       segment.lagDays = lagDays || 0
     }
 
     // Check required information
-    if (duration === undefined) {
-      return `Award is missing property 'duration': ${award}`
+    if (mileage === undefined) {
+      return `Award is missing property 'mileage': ${award}`
     }
     if (fares === undefined) {
       return `Award is missing property 'fares': ${award}`
@@ -138,10 +141,10 @@ class Parser {
     award.partner = partner || this.partnerAward(query.engine, segments)
     award.fromCity = fromCity || first.fromCity
     award.toCity = toCity || last.toCity
-    award.departure = departure || first.departure
-    award.arrival = arrival || last.arrival
     award.cabin = cabin || this.bestCabin(segments)
     award.mixed = mixed || this.mixedCabin(segments)
+    award.duration = duration || this.duration(first, last)
+    award.travelTime = travelTime || this.travelTime(segments)
     award.stops = stops || this.totalStops(segments)
     award.quantity = quantity || query.quantity
   }

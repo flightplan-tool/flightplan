@@ -1,5 +1,5 @@
 const express = require('express')
-const moment = require('moment')
+const { DateTime, Interval } = require('luxon')
 
 const fp = require('../src')
 const db = require('../shared/db')
@@ -48,16 +48,16 @@ app.get('/api/search', async (req, res, next) => {
     } = req.query
 
     // Validate dates
-    const start = moment(startDate)
-    const end = moment(endDate)
-    if (!start.isValid()) {
+    const start = DateTime.fromISO(startDate)
+    const end = DateTime.fromISO(endDate)
+    if (!start.isValid) {
       throw new Error('Invalid start date:', startDate)
     }
-    if (!end.isValid()) {
+    if (!end.isValid) {
       throw new Error('Invalid end date:', endDate)
     }
-    if (end.isBefore(start)) {
-      throw new Error(`Invalid date range for search: ${start.format('L')} -> ${end.format('L')}`)
+    if (!Interval.fromDateTimes(start, end).isValid) {
+      throw new Error(`Invalid date range for search: ${start.toSQLDate()} -> ${end.toSQLDate()}`)
     }
 
     let query = 'SELECT * FROM awards WHERE '
@@ -76,7 +76,7 @@ app.get('/api/search', async (req, res, next) => {
 
     // Add dates
     query += ' AND date BETWEEN ? AND ?'
-    params.push(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'))
+    params.push(start.toSQLDate(), end.toSQLDate())
 
     // Add quantity
     query += ' AND quantity >= ?'

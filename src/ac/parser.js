@@ -1,8 +1,9 @@
-const moment = require('moment')
 const jspath = require('jspath')
+const { DateTime } = require('luxon')
 
 const Parser = require('../base/parser')
 const { cabins } = require('../consts')
+const { aircraft } = require('../data')
 
 // Cabin codes
 const cabinCodes = {
@@ -12,53 +13,39 @@ const cabinCodes = {
   'F': cabins.first
 }
 
-// Certain aircraft codes that are lacking proper description
-const aircraftCodes = {
-  '319': 'Airbus 319',
-  '320': 'Airbus 320',
-  '321': 'Airbus 321',
-  '333': 'Airbus A330-300',
-  '346': 'Airbus A340-600',
-  '388': 'Airbus A380-800',
-  '738': 'Boeing 737-800',
-  '777': 'Boeing 777',
-  '788': 'Boeing 787-8',
-  '789': 'Boeing 787-9',
-  '7M8': 'Boeing 737 MAX 8',
-  '77W': 'Boeing 777-300ER',
-  '32A': 'Airbus A320neo',
-  'CS1': 'Airbus A220-100',
-  'CS3': 'Airbus A220-300'
-}
-
 module.exports = class extends Parser {
   parse (query, assets) {
     const json = assets.json.find(x => x.name === 'results').contents
 
     // Get inbound and outbound flights
     const departures = this.getFlights(json, 0)
-    const returns = this.getFlights(json, 1)
+    const arrivals = this.getFlights(json, 1)
 
     // Transform flight data
-    const awards = [...departures, ...returns].map(f => {
+    const awards = [...departures, ...arrivals].map(f => {
       const award = {
         mileage: f.startingMileage,
-        duration: moment.duration(f.totalMinutes * 60000),
-        segments: f.segment.map(x => ({
-          airline: x.airline,
-          flight: x.flightNo,
-          aircraft: x.aircraft in aircraftCodes ? aircraftCodes[x.aircraft] : x.aircraft,
-          fromCity: x.origin,
-          toCity: x.destination,
-          departure: moment.utc(x.departureDateTime),
-          arrival: moment.utc(x.arrivalDateTime),
-          duration: this.parseDuration(x.duration),
-          connectionTime: this.parseDuration(x.nextConnection),
-          cabin: cabinCodes[x.cabin],
-          stops: parseInt(x.stop),
-          lagDays: parseInt(x.lagDays),
-          bookingCode: x.bookClass
-        }))
+        duration: f.totalMinutes,
+        segments: f.segment.map(x => {
+          const departure = DateTime.fromISO(x.departureDateTime, { zone: 'utc' })
+          const arrival = DateTime.fromISO(x.arrivalDateTime, { zone: 'utc' })
+          return {
+            airline: x.airline,
+            flight: x.flightNo,
+            aircraft: this.getAircraft(x.product),
+            fromCity: x.origin,
+            toCity: x.destination,
+            date: departure.toSQLDate(),
+            departure: departure.toFormat('HH:mm'),
+            arrival: arrival.toFormat('HH:mm'),
+            duration: this.parseDuration(x.duration),
+            nextConnection: this.parseDuration(x.nextConnection),
+            cabin: cabinCodes[x.cabin],
+            stops: parseInt(x.stop),
+            lagDays: parseInt(x.lagDays),
+            bookingCode: x.bookClass
+          }
+        })
       }
 
       // Calculate award fare code
@@ -86,5 +73,13 @@ module.exports = class extends Parser {
       json,
       { type: type, index: index }
     )
+  }
+
+  getAircraft (iataCode) {
+    const result = aircraft.find(x => x.iata === iataCode)
+    if (!result) {
+      throw new Error(`Unrecognized aircraft IATA code: ${iataCode}`)
+    }
+    return result.icao
   }
 }

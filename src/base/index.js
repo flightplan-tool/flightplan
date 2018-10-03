@@ -1,4 +1,4 @@
-const moment = require('moment')
+const { DateTime } = require('luxon')
 
 const { defaults } = require('../consts')
 const utils = require('../../shared/utils')
@@ -99,10 +99,10 @@ module.exports = class {
 
   validDateRange () {
     const { minDays, maxDays } = this.config.validation
-    const now = moment().startOf('d')
+    const now = DateTime.local().startOf('day')
     return [
-      now.clone().add(minDays, 'd'),
-      now.clone().add(maxDays, 'd')
+      now.plus({ days: minDays }),
+      now.plus({ days: maxDays })
     ]
   }
 
