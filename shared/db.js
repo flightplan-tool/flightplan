@@ -52,6 +52,7 @@ function migrate () {
       'partner BOOLEAN NOT NULL',
       'fromCity TEXT NOT NULL',
       'toCity TEXT NOT NULL',
+      'date TEXT NOT NULL',
       'cabin TEXT NOT NULL',
       'mixed BOOLEAN NOT NULL',
       'duration INTEGER',

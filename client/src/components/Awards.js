@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
+import { DateTime } from 'luxon'
 import { inject } from 'mobx-react'
-import moment from 'moment'
 
 import * as utilities from '../lib/utilities'
 
@@ -73,7 +73,7 @@ class Awards extends Component {
     // Generate HTML markup
     return (
       <div>
-        <h2>{date.format('ll')}</h2>
+        <h2>{date.toLocaleString(DateTime.DATE_MED)}</h2>
         {tables.length === 0 && <div className="no-results"><p>No award flights were found.</p></div>}
         {tables.map(table => this.renderTable(table))}
       </div>
@@ -226,10 +226,10 @@ class Awards extends Component {
         <div className="schedule">
           <div className="times">
             <div className="departure">
-              {moment(departure).format('h:ma')}
+              {DateTime.fromFormat(departure, 'HH:mm').toFormat('h:mma')}
             </div>
             <div className="arrival">
-              {moment(arrival).format('h:ma')}
+              {DateTime.fromFormat(arrival, 'HH:mm').toFormat('h:mma')}
               {lagDays > 0 && <div className="lag">+{lagDays}</div>}
             </div>
           </div>
@@ -272,10 +272,9 @@ class Awards extends Component {
   }
 
   formatDuration (val) {
-    const dur = moment.duration(val * 1000)
-    return (val < 3600)
-      ? `${Math.floor(dur.asMinutes())}m`
-      : `${Math.floor(dur.asHours())}h ${dur.minutes()}m`
+    return (val < 60)
+      ? `${val}m`
+      : `${Math.floor(val / 60)}h ${val % 60}m`
   }
 }
 

@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import moment from 'moment'
+import { DateTime } from 'luxon'
 
 import * as utilities from '../lib/utilities'
 
@@ -35,13 +35,14 @@ export default class ChartStore {
     return this.config.chart[utilities.getMonthIndex(month)].find(x => x.day === day)
   }
 
-  /// ///////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////
   // MARKERS
-  /// ///////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////
 
   markCurrentDay () {
-    var currentMonth = parseInt(moment().format('M'), 10) - 1
-    var currentDay = parseInt(moment().format('D'), 10) - 1
+    const today = DateTime.local()
+    var currentMonth = today.month - 1
+    var currentDay = today.day - 1
     var day = this.config.chart[currentMonth][currentDay + this.getStartIndex(currentMonth)]
 
     day.fillColor = this.config.defaults.CURRENT_DAY_FILL_BASE
@@ -51,8 +52,9 @@ export default class ChartStore {
 
   markEvents () {
     this.config.events.forEach((event, eventIndex) => {
-      var eventMonth = parseInt(moment(event.date).format('M'), 10) - 1
-      var eventDay = parseInt(moment(event.date).format('D'), 10) - 1
+      const dt = DateTime.fromSQL(event.date)
+      var eventMonth = dt.month - 1
+      var eventDay = dt.day - 1
       var day = this.config.chart[eventMonth][eventDay + this.getStartIndex(eventMonth)]
 
       if (!day.isCurrentDay) {
@@ -64,8 +66,8 @@ export default class ChartStore {
     })
   }
 
-  /// ///////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////
   // HELPERS
-  /// ///////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////
 
 }

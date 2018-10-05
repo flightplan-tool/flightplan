@@ -250,6 +250,7 @@ function saveAwards (requestId, awards) {
         'partner',
         'fromCity',
         'toCity',
+        'date',
         'cabin',
         'mixed',
         'duration',

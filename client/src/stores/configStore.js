@@ -13,6 +13,10 @@ export default class ConfigStore {
     return this.loading ? null : this.config.engines
   }
 
+  @computed get aircraft () {
+    return this.loading ? null : this.config.aircraft
+  }
+
   @computed get airlines () {
     return this.loading ? null : this.config.airlines
   }

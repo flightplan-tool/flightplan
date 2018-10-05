@@ -53,8 +53,7 @@ class Parser {
       partner,
       fromCity,
       toCity,
-      departure,
-      arrival,
+      date,
       duration,
       travelTime,
       cabin,
@@ -141,6 +140,7 @@ class Parser {
     award.partner = partner || this.partnerAward(query.engine, segments)
     award.fromCity = fromCity || first.fromCity
     award.toCity = toCity || last.toCity
+    award.date = date || first.date
     award.cabin = cabin || this.bestCabin(segments)
     award.mixed = mixed || this.mixedCabin(segments)
     award.duration = duration || this.duration(first, last)

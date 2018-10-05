@@ -17,7 +17,8 @@ app.get('/api/config', async (req, res, next) => {
       return { id, name, website, fares }
     })
 
-    // Get list of all airlines
+    // Get list of all aircraft and airlines
+    const aircraft = fp.aircraft
     const airlines = fp.airlines
 
     // Specify the available cabin options
@@ -28,7 +29,7 @@ app.get('/api/config', async (req, res, next) => {
       { value: fp.cabins.economy, label: 'Economy' }
     ]
 
-    res.send({engines, airlines, cabins})
+    res.send({engines, aircraft, airlines, cabins})
   } catch (err) {
     next(err)
   }

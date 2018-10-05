@@ -5,6 +5,7 @@
   "dependencies": {
     "d3": "^5.1.0",
     "d3-tip": "^0.9.0",
+    "luxon": "^1.4.2",
     "mobx": "^4.2.0",
     "mobx-react": "^5.0.0",
     "moment": "^2.22.1",

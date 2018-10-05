@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3'
-import moment from 'moment'
+import { DateTime } from 'luxon'
 
 import './ChartLabels.css'
 
@@ -45,14 +45,14 @@ class ChartLabels extends Component {
       .attr('transform', 'translate(' + size / 2 + ',' + size / 2 + ')')
 
     // Create day of week labels, around outer edge of chart
-    const index = moment().startOf('week')
+    let index = DateTime.local().startOf('week')
     for (var i = 0; i <= TOTAL_SEGMENTS; i++) {
       donutData.push({
-        isWeekend: (index.day() === 6) || (index.day() === 0),
-        name: (i <= DISPLAY_SEGMENTS) ? index.format('dddd') : '',
+        isWeekend: index.weekday >= 6,
+        name: (i <= DISPLAY_SEGMENTS) ? index.toFormat('cccc') : '',
         value: (100 / 40)
       })
-      index.add(1, 'day')
+      index = index.plus({ days: 1 })
     }
 
     // Create an arc function

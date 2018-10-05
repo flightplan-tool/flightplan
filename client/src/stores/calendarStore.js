@@ -1,5 +1,5 @@
 import { computed } from 'mobx'
-import moment from 'moment'
+import { DateTime } from 'luxon'
 
 const DISPLAY_SEGMENTS = 39 // Total segments to display on screen
 const TOTAL_SEGMENTS = 48 // Total number of segments for each chart ring
@@ -7,28 +7,28 @@ const TOTAL_SEGMENTS = 48 // Total number of segments for each chart ring
 export default class CalendarStore {
   constructor (searchStore) {
     this.searchStore = searchStore
-    this.today = moment().startOf('day')
+    this.today = DateTime.local().startOf('day')
     this.calendar = this.createCalendar(this.today)
   }
 
   createCalendar (today) {
-    const start = today.clone().startOf('month')
-    const end = today.clone().add(1, 'year').endOf('month')
+    const start = today.startOf('month')
+    const end = today.plus({ years: 1 }).endOf('month')
 
     // Create calendar for next 365 days
     let counter = 0
     const calendar = []
-    const index = start.clone()
-    while (index.isBefore(end, 'day')) {
+    let index = start
+    while (index < end) {
       calendar.push({
         index: counter++,
-        days: index.daysInMonth(),
-        month: index.month(),
-        year: index.year(),
-        startIndex: index.day(),
-        monthLabel: index.format('MMMM YYYY')
+        days: index.daysInMonth,
+        month: index.month,
+        year: index.year,
+        startIndex: index.weekday - 1,
+        monthLabel: index.toFormat('MMMM yyyy')
       })
-      index.add(1, 'month')
+      index = index.plus({ months: 1 })
     }
 
     return calendar
@@ -61,16 +61,15 @@ export default class CalendarStore {
         type = 'void'
       } else if (i < (month.days + startIndex)) {
         // This is a calendar day, compute date
-        date = moment({
+        date = DateTime.fromObject({
           year: month.year,
           month: month.month,
           day: (i - startIndex) + 1
         })
         
         // Now figure out what type it is
-        const day = date.day()
-        isWeekend = (day === 6) || (day === 0)
-        if (date.isSame(today, 'day')) {
+        isWeekend = date.weekday >= 6
+        if (date === today) {
           type = 'today'
         } else {
           type = 'inactive'
@@ -93,13 +92,13 @@ export default class CalendarStore {
   }
 
   getDaySlug (itemDate) {
-    return itemDate ? itemDate.date().toString().padStart(2, '0') : ''
+    return itemDate ? itemDate.toFormat('dd') : ''
   }
 
   markResults (data, awards) {
     // Assign each award to the segment it belongs to
     for (const award of awards) {
-      const segment = this.findSegment(data, moment(award.date))
+      const segment = this.findSegment(data, DateTime.fromSQL(award.date))
       if (segment) {
         if (!segment.awards) {
           segment.awards = []
@@ -117,11 +116,11 @@ export default class CalendarStore {
 
     // Find matching month first
     const monthIdx = calendar.findIndex(x => (
-      x.year === date.year() && x.month === date.month()
+      x.year === date.year && x.month === date.month
     ))
     if (monthIdx >= 0) {
       // Locate matching day
-      const dayIdx = calendar[monthIdx].startIndex + date.date() - 1
+      const dayIdx = calendar[monthIdx].startIndex + date.day - 1
       if (dayIdx >= 0 && dayIdx < data[monthIdx].length) {
         return data[monthIdx][dayIdx]
       }

@@ -1,5 +1,5 @@
 import { observable, computed, action, autorun } from 'mobx'
-import moment from 'moment'
+import { DateTime } from 'luxon'
 import URLSearchParams from 'url-search-params'
 
 import { strcmp } from '../lib/utilities'
@@ -104,9 +104,20 @@ export default class SearchStore {
       .map(x => filteredByFlight(x))
   }
 
+  @computed get aircraftInfo () {
+    const map = new Map()
+    const { aircraft } = this.configStore
+    if (aircraft) {
+      for (const plane of aircraft) {
+        map.set(plane.icao, plane.name)
+      }
+    }
+    return map
+  }
+
   @computed get airlineInfo () {
     const map = new Map()
-    const airlines = this.configStore.airlines
+    const { airlines } = this.configStore
     if (airlines) {
       for (const airline of airlines) {
         map.set(airline.id, airline)
@@ -127,13 +138,14 @@ export default class SearchStore {
   }
 
   @computed get flights () {
+    const { aircraftInfo } = this
     const segments = this.results.reduce((arr, award) => arr.concat(award.segments), [])
     const map = new Map()
     for (const segment of segments) {
       let f = {
         airline: segment.airline,
         flight: segment.flight,
-        aircraft: segment.aircraft
+        aircraft: aircraftInfo.get(segment.aircraft) || segment.aircraft
       }
       map.set([f.airline, f.flight, f.aircraft].join('|'), f)
     }
@@ -293,7 +305,7 @@ export default class SearchStore {
   }
 
   validDate (val) {
-    return val.isValid()
+    return val.isValid
   }
 
   validQuantity (val) {
@@ -311,8 +323,8 @@ export default class SearchStore {
       toCity: this.toCity.toUpperCase(),
       quantity,
       direction,
-      startDate: this.startDate.format('YYYY-MM-DD'),
-      endDate: this.endDate.format('YYYY-MM-DD'),
+      startDate: this.startDate.toSQLDate(),
+      endDate: this.endDate.toSQLDate(),
       cabin: cabinClasses.join(',')
     }
 
@@ -349,8 +361,8 @@ export default class SearchStore {
       direction: 'roundtrip',
       cabinClasses: ['first'],
       showMixedCabin: true,
-      startDate: moment().add(1, 'd'),
-      endDate: moment().add(1, 'y')
+      startDate: DateTime.local().plus({ days: 1 }),
+      endDate: DateTime.local().plus({ years: 1 })
     }
     for (const [key, defaultVal] of Object.entries(defaults)) {
       let val = localStorage.getItem(key)
@@ -381,8 +393,8 @@ export default class SearchStore {
             break
           case 'startDate':
           case 'endDate':
-            val = moment(val, 'YYYY-MM-DD')
-            val = val.isValid() ? val : defaultVal
+            val = DateTime.fromSQL(val)
+            val = val.isValid ? val : defaultVal
             break
           default:
             val = defaultVal
@@ -418,7 +430,7 @@ export default class SearchStore {
           break
         case 'startDate':
         case 'endDate':
-          val = val.format('YYYY-MM-DD')
+          val = val.toSQLDate()
           break
         default:
       }

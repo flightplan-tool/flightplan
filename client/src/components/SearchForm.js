@@ -10,7 +10,7 @@ import RadioButton from './controls/RadioButton'
 import './SearchForm.css'
 import 'react-datepicker/dist/react-datepicker.css'
 
-@inject('configStore', 'searchStore')
+@inject('searchStore')
 @observer
 class SearchForm extends Component {
   swapCities () {
@@ -83,9 +83,9 @@ class SearchForm extends Component {
             <label style={{ gridArea: 'startLabel' }}>Start Date</label>
             <DatePicker
               name='fromCity'
-              selected={searchStore.startDate}
+              selected={moment(searchStore.startDate.toISO())}
               minDate={moment()}
-              maxDate={searchStore.endDate}
+              maxDate={moment(searchStore.endDate.toISO())}
               monthsShown={2}
               fixedHeight
               onChange={(val) => searchStore.update({ startDate: val })}
@@ -94,8 +94,8 @@ class SearchForm extends Component {
             <label style={{ gridArea: 'endLabel' }}>End Date</label>
             <DatePicker
               name='toCity'
-              selected={searchStore.endDate}
-              minDate={searchStore.startDate}
+              selected={moment(searchStore.endDate.toISO())}
+              minDate={moment(searchStore.startDate.toISO())}
               maxDate={moment().add(1, 'y')}
               monthsShown={2}
               fixedHeight
