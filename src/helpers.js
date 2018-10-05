@@ -1,3 +1,4 @@
+const util = require('util')
 const { DateTime, Duration, Interval } = require('luxon')
 const parse = require('parse-duration')
 
@@ -200,7 +201,7 @@ module.exports = (Base) => class extends Base {
     const end = this.arrivalDateTime(last)
     const interval = Interval.fromDateTimes(start, end)
     if (!interval.isValid) {
-      throw new Error(`Invalid duration interval from segment: ${first}, ${last}`)
+      throw new Error(`Invalid duration interval from segment: ${util.inspect(first)}, ${util.inspect(last)}`)
     }
     return interval.toDuration().as('minutes')
   }
@@ -215,7 +216,7 @@ module.exports = (Base) => class extends Base {
     const end = this.departureDateTime(next)
     const interval = Interval.fromDateTimes(start, end)
     if (!interval.isValid) {
-      throw new Error(`Invalid connection time interval from segments: ${segment}, ${next}`)
+      throw new Error(`Invalid connection time interval from segments: ${util.inspect(segment)}, ${util.inspect(next)}`)
     }
     return interval.toDuration().as('minutes')
   }
@@ -282,5 +283,9 @@ module.exports = (Base) => class extends Base {
       { zone: this.airportTimeZone(segment.toCity) }
     )
     return dt.plus({ days: segment.lagDays })
+  }
+
+  fares (cabin, waitlisted = false) {
+    return this.config.fares.find(x => x.cabin === cabin).code + (waitlisted ? '@' : '+')
   }
 }

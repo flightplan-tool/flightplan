@@ -60,7 +60,6 @@ class Parser {
       mixed,
       stops,
       quantity,
-      mileage,
       fares,
       segments
     } = award
@@ -78,7 +77,6 @@ class Parser {
       const {
         airline,
         flight,
-        aircraft,
         fromCity,
         toCity,
         date,
@@ -86,7 +84,6 @@ class Parser {
         arrival,
         duration,
         nextConnection,
-        cabin,
         stops,
         lagDays
       } = segment
@@ -97,9 +94,6 @@ class Parser {
       }
       if (flight === undefined) {
         return `Award is missing property 'flight' in segment: ${segment}`
-      }
-      if (aircraft === undefined) {
-        return `Award is missing property 'aircraft' in segment: ${segment}`
       }
       if (!this.validAirportCode(fromCity)) {
         return `Award has invalid origin airport code in segment: ${segment}`
@@ -116,9 +110,6 @@ class Parser {
       if (arrival === undefined || !this.validTime(arrival)) {
         return `Award has invalid arrival in segment: ${segment}`
       }
-      if (cabin === undefined) {
-        return `Award is missing property 'cabin' in segment: ${segment}`
-      }
 
       // Fill in defaults
       segment.duration = duration || this.duration(segment)
@@ -128,9 +119,6 @@ class Parser {
     }
 
     // Check required information
-    if (mileage === undefined) {
-      return `Award is missing property 'mileage': ${award}`
-    }
     if (fares === undefined) {
       return `Award is missing property 'fares': ${award}`
     }

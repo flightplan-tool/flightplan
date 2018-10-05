@@ -77,7 +77,7 @@ function migrate () {
       'arrival TEXT NOT NULL',
       'duration INTEGER',
       'nextConnection INTEGER',
-      'cabin TEXT NOT NULL',
+      'cabin TEXT',
       'stops INTEGER DEFAULT 0',
       'lagDays INTEGER DEFAULT 0',
       'bookingCode TEXT',

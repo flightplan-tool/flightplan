@@ -1,89 +1,107 @@
-const jspath = require('jspath')
+const { DateTime } = require('luxon')
 
 const Parser = require('../base/parser')
 const { cabins } = require('../consts')
 
-// Cabin codes
-const cabinCodes = {
-  'E': cabins.economy,
-  'P': cabins.premium,
-  'B': cabins.business,
-  'F': cabins.first
-}
-
-// Certain aircraft codes that are lacking proper description
-const aircraftCodes = {
-  '319': 'Airbus 319',
-  '320': 'Airbus 320',
-  '321': 'Airbus 321',
-  '333': 'Airbus A330-300',
-  '346': 'Airbus A340-600',
-  '388': 'Airbus A380-800',
-  '738': 'Boeing 737-800',
-  '777': 'Boeing 777',
-  '788': 'Boeing 787-8',
-  '789': 'Boeing 787-9',
-  '7M8': 'Boeing 737 MAX 8',
-  '77W': 'Boeing 777-300ER',
-  '32A': 'Airbus A320neo',
-  'CS1': 'Airbus A220-100',
-  'CS3': 'Airbus A220-300'
-}
+// Regex patterns
+const reQuantity = /(\d+)\s+left/i
 
 module.exports = class extends Parser {
   parse (query, assets) {
-    const json = assets.json.find(x => x.name === 'results').contents
+    const $ = assets.html.find(x => x.name === 'results').$
+    this.query = query
 
-    // Get inbound and outbound flights
-    const departures = this.getFlights(json, 0)
-    const arrivals = this.getFlights(json, 1)
+    // Parse direct flights first
+    const direct = this.parseFlights($, '.direct-flight-details')
+    const connecting = this.parseFlights($, '.connecting-flights')
 
-    // Transform flight data
-    const awards = [...departures, ...arrivals].map(f => {
-      const award = {
-        mileage: f.startingMileage,
-        duration: f.totalMinutes,
-        segments: f.segment.map(x => ({
-          airline: x.airline,
-          flight: x.flightNo,
-          aircraft: x.aircraft in aircraftCodes ? aircraftCodes[x.aircraft] : x.aircraft,
-          fromCity: x.origin,
-          toCity: x.destination,
-          departure: x.departureDateTime,
-          arrival: x.arrivalDateTime,
-          duration: this.parseDuration(x.duration),
-          nextConnection: this.parseDuration(x.nextConnection),
-          cabin: cabinCodes[x.cabin],
-          stops: parseInt(x.stop),
-          lagDays: parseInt(x.lagDays),
-          bookingCode: x.bookClass
-        }))
-      }
+    return { awards: [...direct, ...connecting] }
+  }
 
-      // Calculate award fare code
-      award.cabin = this.bestCabin(award.segments)
-      award.fares = this.config.fares.find(x => (x.cabin === award.cabin && x.saver === f.saver)).code + '+'
+  parseFlights ($, sel) {
+    // Iterate over flights
+    const awards = []
+    $(sel).each((_, row) => {
+      // Iterate over each segment
+      const segments = []
+      $(row).find('.travel-time-detail').each((_, x) => {
+        // Calculate departure / arrival times
+        const departDate = DateTime.fromFormat($(x).find('p.departdate').first().text().trim(), 'd MMM')
+        const departTime = DateTime.fromFormat($(x).find('p.departtime').first().text().trim(), 'HH:mm')
+        const arrivalDate = DateTime.fromFormat($(x).find('p.arrivaldate').first().text().trim(), 'd MMM')
+        const arrivalTime = DateTime.fromFormat($(x).find('p.arrivaltime').first().text().trim(), 'HH:mm')
 
-      return award
+        // Start with base departure date, from query
+        const queryDate = DateTime.fromSQL(this.query.departDate)
+        let departure = DateTime.fromObject({
+          year: queryDate.year,
+          month: departDate.month,
+          day: departDate.day,
+          hour: departTime.hour,
+          minute: departTime.minute
+        })
+        let arrival = DateTime.fromObject({
+          year: queryDate.year,
+          month: arrivalDate.month,
+          day: arrivalDate.day,
+          hour: arrivalTime.hour,
+          minute: arrivalTime.minute
+        })
+
+        // In case date wrapped around, increment year
+        while (arrival < departure) {
+          arrival = arrival.plus({ years: 1 })
+        }
+
+        // Add segment
+        const airports = $(x).find('p.airport-code')
+        const flightInfo = $(x).find('p.career-and-flight').first().text().split('-')
+        const flightNumber = flightInfo[flightInfo.length - 1].trim()
+        segments.push({
+          airline: flightNumber.substring(0, 2),
+          flight: flightNumber,
+          fromCity: airports.eq(0).text().trim(),
+          toCity: airports.eq(1).text().trim(),
+          date: departure.toSQLDate(),
+          departure: departure.toFormat('HH:mm'),
+          arrival: arrival.toFormat('HH:mm'),
+          lagDays: arrivalDate.diff(departDate).as('days')
+        })
+      })
+
+      // Get cabins / quantity for award
+      $(row).find('div[class^="flightCabin"]').each((_, x) => {
+        if ($(x).find('label.txtAvlSlctCls').length) {
+          const seatsLeft = $(x).find('.message-number-of-seats')
+          const quantity = this.parseQuantity(seatsLeft) || Math.max(this.query.quantity, 7)
+          const cabin = this.parseCabin($(x).find('.travel-class'))
+          const fares = this.fares(cabin)
+          awards.push({ cabin, quantity, fares, segments })
+        }
+      })
     })
 
-    // Return results
-    return { awards }
+    return awards
   }
 
-  getFlights (json, index) {
-    const fixed = this.getProduct(json, index, 'classic')
-    const market = this.getProduct(json, index, 'classicPlus')
-    fixed.forEach(x => { x.saver = true })
-    market.forEach(x => { x.saver = false })
-    return [...fixed, ...market]
+  parseQuantity (ele) {
+    if (ele) {
+      const str = ele.text().trim()
+      const result = reQuantity.exec(str)
+      if (result) {
+        return parseInt(result[1])
+      }
+    }
+    return null
   }
 
-  getProduct (json, index, type) {
-    return jspath.apply(
-      `.NormalResults.product{.name === $type}.tripComponent{.position === $index}.ODoption`,
-      json,
-      { type: type, index: index }
-    )
+  parseCabin (ele) {
+    const displayCodes = {
+      'Economy': cabins.economy,
+      'Premium Economy': cabins.premium,
+      'Business Class': cabins.business,
+      'First': cabins.first
+    }
+    return displayCodes[ele.text().trim()]
   }
 }

@@ -116,7 +116,7 @@ module.exports = class extends Parser {
       award.cabin = this.bestCabin(award.segments)
       award.mileage = this.mileage(flightId, isOutbound)
       award.quantity = this.quantity(flightId, isOutbound)
-      award.fares = this.fares(award.cabin) + ((award.quantity > 0) ? '+' : '@')
+      award.fares = this.fares(award.cabin, award.quantity > 0)
       awards.push(award)
     }
 
@@ -197,9 +197,5 @@ module.exports = class extends Parser {
     const arr = this.offers(flightId, isOutbound)
       .map(x => isOutbound ? x.outBoundSeats : x.inBoundSeats)
     return (arr.length === 0) ? 0 : Math.max(...arr)
-  }
-
-  fares (cabin) {
-    return this.config.fares.find(x => x.cabin === cabin).code
   }
 }
