@@ -50,7 +50,7 @@ module.exports = class extends Parser {
 
       // Calculate award fare code
       award.cabin = this.bestCabin(award.segments)
-      award.fares = this.config.fares.find(x => (x.cabin === award.cabin && x.saver === f.saver)).code + '+'
+      award.fares = this.fares(award.cabin, f.saver)
 
       return award
     })
