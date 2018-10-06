@@ -7,8 +7,8 @@ const engines = {
   ba: require('./ba'),
   // cx: require('./cx'),
   // ke: require('./ke'),
-  nh: require('./nh')
-  // sq: require('./sq')
+  nh: require('./nh'),
+  sq: require('./sq')
 }
 
 module.exports = {

@@ -2,40 +2,6 @@ const Engine = require('../base/engine')
 const { cabins } = require('../consts')
 
 module.exports = class extends Engine {
-  async initialize (page) {
-    // Load airport codes
-    this.info('Loading airports...')
-    const { airports, error } = await airportCodes(this)
-
-    // Check for any errors
-    if (error) {
-      return { error }
-    }
-
-    // Save the results
-    this.airports = airports
-    this.info(`Found ${airports.size} airports`)
-  }
-
-  async prepare (page) {
-    // Ensure page is loaded, since we're only waiting until 'domcontentloaded' event
-    await page.waitFor(1000)
-    await settle(this)
-
-    // Dismiss modal pop-up's
-    while (true) {
-      if (
-        await this.clickIfVisible('div.cookie-continue') ||
-        await this.clickIfVisible('div.insider-opt-in-disallow-button') ||
-        await this.clickIfVisible('div.ins-survey-435-close')
-      ) {
-        await page.waitFor(2000)
-        continue
-      }
-      break
-    }
-  }
-
   async isLoggedIn (page) {
     try {
       await page.waitFor(
@@ -44,11 +10,14 @@ module.exports = class extends Engine {
     return !!(await page.$('li.logged-in'))
   }
 
-  async login (page) {
-    const { username, password } = this.options
+  async login (page, credentials) {
+    const [ username, password ] = credentials
     if (!username || !password) {
       return { error: `Missing login credentials` }
     }
+
+    // Dismiss popups
+    await this.prepare()
 
     // Check if the login form is visible
     let formVisible = true
@@ -81,7 +50,7 @@ module.exports = class extends Engine {
       await page.waitFor(250)
     }
     await this.clickAndWait('#kfLoginPopup #submit-1')
-    await settle(this)
+    await this.settle()
 
     // Bypass invisible captcha, if present
     const bypassed = await page.evaluate(() => {
@@ -94,33 +63,25 @@ module.exports = class extends Engine {
     if (bypassed) {
       this.info('Detected and bypassed invisible captcha')
       await page.waitFor(3000)
-      await settle(this)
+      await this.settle()
       await page.waitFor(5000)
     }
   }
 
-  validAirport (airport) {
-    return this.airports.has(airport)
-  }
+  validate (query) {}
 
-  async setup (page) {
+  async search (page, query) {
+    const { partners, fromCity, toCity, oneWay, departDate, returnDate, cabin, quantity } = query
+
+    // Make sure page is ready
+    await this.prepare()
+
     // Check the Redeem Flights radio button
     await page.waitFor('#travel-radio-2', { visible: true })
     await page.click('#travel-radio-2')
-    await settle(this)
-  }
+    await this.settle()
 
-  async setFromCity (page, city) {
-    await this.setValue('#city1-1', this.airports.get(city))
-    await settle(this)
-  }
-
-  async setToCity (page, city) {
-    await this.setValue('#city1-2', this.airports.get(city))
-    await settle(this)
-  }
-
-  async setOneWay (page, oneWay) {
+    // Check the Return or One-way radio button
     if (oneWay) {
       await page.waitFor('#city1-radio-5', {visible: true})
       await page.click('#city1-radio-5')
@@ -128,99 +89,105 @@ module.exports = class extends Engine {
       await page.waitFor('#city1-radio-4', {visible: true})
       await page.click('#city1-radio-4')
     }
-    await settle(this)
-  }
+    await this.settle()
 
-  async setDepartDate (page, departDate) {
-    // Multiple departure date inputs with same name, make sure they're all set
-    departDate = departDate.toFormat('dd/MM/yyyy')
-    await this.setValue('#city1-travel-start-day', departDate)
-    await this.setValue('#city1-travel-start-day-2', departDate)
-    await settle(this)
-  }
-
-  async setReturnDate (page, returnDate) {
-    returnDate = returnDate.toFormat('dd/MM/yyyy')
-    await this.setValue('#city1-travel-return-day', returnDate)
-    await settle(this)
-  }
-
-  async setCabin (page, cabin) {
-    const classOptions = {
-      [cabins.economy]: 'economy',
-      [cabins.premium]: 'premiumeconomy',
-      [cabins.business]: 'business',
-      [cabins.first]: 'firstSuite'
+    // Fill form values
+    const cabinCode = {
+      [cabins.economy]: 'F',
+      [cabins.business]: 'J',
+      [cabins.premium]: 'S',
+      [cabins.first]: 'Y'
     }
-    if (!(cabin in classOptions)) {
-      return { error: `Invalid cabin class: ${cabin}` }
-    }
-    if (!await this.select('#city1-cabin-1', classOptions[cabin])) {
-      return { error: `Could not set cabin class to: ${cabin}` }
-    }
-  }
+    await this.fillForm({
+      'orbOrigin': fromCity,
+      'orbDestination': toCity,
+      'departureMonth': departDate.toFormat('dd/MM/yyyy'),
+      'returnMonth': returnDate ? returnDate.toFormat('dd/MM/yyyy') : '',
+      'cabinClass': cabinCode[cabin],
+      'numOfAdults': quantity.toString(),
+      'numOfChildren': '0',
+      'numOfChildNominees': 0,
+      'numOfAdultNominees': 0
+    })
 
-  async setQuantity (page, quantity) {
-    if (!await this.select('#city1-cabin-2', quantity.toString())) {
-      return { error: `Could not set # of adults to: ${quantity}` }
-    }
-  }
-
-  async submit (page, htmlFile, screenshot) {
-    let ret
+    // There are extraneous inputs that need to be removed from form submission
+    await page.evaluate(() => {
+      document.querySelector('#form-book-travel-1 [name="destinationDropDown"]').name = ''
+      document.querySelector('#city1-travel-start-day-2').name = ''
+    })
 
     // Submit the form
-    const response = await this.clickAndWait('#form-book-travel-1 #city-travel-input-2')
-    await settle(this)
-
-    // Save the HTML and screenshot
-    ret = await this.save(htmlFile, screenshot)
+    let ret = await this.submitForm('form-book-travel-1')
     if (ret && ret.error) {
       return ret
     }
+    await this.settle()
+
+    // Save the results
+    ret = await this.saveHTML('results')
+    if (ret && ret.error) {
+      return ret
+    }
+
+    // If partners requested, check those as well
+    if (partners) {
+      // Show "Star Alliance" flights
+      ret = await this.save('.orb-selectflight-btn-group > a:nth-child(3)', 'partners1')
+      if (ret && ret.error) {
+        return ret
+      }
+
+      // Show "Other Partner" flights
+      ret = await this.save('.orb-selectflight-btn-group > a:nth-child(4)', 'partners2')
+      if (ret && ret.error) {
+        return ret
+      }
+    }
+  }
+
+  async save (sel, id) {
+    const response = await this.clickAndWait(sel)
+    await this.settle()
 
     // Check response code
-    ret = this.validResponse(response)
+    let ret = this.validResponse(response)
+    if (ret && ret.error) {
+      return ret
+    }
+
+    // Save the results
+    ret = await this.saveHTML(id)
     if (ret && ret.error) {
       return ret
     }
   }
-}
 
-async function settle (engine) {
-  // Wait for spinner
-  await engine.settle('div.overlay-loading')
-}
+  async prepare () {
+    const { page } = this
 
-async function airportCodes (engine) {
-  const { page } = engine
-  const airports = new Map()
+    // Ensure page is loaded, since we're only waiting until 'domcontentloaded' event
+    await page.waitFor(1000)
+    await this.settle()
 
-  // Make sure we're in redeem flights mode (to see all the *A cities)
-  await page.waitFor('#travel-radio-2', {visible: true})
-  await page.click('#travel-radio-2')
-  await settle(engine)
-
-  // Wait for the selector to exist
-  const selector = '#cib-flight3 > option'
-  await page.waitFor(selector)
-
-  // Get list of cities
-  const cityCount = await page.evaluate((sel) => {
-    return document.querySelectorAll(sel).length
-  }, selector)
-
-  for (let i = 1; i <= cityCount; i++) {
-    const citySel = `${selector}:nth-child(${i})`
-    const [value, name] = await page.evaluate((sel) => {
-      const ele = document.querySelector(sel)
-      return [ele.getAttribute('data-text'), ele.text]
-    }, citySel)
-    const code = /-\s+(\w+)\s*/.exec(value)
-    if (code) {
-      airports.set(code[1], name)
+    // Dismiss modal pop-up's
+    while (true) {
+      if (
+        await this.clickIfVisible('div.cookie-continue') ||
+        await this.clickIfVisible('div.insider-opt-in-disallow-button') ||
+        await this.clickIfVisible('div.ins-survey-435-close')
+      ) {
+        await page.waitFor(2000)
+        continue
+      }
+      break
     }
   }
 
-  return { airports }
+  async settle () {
+    // Wait for spinner
+    await this.monitor('div.overlay-loading')
+
+    // Check for survey pop-up
+    await this.clickIfVisible('div[class^="ins-survey-"][class$="-close"]')
+  }
 }

@@ -13,6 +13,9 @@ class Parser {
     const { query, json, html } = results
     let ret
 
+    // Store query
+    this.query = query
+
     // Parse any HTML assets
     if (html) {
       html.forEach(x => { x.$ = cheerio.load(x.contents) })

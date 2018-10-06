@@ -64,7 +64,7 @@ class Engine {
       return { error: `Invalid quantity: ${quantity}` }
     }
 
-    return this.validate(query)
+    return !this.validate || this.validate(query)
   }
 
   async _login () {

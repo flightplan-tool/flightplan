@@ -1,5 +1,3 @@
-const { DateTime } = require('luxon')
-
 const Parser = require('../base/parser')
 const { cabins } = require('../consts')
 
@@ -9,7 +7,6 @@ const reQuantity = /(\d+)\s+left/i
 module.exports = class extends Parser {
   parse (query, assets) {
     const $ = assets.html.find(x => x.name === 'results').$
-    this.query = query
 
     // Parse direct flights first
     const direct = this.parseFlights($, '.direct-flight-details')
@@ -26,32 +23,10 @@ module.exports = class extends Parser {
       const segments = []
       $(row).find('.travel-time-detail').each((_, x) => {
         // Calculate departure / arrival times
-        const departDate = DateTime.fromFormat($(x).find('p.departdate').first().text().trim(), 'd MMM')
-        const departTime = DateTime.fromFormat($(x).find('p.departtime').first().text().trim(), 'HH:mm')
-        const arrivalDate = DateTime.fromFormat($(x).find('p.arrivaldate').first().text().trim(), 'd MMM')
-        const arrivalTime = DateTime.fromFormat($(x).find('p.arrivaltime').first().text().trim(), 'HH:mm')
-
-        // Start with base departure date, from query
-        const queryDate = DateTime.fromSQL(this.query.departDate)
-        let departure = DateTime.fromObject({
-          year: queryDate.year,
-          month: departDate.month,
-          day: departDate.day,
-          hour: departTime.hour,
-          minute: departTime.minute
-        })
-        let arrival = DateTime.fromObject({
-          year: queryDate.year,
-          month: arrivalDate.month,
-          day: arrivalDate.day,
-          hour: arrivalTime.hour,
-          minute: arrivalTime.minute
-        })
-
-        // In case date wrapped around, increment year
-        while (arrival < departure) {
-          arrival = arrival.plus({ years: 1 })
-        }
+        const departDate = this.parseDate($(x).find('p.departdate').first().text().trim(), 'd MMM')
+        const departTime = $(x).find('p.departtime').first().text().trim()
+        const arrivalDate = this.parseDate($(x).find('p.arrivaldate').first().text().trim(), 'd MMM')
+        const arrivalTime = $(x).find('p.arrivaltime').first().text().trim()
 
         // Add segment
         const airports = $(x).find('p.airport-code')
@@ -62,10 +37,10 @@ module.exports = class extends Parser {
           flight: flightNumber,
           fromCity: airports.eq(0).text().trim(),
           toCity: airports.eq(1).text().trim(),
-          date: departure.toSQLDate(),
-          departure: departure.toFormat('HH:mm'),
-          arrival: arrival.toFormat('HH:mm'),
-          lagDays: arrivalDate.diff(departDate).as('days')
+          date: departDate.toSQLDate(),
+          departure: departTime,
+          arrival: arrivalTime,
+          lagDays: this.computeLagDays(departDate, arrivalDate)
         })
       })
 

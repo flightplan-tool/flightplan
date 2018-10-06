@@ -1,5 +1,4 @@
 const cheerio = require('cheerio')
-const { DateTime } = require('luxon')
 
 const Parser = require('../base/parser')
 const { cabins } = require('../consts')
@@ -24,7 +23,6 @@ module.exports = class extends Parser {
     const json = assets.json.find(x => x.name === 'extra').contents
     this.airports = json.airports
     this.recommendationList = json.recommendationList
-    this.query = query
 
     try {
       // Parse inbound and outbound flights
@@ -116,7 +114,7 @@ module.exports = class extends Parser {
       award.cabin = this.bestCabin(award.segments)
       award.mileage = this.mileage(flightId, isOutbound)
       award.quantity = this.quantity(flightId, isOutbound)
-      award.fares = this.fares(award.cabin, award.quantity > 0)
+      award.fares = this.fares(award.cabin, true, award.quantity > 0)
       awards.push(award)
     }
 
@@ -147,15 +145,7 @@ module.exports = class extends Parser {
     }
 
     // Start with base departure date, from query
-    const queryDate = DateTime.fromSQL(this.query.departDate)
-    let date = DateTime.fromFormat(result[0], 'MMM d').set({ year: queryDate.year })
-
-    // In case date wrapped around, increment year
-    while (date < queryDate) {
-      date = date.plus({ years: 1 })
-    }
-
-    return date.toSQLDate()
+    return this.parseDate(result[0], 'MMM d').toSQLDate()
   }
 
   flightTime (str) {

@@ -52,7 +52,7 @@ module.exports = (Base) => class extends Base {
     return value === await this.page.$eval(selector, x => x.value)
   }
 
-  async monitor (selector, timeout1 = 1000, timeout2 = 300000) {
+  async monitor (selector, timeout1 = 2000, timeout2 = 300000) {
     while (true) {
       // Wait for the element to appear
       try {
@@ -85,20 +85,23 @@ module.exports = (Base) => class extends Base {
     return this.page.evaluate((values) => {
       for (var key in values) {
         if (values.hasOwnProperty(key)) {
-          const ele = document.getElementsByName(key)[0]
-          if (!ele) {
+          const arr = document.getElementsByName(key)
+          if (arr.length === 0) {
             throw new Error(`Missing form element: ${key}`)
           }
-          if (ele.tagName === 'SELECT') {
-            const opt = document.createElement('option')
-            opt.value = values[key]
-            opt.innerHTML = values[key]
-            ele.appendChild(opt)
-          }
-          if (ele.type === 'checkbox') {
-            ele.checked = values[key]
-          } else {
-            ele.value = values[key]
+          for (let i = 0; i < arr.length; i++) {
+            const ele = arr[i]
+            if (ele.tagName === 'SELECT') {
+              const opt = document.createElement('option')
+              opt.value = values[key]
+              opt.innerHTML = values[key]
+              ele.appendChild(opt)
+            }
+            if (ele.type === 'checkbox') {
+              ele.checked = values[key]
+            } else {
+              ele.value = values[key]
+            }
           }
         }
       }
@@ -242,11 +245,11 @@ module.exports = (Base) => class extends Base {
   }
 
   validDate (date) {
-    return DateTime.fromFormat(date, 'yyyy-MM-dd').isValid
+    return DateTime.fromFormat(date, 'yyyy-MM-dd', {zone: 'utc'}).isValid
   }
 
   validTime (time) {
-    return DateTime.fromFormat(time, 'HH:mm').isValid
+    return DateTime.fromFormat(time, 'HH:mm', {zone: 'utc'}).isValid
   }
 
   airportTimeZone (iataCode) {
@@ -285,7 +288,31 @@ module.exports = (Base) => class extends Base {
     return dt.plus({ days: segment.lagDays })
   }
 
-  fares (cabin, waitlisted = false) {
-    return this.config.fares.find(x => x.cabin === cabin).code + (waitlisted ? '@' : '+')
+  parseDate (text, fmt, options = {}) {
+    // Parse the date using the provided format string
+    const dt = DateTime.fromFormat(text, fmt, { ...options, zone: 'utc' })
+
+    // Determine the year that puts the date closest to what we queried (due to
+    // time zone changes, the arrival year could be earlier than the departure year)
+    const queryDate = DateTime.fromSQL(this.query.departDate, { zone: 'utc' })
+    const years = [queryDate.year - 1, queryDate.year, queryDate.year + 1]
+    const diffs = years.map(x => Math.abs(queryDate.set({ year: x }).diff(queryDate).as('days')))
+
+    // Choose the year that had the smallest absolute difference in days
+    const bestYear = years[diffs.indexOf(Math.min(...diffs))]
+
+    return dt.set({ year: bestYear })
+  }
+
+  computeLagDays (departure, arrival) {
+    departure = departure.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+    arrival = arrival.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+    return arrival.diff(departure, 'days').as('days')
+  }
+
+  fares (cabin, saver = true, waitlisted = false) {
+    return this.config.fares.find(x => {
+      return x.cabin === cabin && x.saver === saver
+    }).code + (waitlisted ? '@' : '+')
   }
 }

@@ -270,7 +270,7 @@ const main = async (args) => {
     db.open()
 
     // Generate queries
-    const days = endDate.diff(startDate, 'days') + 1
+    const days = endDate.diff(startDate).as('days') + 1
     const queries = generateQueries(args, engine, days)
 
     // Execute queries
