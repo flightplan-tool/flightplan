@@ -77,9 +77,9 @@ const main = async (args) => {
       // Print the award fares for this route
       if (verbose) {
         for (const award of awards) {
-          const { fromCity, toCity, departure, fares, mileage } = award
+          const { fromCity, toCity, date, fares, mileage } = award
           const segments = award.segments.map(x => x.flight).join('-')
-          console.log(`    [${fromCity} -> ${toCity}] - ${departure.toSQLDate()} ${segments} (${mileage} Miles): ${fares}`)
+          console.log(`    [${fromCity} -> ${toCity}] - ${date} ${segments} (${mileage} Miles): ${fares}`)
         }
       }
 
