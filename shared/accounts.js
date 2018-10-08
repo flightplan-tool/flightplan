@@ -8,8 +8,33 @@ const utils = require('../shared/utils')
 let accounts = null
 
 function loadAccounts () {
-  if (!fs.existsSync(paths.credentials)) {
-    // Ask if the user would like us to create the file, from the template
+  let credentialsExists = fs.existsSync(paths.credentials)
+
+  // Check if we should convert an old JSON-format version
+  if (!credentialsExists && fs.existsSync(paths.oldCredentials)) {
+    if (utils.promptYesNo(`
+ERROR: An older version of the airline website credentials (JSON-format) was found at "${paths.oldCredentials}"
+
+Would you like to convert it to the newer format?`)) {
+      // Load JSON
+      const contents = fs.readFileSync(paths.oldCredentials)
+      const json = JSON.parse(contents)
+      const lines = []
+      for (const [key, list] of Object.entries(json)) {
+        for (const val of list) {
+          const { username, password } = val
+          lines.push([ key.toUpperCase(), username, password ].join(':'))
+        }
+      }
+
+      // Write out new file
+      fs.appendFileSync(paths.credentials, lines.sort().join('\n'))
+      credentialsExists = true
+    }
+  }
+
+  // Ask if the user would like us to create the file, from the template
+  if (!credentialsExists) {
     if (utils.promptYesNo(`
 ERROR: Airline website credentials not found at "${paths.credentials}"
 
