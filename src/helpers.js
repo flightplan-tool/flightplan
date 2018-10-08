@@ -305,9 +305,9 @@ module.exports = (Base) => class extends Base {
   }
 
   computeLagDays (departure, arrival) {
-    departure = departure.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-    arrival = arrival.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-    return arrival.diff(departure, 'days').as('days')
+    departure = DateTime.fromSQL(departure.toSQLDate(), { zone: 'utc' })
+    arrival = DateTime.fromSQL(arrival.toSQLDate(), { zone: 'utc' })
+    return arrival.diff(departure).as('days')
   }
 
   fares (cabin, saver = true, waitlisted = false) {

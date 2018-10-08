@@ -145,7 +145,7 @@ module.exports = class extends Parser {
     }
 
     // Start with base departure date, from query
-    return this.parseDate(result[0], 'MMM d').toSQLDate()
+    return this.parseDate(result[0], 'LLL d').toSQLDate()
   }
 
   flightTime (str) {

@@ -23,9 +23,9 @@ module.exports = class extends Parser {
       const segments = []
       $(row).find('.travel-time-detail').each((_, x) => {
         // Calculate departure / arrival times
-        const departDate = this.parseDate($(x).find('p.departdate').first().text().trim(), 'd MMM')
+        const departDate = this.parseDate($(x).find('p.departdate').first().text().trim(), 'd LLL')
         const departTime = $(x).find('p.departtime').first().text().trim()
-        const arrivalDate = this.parseDate($(x).find('p.arrivaldate').first().text().trim(), 'd MMM')
+        const arrivalDate = this.parseDate($(x).find('p.arrivaldate').first().text().trim(), 'd LLL')
         const arrivalTime = $(x).find('p.arrivaltime').first().text().trim()
 
         // Add segment

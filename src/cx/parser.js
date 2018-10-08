@@ -1,151 +1,133 @@
+const jspath = require('jspath')
+const { DateTime } = require('luxon')
+
 const Parser = require('../base/parser')
 const { cabins } = require('../consts')
+const { aircraft } = require('../data')
 
-// Regex patterns
-const reFlight = /([A-Z]+)\d+/
-const rePrice = /\d+,000/
+// Cabin codes
+const cabinCodes = [
+  { cabin: cabins.first, code: 'F' },
+  { cabin: cabins.business, code: 'B' },
+  { cabin: cabins.premium, code: 'R' },
+  { cabin: cabins.economy, code: 'N' }
+]
 
-// Cached mapping of flight => aircraft
-const aircraftForFlight = {
-  'CX851': 'Airbus A350-900',
-  'CX870': 'Boeing 777-300',
-  'CX872': 'Boeing 777-300ER',
-  'CX873': 'Boeing 777-300ER',
-  'CX879': 'Boeing 777-300ER',
-  'CX892': 'Airbus A350-900',
-  'CX893': 'Airbus A350-900',
-  'CX895': 'Airbus A350-900',
-  'CX2873': 'Boeing 777-300ER',
-  'CX2892': 'Airbus A350-900',
-  'CX2893': 'Airbus A350-900',
-  'CX5660': 'Airbus A330-300',
-  'CX5662': 'Airbus A330-300',
-  'CX5668': 'Airbus A330-300',
-  'KA660': 'Airbus A330-300',
-  'KA661': 'Airbus A330-300',
-  'KA662': 'Airbus A330-300',
-  'KA663': 'Airbus A330-300',
-  'KA668': 'Airbus A330-300'
+// Tier codes
+const tierMap = {
+  'STD': 'S',
+  'PT1': '1',
+  'PT2A': '2'
 }
 
 module.exports = class extends Parser {
-  parse (request, $, html) {
-    const { fromCity, toCity, cabin, departDate } = request
-    const fareMap = buildFareMap(this.config.fares)
+  parse (query, assets) {
+    const json = assets.json.find(x => x.name === 'results').contents
 
-    // Check if no available awards
-    if ($('.no-flights-header').length > 0 ||
-      $('span.label-error').text().includes('no flights available')) {
-      return { awards: [] }
-    }
+    // Get airport codes
+    const airports = this.airportCodes(json)
 
-    // Confirm cabin and fare class
-    let active = $('.cabin-ticket-card-wrapper-outer.active')
-    if (active.length === 0) {
-      return { error: 'Active fare class not found' }
-    }
-    active = [
-      $(active).find('span.cabin-class'),
-      $(active).find('span.ticket-type')
-    ].map(x => x.text().trim()).join(' ')
-    const fare = fareMap.get(active)
-    if (!fare || fare.cabin !== cabin) {
-      return { error: 'Wrong cabin detected' }
-    }
+    // get pricing info
+    const { milesInfo } = json
 
-    // Get list of flights
-    let error = null
-    const awards = []
-    const table = $('.col-select-flight-wrap')
-    $(table).find('.row-flight-card').each((_, row) => {
-      // Check if flight is not available
-      if ($(row).hasClass('inactive') || $(row).hasClass('flight-full')) {
-        return
+    // Get flights
+    const flights = jspath.apply(`.pageBom.modelObject.availabilities.upsell.bounds.flights`, json)
+    const awards = flights.map(f => {
+      const award = {
+        mileage: (f.flightIdString in milesInfo) ? milesInfo[f.flightIdString] : null,
+        duration: f.duration / 60000,
+        segments: f.segments.map(x => {
+          const flightId = x.flightIdentifier
+          const airline = flightId.marketingAirline
+          const fromCity = airports.get(x.originLocation)
+          const toCity = airports.get(x.destinationLocation)
+
+          // Calculate departure / arrival times
+          const departureUTC = DateTime.fromMillis(flightId.originDate, { zone: 'utc' })
+          const arrivalUTC = DateTime.fromMillis(x.destinationDate, { zone: 'utc' })
+          const departure = departureUTC.setZone(this.airportTimeZone(fromCity), {keepLocalTime: true})
+          const arrival = arrivalUTC.setZone(this.airportTimeZone(toCity), {keepLocalTime: true})
+
+          // Return the segment
+          return {
+            airline,
+            flight: `${airline}${flightId.flightNumber}`,
+            aircraft: this.findAircraft(x.equipment),
+            fromCity,
+            toCity,
+            date: departure.toSQLDate(),
+            departure: departure.toFormat('HH:mm'),
+            arrival: arrival.toFormat('HH:mm'),
+            cabin: this.highestCabin(x.cabins).cabin,
+            stops: parseInt(x.numberOfStops),
+            lagDays: this.computeLagDays(departure, arrival)
+          }
+        })
       }
 
-      // Check if it's a downgrade
-      if ($(row).find('.flight-notice').text().includes('class is suggested')) {
-        return
+      // Calculate award fare code
+      award.cabin = this.bestCabin(award.segments)
+
+      // Calculate waitlist and quantity
+      let quantity = Number.MAX_SAFE_INTEGER
+      let waitlisted = false
+      for (const segment of f.segments) {
+        const { status } = this.highestCabin(segment.cabins)
+        if (status === 'L') {
+          waitlisted = true
+          quantity = 0
+        } else {
+          quantity = Math.min(quantity, parseInt(status))
+        }
       }
+      award.quantity = (quantity > 0) ? quantity : this.query.quantity
 
-      // Get flight number
-      const segments = $(row).find('span.flight-number')
-      if (segments.length !== 1) {
-        return // Only interested in non-stop flights
-      }
-      let flight = reFlight.exec(segments.text())
-      if (!flight) {
-        error = `Failed to parse valid flight number: ${segments.text()}`
-        return
-      }
-      if (flight[1] !== 'CX' && flight[1] !== 'KA') {
-        return // Only interested in CX flights
-      }
-      flight = flight[0]
+      // Parse flight id string, to compute fare code
+      const tierSuffix = tierMap[f.flightIdString.split('_').slice(-2)[0]]
+      const fare = this.config.fares.find(x => x.cabin === award.cabin && x.code.endsWith(tierSuffix))
+      award.fares = fare.code + (waitlisted ? '@' : '+')
 
-      // Double-check the origin / destination
-      error = checkCities($, row, 'div.flight-origin', 'div.flight-destination', request)
-      if (error) {
-        return
-      }
-
-      // TODO: Need to fetch flight details at search time, to get aircraft
-      const aircraft = aircraftForFlight[flight] || '(Unknown Aircraft)'
-
-      // Ensure the flight is available (should have a valid price)
-      const price = rePrice.exec($(row).find('span.am-total').text())
-      if (!price) {
-        return
-      }
-
-      // Check if it's waitlist
-      const waitlisted = $(row).find('.row-flight-pricing-seat').text().includes('Waitlist')
-
-      // Get fare code
-      const fares = fare.code + (waitlisted ? '@' : '+')
-
-      // Add the award
-      awards.push({ fromCity, toCity, date: departDate, cabin, flight, aircraft, fares })
+      return award
     })
 
-    // Check for any errors
-    if (error) {
-      return { error }
-    }
-
-    // Create final list of awards, and return it
+    // Return results
     return { awards }
   }
-}
 
-function buildFareMap (fares) {
-  const cabinStr = {
-    [cabins.economy]: 'Economy',
-    [cabins.premium]: 'Premium Economy',
-    [cabins.business]: 'Business',
-    [cabins.first]: 'First'
+  findAircraft (equipment) {
+    const result = aircraft.find(x => x.iata === equipment)
+    if (!result) {
+      throw new Error(`Missing details for aircraft with IATA code: ${equipment}`)
+    }
+    return result.icao
   }
-  const typeStr = {
-    'S': 'Standard',
-    '1': 'Choice',
-    '2': 'Tailored'
-  }
-  const map = new Map()
-  for (const fare of fares) {
-    map.set(`${cabinStr[fare.cabin]} ${typeStr[fare.code[1]]}`, fare)
-  }
-  return map
-}
 
-function checkCities ($, row, selOrigin, selDestination, request) {
-  const { fromCity, toCity } = request
-  const origin = $(row).find(selOrigin).text().trim()
-  const destination = $(row).find(selDestination).text().trim()
-  if (origin !== fromCity) {
-    return `Incorrect origin city detected: ${origin} (expected: ${fromCity})`
+  highestCabin (cabins) {
+    const start = cabinCodes.findIndex(x => x.cabin === this.query.cabin)
+    for (const x of cabinCodes.slice(start)) {
+      if (x.code in cabins) {
+        return { cabin: x.cabin, ...cabins[x.code] }
+      }
+    }
   }
-  if (destination !== toCity) {
-    return `Incorrect destination city detected: ${destination} (expected: ${toCity})`
+
+  airportCodes (json) {
+    const map = new Map()
+    const classNames = jspath.apply(`.pageBom.dictionaries.classNameDictionary`, json)[0]
+    const locationIdx = Object.entries(classNames).find(x => x[1] === 'CXLocation')[0]
+    const dict = jspath.apply(`.pageBom.dictionaries.values."${locationIdx}".*`, json)
+
+    // Add airports
+    jspath.apply(`.{.type === "A"}`, dict).forEach(entry => {
+      map.set(entry.dictionaryKey, entry.code)
+    })
+
+    // Add terminals
+    jspath.apply(`.{.type === "T"}`, dict).forEach(entry => {
+      const parent = dict.find(x => x.dictionaryKey === entry.parent)
+      map.set(entry.dictionaryKey, parent.code)
+    })
+
+    return map
   }
-  return null
 }

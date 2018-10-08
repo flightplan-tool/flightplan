@@ -5,7 +5,7 @@ const Engine = require('./base')
 const engines = {
   ac: require('./ac'),
   ba: require('./ba'),
-  // cx: require('./cx'),
+  cx: require('./cx'),
   // ke: require('./ke'),
   nh: require('./nh'),
   sq: require('./sq')

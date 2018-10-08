@@ -144,7 +144,7 @@ module.exports = class extends Parser {
     const city = hourResult[1]
     const time = hourResult[2]
     const dateResult = reDate.exec($(details).find('span.date').text())
-    const date = this.parseDate(dateResult[0], 'dd MMM')
+    const date = this.parseDate(dateResult[0], 'dd LLL')
     return { city, time, date }
   }
 

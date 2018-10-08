@@ -124,7 +124,7 @@ function validateArguments (args) {
 
 function generateQueries (args, engine, days) {
   const { start: startDate, end: endDate } = args
-  const { roundtripOptimized = true, tripMinDays = 3, oneWaySupported = true } = engine.config
+  const { roundtripOptimized, tripMinDays, oneWaySupported } = engine.config
   const gap = (args.oneway || !roundtripOptimized) ? 0 : Math.min(tripMinDays, days)
   const validEnd = engine.validDateRange()[1]
   const queries = []

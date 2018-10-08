@@ -26,7 +26,7 @@ export default class CalendarStore {
         month: index.month,
         year: index.year,
         startIndex: index.weekday - 1,
-        monthLabel: index.toFormat('MMMM yyyy')
+        monthLabel: index.toFormat('LLLL yyyy')
       })
       index = index.plus({ months: 1 })
     }

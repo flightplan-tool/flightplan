@@ -95,7 +95,7 @@ module.exports = class extends Engine {
       return { error: err.message }
     }
 
-    // Obtain the AJAX from the browser itself, which will have calculated prices
+    // Obtain the JSON from the browser itself, which will have calculated prices
     const json = await page.evaluate(() => this.results.results)
     let ret = await this.saveJSON('results', json)
     if (ret && ret.error) {

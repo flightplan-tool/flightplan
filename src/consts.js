@@ -7,7 +7,10 @@ module.exports = {
   },
   defaults: {
     config: {
-      waitUntil: 'networkidle0'
+      waitUntil: 'networkidle0',
+      roundtripOptimized: true,
+      tripMinDays: 3,
+      oneWaySupported: true
     },
     options: {
       parse: true,
