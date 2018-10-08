@@ -96,10 +96,7 @@ module.exports = class extends Parser {
 
   findAircraft (equipment) {
     const result = aircraft.find(x => x.iata === equipment)
-    if (!result) {
-      throw new Error(`Missing details for aircraft with IATA code: ${equipment}`)
-    }
-    return result.icao
+    return result ? result.icao : equipment
   }
 
   highestCabin (cabins) {

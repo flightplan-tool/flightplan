@@ -9,12 +9,12 @@ module.exports = {
     mainURL: 'https://www.koreanair.com/global/en.html',
     searchURL: 'https://www.koreanair.com/global/en/booking/booking-gate.html?awa#domestic-award',
     waitUntil: 'networkidle0',
-    tripMinDays: 3,
+    oneWaySupported: false,
     validation: {
       minDays: 1,
       maxDays: 355
     },
-    modifiable: ['fromCity', 'toCity', 'departDate', 'returnDate'],
+    modifiable: ['departDate', 'returnDate'],
     throttling: profiles.fast,
     fares: [
       {code: 'A', cabin: cabins.first, saver: true, name: 'First'},

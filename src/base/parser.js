@@ -113,12 +113,14 @@ class Parser {
       if (arrival === undefined || !this.validTime(arrival)) {
         return `Award has invalid arrival in segment: ${segment}`
       }
+      if (lagDays === undefined || !Number.isInteger(lagDays)) {
+        return `Award has invalid lag days in segment: ${segment}`
+      }
 
       // Fill in defaults
       segment.duration = duration || this.duration(segment)
       segment.nextConnection = nextConnection || this.nextConnection(segment, segments)
       segment.stops = stops || 0
-      segment.lagDays = lagDays || 0
     }
 
     // Check required information

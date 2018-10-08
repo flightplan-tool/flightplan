@@ -9,7 +9,6 @@ module.exports = {
     mainURL: 'https://www.singaporeair.com/en_UK/us/home',
     searchURL: 'https://www.singaporeair.com/en_UK/ppsclub-krisflyer/flightsearch/',
     waitUntil: 'domcontentloaded',
-    tripMinDays: 3,
     validation: {
       minDays: 0,
       maxDays: 354

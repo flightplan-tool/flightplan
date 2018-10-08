@@ -2,10 +2,6 @@ const Engine = require('../base/engine')
 const { cabins } = require('../consts')
 
 module.exports = class extends Engine {
-  async initialize (page) {}
-
-  async prepare (page) {}
-
   async isLoggedIn (page) {
     await Promise.race([
       page.waitFor('#skypassLoginButton', { visible: true }).catch(e => {}),
@@ -14,8 +10,8 @@ module.exports = class extends Engine {
     return !!(await page.$('#skypassLogoutButton'))
   }
 
-  async login (page) {
-    const { username, password } = this.options
+  async login (page, credentials) {
+    const [ username, password ] = credentials
     if (!username || !password) {
       return { error: `Missing login credentials` }
     }
@@ -46,44 +42,18 @@ module.exports = class extends Engine {
     await page.waitFor(500)
   }
 
-  validAirport (airport) {
-    return this.airports.has(airport)
+  validate (query) {
+    const { partners, oneWay, cabin } = query
+    if (partners && oneWay) {
+      return { error: `KE does not support searching one-way partner awards` }
+    }
+    if (cabin === cabins.premium) {
+      return { error: `KE does not support the premium economy award class` }
+    }
   }
 
-  async setup (page, query) {
-    // Check if we're modifying existing form
-    if (this.isModifying()) {
-      // Check if only changing dates, and directly selectable
-      this.usingDateTabs = false
-      if (!('fromCity' in query || 'toCity' in query)) {
-        // Get old and new dates
-        const { departDate, returnDate } = this.query
-        const { departDate: oldDepartDate, returnDate: oldReturnDate } = this.prevQuery
-
-        // Attempt to choose the dates directly
-        if (await chooseDateTab(this, 'ul.date-outbound-column', oldDepartDate, departDate)) {
-          if (!returnDate || await chooseDateTab(this, 'ul.date-inbound-column', oldReturnDate, returnDate)) {
-            this.usingDateTabs = true
-            return
-          }
-        }
-      }
-
-      // Couldn't select dates directly, open the inline form
-      const modifySearchSel = `${this.query.partners ? '#inter-avenue' : '#award-avenue'} > div.change-avail div.booking-ct-btn > button`
-      if (await page.$(modifySearchSel)) {
-        // Make sure we're not stuck on flexible dates calendar
-        if (!await page.$('div.award-cal')) {
-          // Click to open the inline search form
-          await page.click(modifySearchSel)
-          await page.waitFor(500)
-          return
-        }
-      }
-
-      // Couldn't open the inline form
-      return { modified: false }
-    }
+  async search (page, query) {
+    const { partners, oneWay, fromCity, toCity, departDate, returnDate, cabin } = query
 
     // Select "Award Booking"
     const awardSel = '#booking-type button[data-name="award"]'
@@ -91,42 +61,25 @@ module.exports = class extends Engine {
     await page.click(awardSel)
 
     // Select "SkyTeam" or "Korean Air" award type based on whether we're searching partners
-    await page.click(this.query.partners ? '#sta-sk' : '#sta-kr')
-  }
+    await page.click(partners ? '#sta-sk' : '#sta-kr')
 
-  async setFromCity (page, city) {
-    await setCity(this, 'li.airports-departure-area input.fromto-input', city)
-  }
+    // Set from / to cities
+    await this.setCity('li.airports-departure-area input.fromto-input', fromCity)
+    await this.setCity('li.airports-arrival-area input.fromto-input', toCity)
 
-  async setToCity (page, city) {
-    await setCity(this, 'li.airports-arrival-area input.fromto-input', city)
-  }
-
-  async setOneWay (page, oneWay) {
+    // Set trip type
     await page.click(`#from-to-chooser input[value="${oneWay ? 'oneway' : 'roundtrip'}"]`)
-  }
 
-  async setDepartDate (page, departDate) {
-    // If we already selected the new dates from tabs, nothing to do
-    if (this.isModifying() && this.usingDateTabs) {
-      return
-    }
-
-    // Fill out the normal date selector
+    // Fill out the date selector
     const dateInputSel = 'div.dateholder input.tripdetail-input'
     await page.click(dateInputSel)
     await this.clear(dateInputSel)
-    const dates = this.query.oneWay ? [departDate] : [departDate, this.query.returnDate]
+    const dates = oneWay ? [departDate] : [departDate, returnDate]
     const strDates = dates.map(x => x.toFormat('yyyy-MM-dd')).join('/')
     await page.keyboard.type(strDates, { delay: 10 })
     await page.keyboard.press('Tab')
-  }
 
-  async setReturnDate (page, returnDate) {
-    // Nothing to do
-  }
-
-  async setCabin (page, cabin) {
+    // Set cabin
     const cabinOptions = {
       [cabins.economy]: 'economy',
       [cabins.business]: 'prestige',
@@ -140,179 +93,158 @@ module.exports = class extends Engine {
     if (!await page.$(cabinSel + ':checked')) {
       return { error: `Could not set cabin to: ${cabin}` }
     }
-  }
 
-  async setQuantity (page, quantity) {
-    // Set the # of passengers
-    // TODO: Account will need multiple family members registered to enable this
-  }
-
-  async submit (page, htmlFile, screenshot) {
-    let ret
-
-    // Don't submit if we used the date tabs to modify search
-    if (this.isModifying() && this.usingDateTabs) {
-      return
-    }
-
-    // Submit the search form
-    const { partners } = this.query
-    const submitSel = this.isModifying()
-      ? `${partners ? '#inter-avenue' : '#award-avenue'} > div.change-avail > div > div.booking-ct-btn > input`
-      : '#submit'
-    const [response] = await Promise.all([
-      page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 60000 }),
-      clickSubmit(this, submitSel)
-    ])
-    await settle(this)
-
-    // Any form submission errors?
-    try {
-      await page.waitFor('#booking-gate-from-to-chooser-error p.error', { visible: true, timeout: 500 })
-      return { error: 'An error was detected in form submission' }
-    } catch (err) {}
-
-    // Insert a small wait
-    await this.waitBetween([5, 10])
-
-    // Save HTML and screenshot
-    ret = await this.save(htmlFile, screenshot)
-    if (ret && ret.error) {
-      return ret
-    }
-
-    // Check response code
-    ret = this.validResponse(response)
-    if (ret && ret.error) {
-      return ret
-    }
-  }
-}
-
-async function settle (engine) {
-  const { page } = engine
-
-  // While loading bar exists, keep waiting...
-  while (true) {
-    if (await engine.settle('div.loading-bar', 500, 2000)) {
-      break
-    }
-
-    // If we hit a modal popup while results were loading, then return
-    if (await page.$('#btnModalPopupYes')) {
-      break
-    }
-  }
-}
-
-async function setCity (engine, selector, value) {
-  const { page } = engine
-  await page.click(selector)
-  await engine.clear(selector)
-  await page.keyboard.type(value, { delay: 10 })
-  await page.waitFor(1000)
-  await page.keyboard.press('Tab')
-}
-
-async function chooseDateTab (engine, selector, oldDate, newDate) {
-  const { page } = engine
-
-  const tabs = await page.$(selector)
-  if (!tabs) {
-    return false
-  }
-
-  // Find the index of the selected tab
-  const [ selIndex, selDate ] = await tabs.$eval('li.selected-date a', item => {
-    return [ item.getAttribute('data-index'), item.getAttribute('data-name') ]
-  })
-  if (selDate !== oldDate.toFormat('MM/dd')) {
-    return false // Something's not right...
-  }
-
-  // Now we can locate the right tab
-  let tabData = await tabs.$$eval('li.include-btn a', items => {
-    items.map(x => [ x.getAttribute('data-index'), x.getAttribute('data-name') ])
-  })
-  const newSel = tabData.find(([ tabIndex, tabDate ]) => {
-    const m = oldDate.clone().add(tabIndex - selIndex, 'd')
-    return m.isSame(newDate, 'd') && m.toFormat('MM/dd') === tabDate
-  })
-  if (!newSel) {
-    return false
-  }
-
-  // Click the tab
-  await tabs.click(`li.selected-date a[data-index="${newSel[0]}"]`)
-  return true
-}
-
-async function clickSubmit (engine, submitSel) {
-  const { page } = engine
-
-  // Hit submit first
-  await page.click(submitSel)
-
-  // Check for popups
-  while (true) {
-    const confirm1 = '#cboxLoadedContent #btnModalPopupYes'
-    const dontShowAgain1 = '#airpmessage-checkbox'
-    const confirm2 = '#cboxLoadedContent div.btn-area.tcenter > button'
-    const dontShowAgain2 = '#popsession-checkbox'
-
-    try {
-      await Promise.race([
-        page.waitFor(confirm1, { visible: true, timeout: 5000 }),
-        page.waitFor(confirm2, { visible: true, timeout: 5000 })
+    // Capture response
+    return this.saveResponse(async () => {
+      // Submit the search form
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 120000 }),
+        this.clickSubmit('#submit')
       ])
-    } catch (err) {
-      break
-    }
-
-    await dismissPopup(engine, dontShowAgain1, confirm1)
-    await dismissPopup(engine, dontShowAgain2, confirm2)
+    })
   }
-}
 
-async function dismissPopup (engine, dontShowAgainSel, confirmSel) {
-  const { page } = engine
+  async modify (page, diff, query, prevQuery) {
+    // Get old and new dates
+    const { departDate, returnDate } = this.query
+    const { departDate: oldDepartDate, returnDate: oldReturnDate } = this.prevQuery
 
-  try {
-    if (await page.$(confirmSel)) {
-      // Check the box to not show again, then dismiss the popup
-      if (await page.$(dontShowAgainSel)) {
-        await page.click(dontShowAgainSel)
-        await page.waitFor(500)
+    return this.saveResponse(async () => {
+      // Attempt to choose the dates directly
+      if (await this.chooseDateTab('ul.date-outbound-column', oldDepartDate, departDate)) {
+        if (!returnDate || await this.chooseDateTab('ul.date-inbound-column', oldReturnDate, returnDate)) {
+          return
+        }
       }
-      await page.click(confirmSel)
-      await page.waitFor(1000)
+      return { success: false }
+    })
+  }
+
+  async saveResponse (callback) {
+    const { page } = this
+
+    let fn = null
+    let resp = null
+    try {
+      // Setup response handler
+      fn = (response) => {
+        if (response.url().includes('/api/fly/award/')) {
+          resp = response
+        }
+      }
+      page.on('response', fn)
+
+      // Call the submit callback (response may get set several times here,
+      // we want the last occurrence)
+      let ret = await callback()
+      if (ret && (ret.error || (ret.success === false))) {
+        return ret
+      }
+
+      // Insert a small wait (to make sure response is set)
+      await this.waitBetween([5, 10])
+    } finally {
+      if (fn) {
+        page.removeListener('response', fn)
+      }
     }
-  } catch (err) {
-    // Spurious context errors arise here sometimes, just try again...
-    console.error(err)
-  }
-}
 
-async function airportCodes (engine) {
-  const { page } = engine
-  const codes = new Set()
-  const reAirportCode = /^[A-Z]{3}$/
-
-  // // Open up the city list
-  await page.click('li.airports-departure-area button')
-  await page.waitFor(500)
-  await page.waitFor('#tabAirpotSelect a[role="tab"]', { visible: true })
-
-  // Grab each city's airport code
-  const idList = await page.$$eval('div.city-list > ul > li > a', items => {
-    return items.map(x => x.getAttribute('data-code'))
-  })
-  for (const code of idList.filter(x => x && reAirportCode.exec(x))) {
-    codes.add(code)
+    // Inspect the API response
+    let json = {}
+    if (!resp) {
+      return { error: 'Expected API response was not found: /api/fly/award/...' }
+    }
+    try {
+      json = await resp.json()
+      return this.saveJSON('results', json)
+    } catch (err) {
+      return { error: `Failed to parse API response: ${err}` }
+    }
   }
 
-  // Now close the modal
-  await page.click('#cboxClose')
+  async setCity (selector, value) {
+    const { page } = this
+    await page.click(selector)
+    await this.clear(selector)
+    await page.keyboard.type(value, { delay: 10 })
+    await page.waitFor(1000)
+    await page.keyboard.press('Tab')
+  }
 
-  return { airports: codes }
+  async chooseDateTab (selector, oldDate, newDate) {
+    const { page } = this
+
+    // We only support +/- 3 days
+    const diff = newDate.diff(oldDate, 'days').as('days')
+    if (Math.abs(diff) > 3 || diff === 0) {
+      return false
+    }
+
+    // Locate the tabs
+    const tabs = await page.$(selector)
+    if (!tabs) {
+      return false
+    }
+
+    // Get the dates associated with tabs
+    let tabData = await tabs.$$eval('li.date-tab a', items => {
+      return items.map(x => [ x.getAttribute('data-index'), x.getAttribute('data-name') ])
+    })
+    newDate = newDate.toFormat('MM/dd')
+    const newSel = tabData.find(x => x[1] === newDate)
+    if (!newSel) {
+      return false
+    }
+
+    // Click the tab
+    await page.click(`${selector} li.date-tab a[data-index="${newSel[0]}"]`)
+
+    return true
+  }
+
+  async clickSubmit (submitSel) {
+    const { page } = this
+
+    // Hit submit first
+    await page.click(submitSel)
+
+    // Check for popups
+    while (true) {
+      const confirm1 = '#cboxLoadedContent #btnModalPopupYes'
+      const dontShowAgain1 = '#airpmessage-checkbox'
+      const confirm2 = '#cboxLoadedContent div.btn-area.tcenter > button'
+      const dontShowAgain2 = '#popsession-checkbox'
+
+      try {
+        await Promise.race([
+          page.waitFor(confirm1, { visible: true, timeout: 5000 }),
+          page.waitFor(confirm2, { visible: true, timeout: 5000 })
+        ])
+      } catch (err) {
+        break
+      }
+
+      await this.dismissPopup(dontShowAgain1, confirm1)
+      await this.dismissPopup(dontShowAgain2, confirm2)
+    }
+  }
+
+  async dismissPopup (dontShowAgainSel, confirmSel) {
+    const { page } = this
+
+    try {
+      if (await page.$(confirmSel)) {
+        // Check the box to not show again, then dismiss the popup
+        if (await page.$(dontShowAgainSel)) {
+          await page.click(dontShowAgainSel)
+          await page.waitFor(500)
+        }
+        await page.click(confirmSel)
+        await page.waitFor(1000)
+      }
+    } catch (err) {
+      // Spurious context errors arise here sometimes, just try again...
+      this.warn(err)
+    }
+  }
 }

@@ -77,9 +77,6 @@ module.exports = class extends Parser {
 
   getAircraft (iataCode) {
     const result = aircraft.find(x => x.iata === iataCode)
-    if (!result) {
-      throw new Error(`Unrecognized aircraft IATA code: ${iataCode}`)
-    }
-    return result.icao
+    return result ? result.icao : iataCode
   }
 }

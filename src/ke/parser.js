@@ -1,102 +1,87 @@
 const { DateTime } = require('luxon')
 
 const Parser = require('../base/parser')
+const { cabins } = require('../consts')
+const { aircraft } = require('../data')
 
-// Regex patterns
-const rePrice = /[\d,]+ Miles/
-const reSeats = /(\d+)\s+Seats\s+\(([A-Z]+)\)/
-
-// Normalized aircraft names
-const aircraftNormalizations = {
-  'B747': 'Boeing 747',
-  'B777': 'Boeing 777',
-  'B787': 'Boeing 787'
+// Cabin classes
+const cabinClasses = {
+  'FIRST': cabins.first,
+  'PRESTIGE': cabins.business,
+  'ECONOMY': cabins.economy
 }
 
 module.exports = class extends Parser {
-  parse (request, $, html) {
-    const { fromCity, toCity, cabin, departDate, returnDate } = request
+  parse (query, assets) {
+    const json = assets.json.find(x => x.name === 'results').contents
 
-    // Check if no available awards
-    const alertMsg = $('div.alert-message').text()
-    if (
-      alertMsg.includes('Seats are unavailable on the date') ||
-      alertMsg.includes('We are unable to find recommendations for your search')
-    ) {
-      return { awards: [] }
+    // Check for errors
+    const { isBlocking, message } = json
+    if (isBlocking) {
+      if (message.includes('We are unable to find recommendations')) {
+        return { awards: [] }
+      } else {
+        return { error: message }
+      }
     }
 
-    // Request parameters for each direction
-    const departRequest = {fromCity, toCity, date: departDate, cabin}
-    const returnRequest = {fromCity: toCity, toCity: fromCity, date: returnDate, cabin}
+    // Get pricing info
+    const { fares, tripFareMapper } = json
 
-    // Find outbound and inbound tables
-    let outbound = $('div.outbound')
-    outbound = (outbound.length === 1) ? outbound[0] : undefined
-    let inbound = $('div.inbound')
-    inbound = (inbound.length === 1) ? inbound[0] : undefined
-    if (!outbound || (returnDate && !inbound)) {
-      return { error: 'Award table not found' }
-    }
+    // Get inbound and outbound flights
+    const { outbound, inbound = [] } = json
 
-    // Parse both departure and return awards
-    const departures = parseTable($, outbound, departRequest, this.config)
-    const returns = returnDate ? parseTable($, inbound, returnRequest, this.config) : []
+    // Transform flight data
+    const awards = [...outbound, ...inbound].map(f => {
+      const e = Object.entries(f.remainingSeatsByCabinClass)[0]
+      const cabin = cabinClasses[e[0]]
+      const quantity = e[1]
 
-    // Create final list of awards, and return it
-    return { awards: [...departures, ...returns] }
+      // Get pricing info (may not always be available)
+      const pricingInfo = {}
+      const fareKeys = tripFareMapper[`${f.key}-${e[0]}`]
+      if (fareKeys && fareKeys.length) {
+        const fare = fares[fareKeys[0]]
+        if (fare) {
+          pricingInfo.mileage = fare.awardFare
+          pricingInfo.fees = `${fare.fare} ${fare.currency}`
+        }
+      }
+      const { mileage, fees } = pricingInfo
+
+      return {
+        cabin,
+        fares: this.fares(cabin),
+        fees,
+        mileage,
+        quantity,
+        segments: f.flights.map(x => {
+          const departure = DateTime.fromISO(x.departure, { setZone: true })
+          const arrival = DateTime.fromISO(x.arrival, { setZone: true })
+          return {
+            airline: x.airlineCode,
+            flight: x.flightNumber,
+            aircraft: this.getAircraft(x.aircraft),
+            fromCity: x.departureAirportCode,
+            toCity: x.destinationAirportCode,
+            date: departure.toSQLDate(),
+            departure: departure.toFormat('HH:mm'),
+            arrival: arrival.toFormat('HH:mm'),
+            lagDays: this.computeLagDays(departure, arrival),
+            cabin,
+            stops: x.stops,
+            bookingCode: x.bookingClass
+          }
+        })
+      }
+    })
+
+    // Return results
+    return { awards }
   }
-}
 
-function parseTable ($, table, request, config) {
-  const { fromCity, toCity, cabin, date } = request
-  const awards = []
-
-  // Confirm date matches
-  const tabDate = $(table).find('li.selected-date a').data('name')
-  if (date.toFormat('MM/dd') !== tabDate) {
-    return []
+  getAircraft (iataCode) {
+    const result = aircraft.find(x => x.iata === iataCode)
+    return result ? result.icao : iataCode
   }
-
-  // Iterate over flights in this table
-  $(table).find('div.flightItem').each((_, row) => {
-    // Ensure the flight is available (should have a valid price)
-    const price = rePrice.exec($(row).find('div.flight-fare-passenger-type').text())
-    if (!price) {
-      return
-    }
-
-    // Get quantity and fare code
-    const seats = reSeats.exec($(row).find('span.avail-seats').text())
-    if (!seats) {
-      return
-    }
-    const quantity = seats[1]
-    const fareCode = seats[2]
-    const fares = fareCode + '+'
-
-    // Confirm the cabin being displayed matches what we searched for
-    const fare = config.fares.find(x => x.code === fareCode)
-    if (!fare || fare.cabin !== cabin) {
-      return
-    }
-
-    // Get flight number
-    const flight = $(row).find('li.flight').data('flight-number')
-
-    // Get aircraft
-    const aircraft = normalizeAircraft($(row).find('span.airplane a').contents()[0].nodeValue)
-
-    // Add the award
-    awards.push({ fromCity, toCity, date, cabin, flight, aircraft, fares, quantity })
-  })
-
-  return awards
-}
-
-function normalizeAircraft (str) {
-  for (const x in aircraftNormalizations) {
-    str = str.replace(x, aircraftNormalizations[x])
-  }
-  return str
 }

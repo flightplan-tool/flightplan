@@ -124,10 +124,7 @@ module.exports = class extends Parser {
   aircraft ($, details) {
     const iata = $(details).not('.starAlliance').eq(1).text().trim()
     const result = aircraft.find(x => x.iata === iata)
-    if (!result) {
-      throw new ParserError('Failed to parse aircraft code from HTML details')
-    }
-    return result.icao
+    return result ? result.icao : iata
   }
 
   airportCode (name) {
