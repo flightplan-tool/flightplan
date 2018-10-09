@@ -13,7 +13,7 @@ If you're sitting on a pile of airline miles or credit card points, you know tha
 ### Supported Airlines
 
 Airline                 | Website               | Search             | Parse              | Notes
-------------------------|-----------------------|:------------------:|:------------------:|:------:
+------------------------|-----------------------|:------------------:|:------------------:|:------
 AC (Air Canada)         | [Aeroplan][1]         | :white_check_mark: | :white_check_mark: |
 BA (British Airways)    | [Executive Club][2]   | :white_check_mark: | :white_check_mark: | Award mileage not available
 CX (Cathay Pacific)     | [AsiaMiles][3]        | :white_check_mark: | :white_check_mark: |
