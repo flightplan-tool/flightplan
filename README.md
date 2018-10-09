@@ -12,15 +12,15 @@ If you're sitting on a pile of airline miles or credit card points, you know tha
 
 ### Supported Airlines
 
-Airline                 | Website               | Search             | Parse
-------------------------|-----------------------|:------------------:|:------------------:
-AC (Air Canada)         | [Aeroplan][1]         | :construction:     | :construction:
-BA (British Airways)    | [Executive Club][2]   | :white_check_mark: | :construction:
-CX (Cathay Pacific)     | [AsiaMiles][3]        | :white_check_mark: | :white_check_mark:
-KE (Korean Air)         | [SKYPASS][4]          | :white_check_mark: | :white_check_mark:
-NH (All Nippon Airways) | [ANA Mileage Club][5] | :white_check_mark: | :white_check_mark:
-QF (Qantas)             | [Frequent Flyer][6]   | :construction:     | :construction:
-SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_check_mark:
+Airline                 | Website               | Search             | Parse              | Notes
+------------------------|-----------------------|:------------------:|:------------------:|:------:
+AC (Air Canada)         | [Aeroplan][1]         | :white_check_mark: | :white_check_mark: |
+BA (British Airways)    | [Executive Club][2]   | :white_check_mark: | :white_check_mark: | Award mileage not available
+CX (Cathay Pacific)     | [AsiaMiles][3]        | :white_check_mark: | :white_check_mark: |
+KE (Korean Air)         | [SKYPASS][4]          | :white_check_mark: | :white_check_mark: | Award mileage not available for partner awards
+NH (All Nippon Airways) | [ANA Mileage Club][5] | :white_check_mark: | :white_check_mark: |
+QF (Qantas)             | [Frequent Flyer][6]   | :construction:     | :construction:     | In progress
+SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_check_mark: |
 
 [1]: https://www.aeroplan.com/
 [2]: https://www.britishairways.com/en-us/executive-club
@@ -133,17 +133,16 @@ const fp = require('flightplan');
 const sq = fp.new('sq');
 
 (async () => {
-  await sq.initialize({ username: '1234567890', password: '123456' });
-  const { htmlFiles, screenshots, fileCount, error } = await sq.search({
+  await sq.initialize({ credentials: ['1234567890', '123456'] });
+  const { html, screenshots, error } = await sq.search({
     fromCity: 'SIN', toCity: 'HKG',
-    departDate: '2019-03-06', cabin: 'business',      
-    htmlFile: 'output.html', screenshot: 'output.jpg'
+    departDate: '2019-09-06', cabin: 'business',
+    html: { path: 'output.html' }, screenshot: { path: 'output.jpg' }
   });
     
   if (!error) {
-    console.log('Files Saved:', fileCount);
-    console.log('HTML:', htmlFiles);
-    console.log('Screenshots:', screenshots);
+    console.log('HTML Files:', html.length);
+    console.log('Screenshots:', screenshots.length);
   }
 })();
 ```
