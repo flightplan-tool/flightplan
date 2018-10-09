@@ -1,6 +1,6 @@
-const util = require('util')
 const { DateTime, Duration, Interval } = require('luxon')
 const parse = require('parse-duration')
+const util = require('util')
 
 const { cabins } = require('./consts')
 const { airports } = require('./data')

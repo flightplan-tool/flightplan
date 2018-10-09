@@ -132,7 +132,7 @@ module.exports = class extends Parser {
     if (!result) {
       throw new ParserError(`Unrecognized airport: ${name}`)
     }
-    return result.code
+    return result.codeSuggest
   }
 
   departureDate (str) {

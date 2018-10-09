@@ -1,4 +1,5 @@
 const cheerio = require('cheerio')
+const util = require('util')
 
 const helpers = require('../helpers')
 const logging = require('../logging')
@@ -93,28 +94,28 @@ class Parser {
 
       // Check required information
       if (!this.validAirlineCode(airline)) {
-        return `Award has invalid airline code in segment: ${segment}`
+        return `Award has invalid airline code in segment: ${util.inspect(segment)}`
       }
       if (flight === undefined) {
-        return `Award is missing property 'flight' in segment: ${segment}`
+        return `Award is missing property 'flight' in segment: ${util.inspect(segment)}`
       }
       if (!this.validAirportCode(fromCity)) {
-        return `Award has invalid origin airport code in segment: ${segment}`
+        return `Award has invalid origin airport code in segment: ${util.inspect(segment)}`
       }
       if (!this.validAirportCode(toCity)) {
-        return `Award has invalid destination airport code in segment: ${segment}`
+        return `Award has invalid destination airport code in segment: ${util.inspect(segment)}`
       }
       if (date === undefined || !this.validDate(date)) {
-        return `Award has invalid departure date in segment: ${segment}`
+        return `Award has invalid departure date in segment: ${util.inspect(segment)}`
       }
       if (departure === undefined || !this.validTime(departure)) {
-        return `Award has invalid departure in segment: ${segment}`
+        return `Award has invalid departure in segment: ${util.inspect(segment)}`
       }
       if (arrival === undefined || !this.validTime(arrival)) {
-        return `Award has invalid arrival in segment: ${segment}`
+        return `Award has invalid arrival in segment: ${util.inspect(segment)}`
       }
       if (lagDays === undefined || !Number.isInteger(lagDays)) {
-        return `Award has invalid lag days in segment: ${segment}`
+        return `Award has invalid lag days in segment: ${util.inspect(segment)}`
       }
 
       // Fill in defaults
