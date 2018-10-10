@@ -2,6 +2,7 @@ const program = require('commander')
 
 const fp = require('../src')
 const db = require('../shared/db')
+const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const routes = require('../shared/routes')
 const utils = require('../shared/utils')
@@ -46,7 +47,7 @@ const main = async (args) => {
     for (const row of getRequests(args.website, force)) {
       // First delete all awards associated with this request
       const oldAwards = db.db().prepare('SELECT id FROM awards WHERE requestId = ?').all(row.id)
-      utils.cleanupAwards(oldAwards)
+      helpers.cleanupAwards(oldAwards)
 
       // Create the parser if necessary
       const { engine } = row
@@ -56,7 +57,7 @@ const main = async (args) => {
       const parser = parsers.get(engine)
 
       // Load all the request's resources
-      const request = utils.loadRequest(row)
+      const request = helpers.loadRequest(row)
 
       // Process the request
       numRequests++
@@ -84,7 +85,7 @@ const main = async (args) => {
       }
 
       // Update the database
-      utils.saveAwards(row.id, awards)
+      helpers.saveAwards(row.id, awards)
       numAwards += awards.length
     }
 
@@ -92,7 +93,7 @@ const main = async (args) => {
       if (yes || utils.promptYesNo(`${failed.length} failed requests will be purged from the database. Do you want to continue?`)) {
         console.log('Cleaning up stored files and database entries...')
         for (const row of failed) {
-          await utils.cleanupRequest(row)
+          await helpers.cleanupRequest(row)
         }
       }
     }

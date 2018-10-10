@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 
 const db = require('../shared/db')
+const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const utils = require('../shared/utils')
@@ -20,7 +21,7 @@ async function count (database, table) {
 }
 
 function copyAssets (request, srcPath, verbose) {
-  const assets = utils.assetsForRequest(request)
+  const assets = helpers.assetsForRequest(request)
   const files = [...assets.htmlFiles, ...assets.screenshots]
   for (const file of files) {
     const src = path.resolve(srcPath, file)

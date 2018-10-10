@@ -3,7 +3,7 @@ const parse = require('csv-parse/lib/sync')
 const path = require('path')
 
 const paths = require('./paths')
-const utils = require('../shared/utils')
+const utils = require('./utils')
 
 let accounts = null
 

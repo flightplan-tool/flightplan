@@ -4,6 +4,7 @@ const { DateTime, Duration } = require('luxon')
 const path = require('path')
 
 const db = require('../shared/db')
+const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
@@ -25,7 +26,7 @@ async function cleanupResources (yes, verbose) {
     }
 
     // Keep track of every file associated with a request
-    const assets = utils.assetsForRequest(row)
+    const assets = helpers.assetsForRequest(row)
     assets.htmlFiles.forEach(x => associatedFiles.add(x))
     assets.screenshots.forEach(x => associatedFiles.add(x))
   })
@@ -75,7 +76,7 @@ async function cleanupRequests (yes, verbose) {
     }
 
     // Check for any missing resources
-    const assets = utils.assetsForRequest(row)
+    const assets = helpers.assetsForRequest(row)
     const missing = !!assets.htmlFiles.find(x => !fs.existsSync(x))
 
     // If any files were missing, cleanup the request
@@ -97,7 +98,7 @@ async function cleanupRequests (yes, verbose) {
   if (yes || utils.promptYesNo(`Found ${requests.length} incomplete requests. Delete them from the database?`)) {
     console.log('Cleaning up database entries and associated resources...')
     for (const row of requests) {
-      await utils.cleanupRequest(row)
+      await helpers.cleanupRequest(row)
     }
     return { requests }
   }
@@ -145,7 +146,7 @@ async function cleanupRedundant (yes, verbose, cutoff) {
   if (yes || utils.promptYesNo(`Found ${redundant.length} redundant requests. Delete them from the database?`)) {
     console.log('Cleaning up database entries and associated resources...')
     for (const row of redundant) {
-      await utils.cleanupRequest(row)
+      await helpers.cleanupRequest(row)
     }
     return { redundant }
   }

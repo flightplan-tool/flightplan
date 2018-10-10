@@ -1,8 +1,10 @@
 const Database = require('better-sqlite3')
 const fs = require('fs')
 const path = require('path')
+const rimraf = require('rimraf')
 
 const paths = require('./paths')
+const utils = require('./utils')
 
 let _db = null
 
@@ -17,9 +19,34 @@ function open () {
   return _db
 }
 
+function detectOldVersion () {
+  let db = null
+  try {
+    db = new Database(paths.database)
+    return !!db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='awards_requests'`).get()
+  } finally {
+    if (db) {
+      db.close()
+    }
+  }
+}
+
 function migrate () {
   if (fs.existsSync(paths.database)) {
-    return
+    let migrationNeeded = false
+    if (detectOldVersion()) {
+      if (utils.promptYesNo(`
+ERROR: An older version database was detected, that is incompatible with this version of Flightplan.
+
+Would you like to convert it to the newer format? (WARNING: All search and award data will be deleted!)`)) {
+        fs.unlinkSync(paths.database)
+        rimraf.sync(paths.data)
+        migrationNeeded = true
+      }
+    }
+    if (!migrationNeeded) {
+      return
+    }
   }
   console.log('Creating database...')
 

@@ -8,6 +8,7 @@ const sleep = require('await-sleep')
 const fp = require('../src')
 const accounts = require('../shared/accounts')
 const db = require('../shared/db')
+const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
@@ -312,10 +313,10 @@ const main = async (args) => {
       }
 
       // Write request and awards (if parsed) to database
-      const requestId = utils.saveRequest(results)
+      const requestId = helpers.saveRequest(results)
       if (results.awards) {
-        utils.addPlaceholders(results, { cabins: Object.values(fp.cabins) })
-        utils.saveAwards(requestId, results.awards)
+        helpers.addPlaceholders(results, { cabins: Object.values(fp.cabins) })
+        helpers.saveAwards(requestId, results.awards)
       }
 
       // Insert a delay if we've been blocked
