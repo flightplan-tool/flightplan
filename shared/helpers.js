@@ -13,6 +13,7 @@ function addPlaceholders (results, options = {}) {
   // Helper function to add a placeholder
   const fn = (fromCity, toCity, date, cabin) => {
     if (date) {
+      date = typeof date === 'string' ? date : date.toSQLDate()
       awards.push({
         engine,
         fromCity,

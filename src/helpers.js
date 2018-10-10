@@ -294,7 +294,7 @@ module.exports = (Base) => class extends Base {
 
     // Determine the year that puts the date closest to what we queried (due to
     // time zone changes, the arrival year could be earlier than the departure year)
-    const queryDate = DateTime.fromSQL(this.query.departDate, { zone: 'utc' })
+    const queryDate = this.query.departDate
     const years = [queryDate.year - 1, queryDate.year, queryDate.year + 1]
     const diffs = years.map(x => Math.abs(queryDate.set({ year: x }).diff(queryDate).as('days')))
 

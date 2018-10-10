@@ -85,6 +85,7 @@ const main = async (args) => {
       }
 
       // Update the database
+      helpers.addPlaceholders({ ...request, awards }, { cabins: Object.values(fp.cabins) })
       helpers.saveAwards(row.id, awards)
       numAwards += awards.length
     }

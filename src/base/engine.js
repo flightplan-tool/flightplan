@@ -126,7 +126,8 @@ class Engine {
     this.prevQuery = lastError ? null : this.query
 
     // Normalize the query
-    query = this.normalizeQuery(query)
+    query = this.parent.normalizeQuery(query)
+    this.results.query = this.query = query
 
     // Validate the query
     ret = this._validate(query)
@@ -351,33 +352,6 @@ class Engine {
       await this.browser.close()
       this.browser = null
     }
-  }
-
-  normalizeQuery (query) {
-    // Ensure airport codes are uppercase
-    query.fromCity = query.fromCity.toUpperCase()
-    query.toCity = query.toCity.toUpperCase()
-
-    // Ensure dates are in DateTime format
-    query.departDate = this.normalizeDate(query.departDate)
-    query.returnDate = this.normalizeDate(query.returnDate)
-
-    // For convenience, compute if query is one-way
-    query.oneWay = !query.returnDate
-
-    // Default quantity to 1 if not specified
-    if (query.quantity === undefined) {
-      query.quantity = 1
-    }
-
-    // Freeze the query, and store it on this instance
-    this.query = Object.freeze({...query})
-    this.results.query = this.query
-    return this.query
-  }
-
-  normalizeDate (date) {
-    return (date && typeof date === 'string') ? DateTime.fromSQL(date) : date
   }
 
   validResponse (response) {

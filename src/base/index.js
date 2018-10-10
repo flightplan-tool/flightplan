@@ -87,6 +87,12 @@ module.exports = class {
   }
 
   parse (results) {
+    // Normalize the query (in case parse() is being called separately from search)
+    if (results.query) {
+      results = { ...results, query: this.normalizeQuery(results.query) }
+    }
+
+    // Parse the results
     if (!this._parser) {
       throw new Error(`Missing Parser implementation for: ${this.config.id}`)
     }
@@ -104,6 +110,34 @@ module.exports = class {
       now.plus({ days: minDays }),
       now.plus({ days: maxDays })
     ]
+  }
+
+  normalizeQuery (query) {
+    // Create a copy first
+    query = { ...query }
+
+    // Ensure airport codes are uppercase
+    query.fromCity = query.fromCity.toUpperCase()
+    query.toCity = query.toCity.toUpperCase()
+
+    // Ensure dates are in DateTime format
+    query.departDate = this.normalizeDate(query.departDate)
+    query.returnDate = this.normalizeDate(query.returnDate)
+
+    // For convenience, compute if query is one-way
+    query.oneWay = !query.returnDate
+
+    // Default quantity to 1 if not specified
+    if (query.quantity === undefined) {
+      query.quantity = 1
+    }
+
+    // Freeze the query
+    return Object.freeze(query)
+  }
+
+  normalizeDate (date) {
+    return (date && typeof date === 'string') ? DateTime.fromSQL(date, { zone: 'utc' }) : date
   }
 
   // Logging functions forward to engine
