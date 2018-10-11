@@ -27,6 +27,8 @@ program
   .option('-a, --account <n>', `Index of account to use`, (x) => parseInt(x), 0)
   .option('-h, --headless', `Run Chrome in headless mode`)
   .option('-P, --no-parser', `Do not parse search results`)
+  .option('-r, --reverse', `Run queries in reverse chronological order`)
+  .option('--terminate <n>', `Terminate search if no results are found for n successive days`, (x) => parseInt(x), 0)
   .option('--force', 'Re-run queries, even if already in the database')
   .on('--help', () => {
     console.log('')
@@ -97,6 +99,15 @@ function validateArguments (args) {
   }
   if (args.end < args.start) {
     fatal(`Invalid date range: ${args.start.toSQLDate()} - ${args.end.toSQLDate()}`)
+  }
+  if (args.quantity < 0) {
+    fatal(`Invalid quantity: ${args.quantity}`)
+  }
+  if (args.account < 0) {
+    fatal(`Invalid account index: ${args.account}`)
+  }
+  if (args.terminate < 0) {
+    fatal(`Invalid termination setting: ${args.terminate}`)
   }
 
   // Instantiate engine, and do further validation
@@ -211,7 +222,7 @@ function generateQueries (args, engine, days) {
     q.screenshot = { path: routePath + '.jpg' }
   })
 
-  return queries
+  return args.reverse ? queries.reverse() : queries
 }
 
 async function redundant (query) {
@@ -253,7 +264,7 @@ function redundantSegment (routeMap, query) {
 }
 
 const main = async (args) => {
-  const { start: startDate, end: endDate, headless, parser: parse } = args
+  const { start: startDate, end: endDate, headless, parser: parse, terminate } = args
 
   // Create engine
   const { partners, force } = args
@@ -276,6 +287,8 @@ const main = async (args) => {
 
     // Execute queries
     let skipped = 0
+    let daysRemaining = terminate
+    let lastDate = null
     console.log(`Searching ${days} days of award inventory: ${startDate.toSQLDate()} - ${endDate.toSQLDate()}`)
     for (const query of queries) {
       const { id, loginRequired } = engine.config
@@ -284,6 +297,15 @@ const main = async (args) => {
       if (!force && await redundant(query)) {
         skipped++
         continue
+      }
+
+      // Should we terminate?
+      if (terminate && parse && query.departDate !== lastDate) {
+        daysRemaining--
+        lastDate = query.departDate
+        if (daysRemaining < 0) {
+          console.log(`Terminating search after no award inventory found for ${terminate} days.`)
+        }
       }
 
       // Lazy load the search engine
@@ -315,6 +337,9 @@ const main = async (args) => {
       // Write request and awards (if parsed) to database
       const requestId = helpers.saveRequest(results)
       if (results.awards) {
+        if (results.awards.length > 0) {
+          daysRemaining = terminate // Reset termination counter
+        }
         helpers.addPlaceholders(results, { cabins: Object.values(fp.cabins) })
         helpers.saveAwards(requestId, results.awards)
       }
