@@ -93,10 +93,10 @@ module.exports = class extends Engine {
 
     // Fill form values
     const cabinCode = {
-      [cabins.economy]: 'F',
+      [cabins.first]: 'F',
       [cabins.business]: 'J',
       [cabins.premium]: 'S',
-      [cabins.first]: 'Y'
+      [cabins.economy]: 'Y'
     }
     await this.fillForm({
       'orbOrigin': fromCity,
