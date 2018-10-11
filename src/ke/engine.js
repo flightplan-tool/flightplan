@@ -98,7 +98,7 @@ module.exports = class extends Engine {
     return this.saveResponse(async () => {
       // Submit the search form
       await Promise.all([
-        page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 120000 }),
+        page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 180000 }),
         this.clickSubmit('#submit')
       ])
     })
