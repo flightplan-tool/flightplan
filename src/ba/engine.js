@@ -92,6 +92,12 @@ module.exports = class extends Engine {
       }
 
       // Check for stopover form
+      if (await page.$('#noStopovers')) {
+        await page.click('#noStopovers')
+        await page.waitFor(500)
+        await page.click('#continueTopPod')
+        continue
+      }
       break
     }
 
