@@ -36,7 +36,7 @@ To use Flightplan, there are a few prerequisites that must be installed:
 1. Node.js 8.x or later (Installation instructions: ([Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows) | [Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac) | [Linux](http://blog.teamtreehouse.com/install-node-js-npm-linux))
 2. Yarn ([Installation instructions](https://yarnpkg.com/lang/en/docs/install/#mac-stable))
 3. Install the proper build tools for your platform:
-   * **Windows:** Open an elevated PowerShell prompt (in taskbar search, type `powershell`, right-click on "Windows PowerShell" and select "Run as Administrator"). Then run `npm install --add-python-to-path --global --production windows-build-tools`. Once the install is complete, you must restart your computer.
+   * **Windows:** Open an elevated PowerShell prompt (in taskbar search, type `powershell`, right-click on "Windows PowerShell" and select "Run as Administrator"). Then run `npm install --add-python-to-path --global --production windows-build-tools --vs2015`. Once the install is complete, you must restart your computer.
    * **MacOS:** Xcode will have already been installed if you followed the linked instructions to install `node` in Step 1 above.
    * **Ubuntu:** `sudo apt-get install build-essential`
 
