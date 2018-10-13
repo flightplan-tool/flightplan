@@ -296,7 +296,7 @@ module.exports = (Base) => class extends Base {
     // time zone changes, the arrival year could be earlier than the departure year)
     const queryDate = this.query.departDate
     const years = [queryDate.year - 1, queryDate.year, queryDate.year + 1]
-    const diffs = years.map(x => Math.abs(queryDate.set({ year: x }).diff(queryDate).as('days')))
+    const diffs = years.map(x => Math.abs(queryDate.set({ year: x }).diff(queryDate, 'days').days))
 
     // Choose the year that had the smallest absolute difference in days
     const bestYear = years[diffs.indexOf(Math.min(...diffs))]
@@ -307,7 +307,7 @@ module.exports = (Base) => class extends Base {
   computeLagDays (departure, arrival) {
     departure = DateTime.fromSQL(departure.toSQLDate(), { zone: 'utc' })
     arrival = DateTime.fromSQL(arrival.toSQLDate(), { zone: 'utc' })
-    return arrival.diff(departure).as('days')
+    return arrival.diff(departure, 'days').days
   }
 
   fares (cabin, saver = true, waitlisted = false) {

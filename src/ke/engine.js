@@ -175,7 +175,7 @@ module.exports = class extends Engine {
     const { page } = this
 
     // We only support +/- 3 days
-    const diff = newDate.diff(oldDate, 'days').as('days')
+    const diff = newDate.diff(oldDate, 'days').days
     if (Math.abs(diff) > 3 || diff === 0) {
       return false
     }

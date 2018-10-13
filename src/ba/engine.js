@@ -123,8 +123,8 @@ module.exports = class extends Engine {
 
   async modify (page, diff, query, prevQuery) {
     // We only support +/- 3 days
-    const departDiff = query.departDate.diff(prevQuery.departDate, 'days')
-    const returnDiff = query.oneWay ? 0 : query.returnDate.diff(prevQuery.returnDate, 'days')
+    const departDiff = query.departDate.diff(prevQuery.departDate, 'days').days
+    const returnDiff = query.oneWay ? 0 : query.returnDate.diff(prevQuery.returnDate, 'days').days
     if (
       Math.abs(departDiff) > 3 ||
       Math.abs(returnDiff) > 3 ||

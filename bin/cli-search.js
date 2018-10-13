@@ -256,7 +256,7 @@ function redundantSegment (routeMap, query) {
     if (routeMap.requests.find(x => x.quantity === quantity)) {
       return true // We've already run a request for this segment
     }
-    if (routeMap.awards.find(x => x.fares === '' && x.quantity <= quantity)) {
+    if (routeMap.awards.find(x => x.segments && x.fares === '' && x.quantity <= quantity)) {
       return true // We already know this segment has no availability for an equal or lesser quantity
     }
   }
@@ -282,7 +282,7 @@ const main = async (args) => {
     db.open()
 
     // Generate queries
-    const days = endDate.diff(startDate).as('days') + 1
+    const days = endDate.diff(startDate, 'days').days + 1
     const queries = generateQueries(args, engine, days)
 
     // Execute queries
