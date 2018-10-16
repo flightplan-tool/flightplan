@@ -21,9 +21,10 @@ function error () {
 }
 
 function opts (args) {
-  const options = (args.length === 1 && typeof args[0] === 'object') ? args[0] : { arguments: args }
-  options.arguments = [...options.arguments]
-  return options
+  if (args.length === 1 && typeof args[0] === 'object' && args[0].arguments) {
+    return args[0]
+  }
+  return { arguments: [...args] }
 }
 
 module.exports = {
