@@ -168,7 +168,7 @@ const main = async (args) => {
     const { requests } = await cleanupRequests(yes, verbose)
 
     // Cleanup redundant requests
-    const cutoff = DateTime.local().minus(Duration.fromISO(maxage))
+    const cutoff = DateTime.utc().minus(Duration.fromISO(maxage))
     const { redundant } = await cleanupRedundant(yes, verbose, cutoff)
 
     // Print summary

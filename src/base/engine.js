@@ -251,7 +251,7 @@ class Engine {
         await this.page.waitFor(delayMillis)
       }
     }
-    lastRequest = DateTime.local()
+    lastRequest = DateTime.utc()
 
     // Check if we are at a resting checkpoint
     if (checkpoint && checkpoint.remaining <= 0) {
@@ -264,10 +264,10 @@ class Engine {
     }
 
     // If next resting checkpoint is unknown or past, compute new one
-    if (!checkpoint || DateTime.local() >= checkpoint.until) {
+    if (!checkpoint || DateTime.utc() >= checkpoint.until) {
       const dur = utils.randomDuration(restPeriod)
       checkpoint = {
-        until: DateTime.local().plus(dur),
+        until: DateTime.utc().plus(dur),
         remaining: Math.max(1, Math.floor(requestsPerHour * dur.valueOf() / (3600 * 1000)))
       }
     }

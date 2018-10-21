@@ -256,12 +256,12 @@ module.exports = (Base) => class extends Base {
     const airport = airports[iataCode]
     if (airport) {
       const { timezone, offset } = airport
-      if (timezone && DateTime.local().setZone(timezone).isValid) {
+      if (timezone && DateTime.utc().setZone(timezone).isValid) {
         return timezone
       }
       if (Number.isInteger(offset)) {
         const fixed = (offset >= 0) ? `UTC+${offset}` : `UTC${offset}`
-        if (DateTime.local().setZone(fixed).isValid) {
+        if (DateTime.utc().setZone(fixed).isValid) {
           return fixed
         }
       }

@@ -85,10 +85,9 @@ module.exports = class extends Engine {
       // Wait for results to finish loading
       await this.settle()
 
-      // Check for errors
-      ret = await this.checkPage()
-      if (ret && ret.error) {
-        return ret
+      // Check for captcha form
+      if (await page.$('#captcha_form')) {
+        return { error: 'Blocked by captcha' }
       }
 
       // Check for stopover form
@@ -97,6 +96,12 @@ module.exports = class extends Engine {
         await page.waitFor(500)
         await page.click('#continueTopPod')
         continue
+      }
+
+      // Check for errors
+      ret = await this.checkPage()
+      if (ret && ret.error) {
+        return ret
       }
       break
     }
@@ -151,7 +156,7 @@ module.exports = class extends Engine {
   }
 
   async chooseDateTab (date, sector) {
-    const ts = date.utcOffset(0, true).valueOf()
+    const ts = date.valueOf()
     const opts = { SectorNumber: sector }
     if (sector === 0) {
       // Departure tab
@@ -189,7 +194,7 @@ module.exports = class extends Engine {
       return { error: msgError }
     }
 
-    if (!page.$('#flt_selection_form')) {
+    if (!await page.$('#flt_selection_form')) {
       return { error: 'Unable to locate flight results' }
     }
   }

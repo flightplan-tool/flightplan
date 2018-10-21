@@ -267,8 +267,7 @@ const main = async (args) => {
   const { start: startDate, end: endDate, headless, parser: parse, terminate } = args
 
   // Create engine
-  const { partners, force } = args
-  const engine = fp.new(args.website, { partners })
+  const engine = fp.new(args.website)
   let initialized = false
 
   try {
@@ -294,7 +293,7 @@ const main = async (args) => {
       const { id, loginRequired } = engine.config
 
       // Check if the query's results are already stored
-      if (!force && await redundant(query)) {
+      if (!args.force && await redundant(query)) {
         skipped++
         continue
       }

@@ -105,7 +105,7 @@ module.exports = class {
 
   validDateRange () {
     const { minDays, maxDays } = this.config.validation
-    const now = DateTime.local().startOf('day')
+    const now = DateTime.utc().startOf('day')
     return [
       now.plus({ days: minDays }),
       now.plus({ days: maxDays })
@@ -137,7 +137,12 @@ module.exports = class {
   }
 
   normalizeDate (date) {
-    return (date && typeof date === 'string') ? DateTime.fromSQL(date, { zone: 'utc' }) : date
+    if (date) {
+      return (date && typeof date === 'string')
+        ? DateTime.fromSQL(date, { zone: 'utc' })
+        : date.setZone('utc', { keepLocalTime: true })
+    }
+    return date
   }
 
   // Logging functions forward to engine
