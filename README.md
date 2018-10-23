@@ -1,12 +1,8 @@
 # Flightplan
 
-Flightplan is a Javascript library that makes it easy to scrape and parse airline websites for award inventory. It uses Puppeteer for scraping, which is built on top of headless Chrome, meaning it behaves just like a full-fledged Chrome browser, but it can be run from the command line with no visible window (allowing you to use your computer for other things). Furthermore, it can run on any platform supported by headless Chrome, which is just about everything (Windows, Mac, or Linux).
+Flightplan is a Javascript library that makes it easy to scrape and parse airline websites for award inventory. It uses Puppeteer for scraping, which is built on top of headless Chrome, meaning it behaves just like a full-fledged web browser, but it can be run from the command line with no visible window (allowing you to use your computer for other things). Furthermore, it can run on any platform supported by headless Chrome, which is just about everything (Windows, Mac, or Linux).
 
 ![Flightplan Web UI](https://media.giphy.com/media/3JOyfG4DUoh4bpqUvY/giphy.gif)
-
-### Why?
-
-If you're sitting on a pile of airline miles or credit card points, you know that redeeming them can be difficult. Often, planning for my own trips, I would spend hours clicking through an airline's website, searching for available awards, while writing down what I found in a notebook. Eventually, I decided to automate that process, so I could free up my time. Flightplan doesn't scrape much faster than a human would, it simply will do it for hours on end without complaining or making mistakes. This can make planning complex award itineraries much less stressful!
 
 **Disclaimer:** Scraping is generally against an airline's website's terms of service. As mentioned above, Flightplan typically doesn't place more load on a website than a normal human would, but unlike the human, it can run 24/7. So please use responsibly! Use of any scraping tool (or even excessive non-automated usage) can cause an airline to temporarily (or permanently) ban your IP or member account.
 
@@ -30,66 +26,25 @@ SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_ch
 [6]: https://www.qantas.com/fflyer/dyn/program/welcome
 [7]: http://www.singaporeair.com/en_UK/us/ppsclub-krisflyer/
 
-# Getting Started
+## Installation
 
-To use Flightplan, there are a few prerequisites that must be installed:
-1. Node.js 8.x or later (Installation instructions: ([Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows) | [Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac) | [Linux](http://blog.teamtreehouse.com/install-node-js-npm-linux))
-2. Yarn ([Installation instructions](https://yarnpkg.com/lang/en/docs/install/#mac-stable))
-3. Install the proper build tools for your platform:
-   * **Windows:** Open an elevated PowerShell prompt (in taskbar search, type `powershell`, right-click on "Windows PowerShell" and select "Run as Administrator"). Then run `npm install --add-python-to-path --global --production windows-build-tools --vs2015`. Once the install is complete, you must restart your computer.
-   * **MacOS:** Xcode will have already been installed if you followed the linked instructions to install `node` in Step 1 above.
-   * **Ubuntu:** `sudo apt-get install build-essential`
-
-If you simply wish to install and run the Flightplan tools, use:
+If you are a developer using Flightplan as a library in your own Javascript project:
 
 ```bash
-yarn global add flightplan-tool
-
-# Create a directory to store data in
-mkdir flightplan
-cd flightplan
-
-# Explain all available commands
-flightplan
+npm install flightplan-tool
 ```
 
-If you're a developer, you can install Flightplan to an existing Javascript project with:
+Otherwise, if you just want to run the Flightplan tools as an end-user, you can install globally:
 
 ```bash
-yarn add flightplan-tool
-# or "npm i flightplan-tool"
+npm install --global flightplan-tool
 ```
 
-**Note:** When you install Flightplan, it will be bundled with a recent version of Chromium automatically (so you do not need Chrome installed on your machine to use Flightplan).
+> Don't have `npm` installed? Read the [setup guide](./docs/setup.md)
 
-## Running the tools ##
+## Usage
 
-For developers who wish to use Flightplan in their own Javascript projects, skip to the [Library Usage](#library-usage) section below. For everyone else, you're in the right place! If you'd like a video introduction to using Flightplan, check out the tutorial on YouTube:
-
-http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs" target="_blank"><img src="http://img.youtube.com/vi/QMtiucIPOxs/0.jpg" 
-alt="Screencast: Install and use Flightplan" width="240" height="180" border="10" /></a>
-
-```bash
-# Create a directory to store data in
-mkdir flightplan
-cd flightplan
-
-# Explain all available commands
-flightplan
-
-# Run a search
-flightplan search
-```
-
-The first time you run the `search` command, you will be prompted to create a `config/accounts.json` file. You must enter valid credentials in this file, for any engine you will be using, or login will fail.
-
-After you've run a search, you should see the raw HTML and screenshots in the `data` subdirectory. To extract award fares from the HTML and populate the database, run `flightplan parse`.
-
-When you are ready to run the React web UI, run both `flightplan server` and `flightplan client`. When the React app has finished loading, a browser will automatically be opened, pointing to `http://localhost:3000/`.
-
-## Library usage ##
+> Not a developer? Check out the section on Flightplan's [Command-Line Interface](#command-line-interface).
 
 With Flightplan, you specify an airline and get back an *engine*, which supports two operations: searching and parsing.
 
@@ -147,4 +102,110 @@ const sq = fp.new('sq');
 })();
 ```
 
-More API details to come later...
+## Command-Line Interface
+
+Flightplan comes bundled with a set of command-line tools and web UI, that makes it easy to search for flight awards, without knowing how to code! If you're a more visual person, please check out the tutorial on YouTube:
+
+http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs" target="_blank"><img src="http://img.youtube.com/vi/QMtiucIPOxs/0.jpg" 
+alt="Screencast: Install and use Flightplan" width="240" height="180" border="10" /></a>
+
+> **Note:** The YouTube tutorial covers v1, so some things will be a bit different.
+
+If you installed Flightplan globally (using the `--global` flag with `npm`) you can run the Flightplan command from anywhere. For a list of commands, run:
+
+```bash
+❯ flightplan --help
+Usage: flightplan [options] [command]
+
+Options:
+  -V, --version  output the version number
+  -h, --help     output usage information
+
+Commands:
+  search         Search for award inventory.
+  parse          Parse search results from database.
+  import         Import search results from another directory.
+  cleanup        Remove incomplete requests or data resources.
+  stats          Print statistics on routes stored in the database.
+  client         Launch the web client.
+  server         Launch the web server.
+  help [cmd]     display help for [cmd]
+```
+
+Each of the commands are covered in more detail below.
+
+### Working Directory
+
+Whenever you run the `flightplan` command, your current working directory is important. Flightplan stores data in several subdirectories inside the working directory, and will create them automatically if it cannot find them. The subdirectories it looks for are:
+
+```bash
+config/ # Stores your account credentials in accounts.txt
+data/   # Webpages / screenshots when searching awards are saved here
+db/     # The database containing all requests and awards found
+```
+
+To keep things organized, it's recommended to create a directory just for Flightplan (for example `C:\flightplan` or `~/flightplan`, although you can call it whatever you like). When running Flightplan, be sure to always run it from the same directory.
+
+## Commands
+
+### Search
+
+Search a specific *engine* for awards, over a specified date range. If no query parameters are provided, they can be entered interactively on the command line. By default, Chrome will be visible, but can be hidden with the `--headless` flag. Awards will also be parsed and added to the database by default, but this can also be turned off with `--no-parser`. The search command is smart enough to avoid re-running queries that are already in the database, though this can be overridden with `--force`.
+
+#### Example
+
+```bash
+# Search AsiaMiles for JFK-HKG first-class awards in September 2019
+flightplan search -w CX -f JFK -t HKG -c first -s 2019-09-01 -e 2019-09-30 -q 1
+```
+
+### Parse
+
+By default, when searching for awards, the HTML or JSON is parsed for awards which are then written to the database. Sometimes, due to bugs or updates to the parser code, it is necessary to re-parse the awards (using the HTML/JSON files saved to disk, instead of re-running all searches, which could be very time-consuming). The parse command will look for all requests, which have not yet been parsed (in case the `--no-parser` flag was used) and will parse them. If you wish to re-parse all requests, even those that have already been parsed, use the `--force` flag.
+
+#### Example
+
+```bash
+# Forcibly re-parse all AsiaMiles awards
+flightplan parse -w CX --force
+```
+
+### Import
+
+If you are running Flightplan on one or more computers, and wish to combine multiple databases into a single one (so you can see all the results in the Web UI), the `import` command is used to do this. It takes the path of a database, which it will add to the database in the current working directory. In the case of conflicts (e.g. the same search exists in both databases) the data for the more recent one will be used. Request resources (HTML/JSON files and screenshots) will also be imported.
+
+#### Example
+
+```bash
+# Import data from another directory
+flightplan import -d ~/Downloads/my-other-flightplan
+```
+
+> **Note:** May need some fixes to work properly in V2.
+
+### Cleanup
+
+Normally, there is a one-to-one mapping between requests in the database, and resource files saved in the `data` subdirectory. If either become orphaned they can be cleaned up using this command. You can also get rid of old data (by providing an age), so you can get more recent data when running the search command (otherwise the older data will prevent the searches from being re-run unless the `--force` flag is used).
+
+#### Example
+
+```bash
+# Remove all requests older than 2 months (durations are in ISO 8601 format)
+flightplan cleanup -m P2M
+```
+
+> **Note:** May need some fixes to work properly in V2.
+
+### Stats
+
+Prints the # of requests and awards stored in the database, for all unique routes (grouped by cabin and quantity). Useful to know which routes have already been searched, and which may need additional searching to be complete.
+
+### Client
+
+Runs the Web UI, which can be accessed by pointing your web browser at `http://localhost:3000`. **Important:** You must also run the API server, so the client can fetch award data (see the next command).
+
+### Server
+
+Runs the back-end server, which reads the database and provides an API endpoint for the web client to query available awards.
