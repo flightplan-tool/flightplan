@@ -31,20 +31,22 @@ SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_ch
 If you are a developer using Flightplan as a library in your own Javascript project:
 
 ```bash
-npm install flightplan-tool
+$ npm install flightplan-tool
+# or "yarn add flightplan-tool"
 ```
 
 Otherwise, if you just want to run the Flightplan tools as an end-user, you can install globally:
 
 ```bash
-npm install --global flightplan-tool
+$ npm install --global flightplan-tool
+# or "yarn global add flightplan-tool"
 ```
 
 > Don't have `npm` installed? Read the [setup guide](./docs/setup.md)
 
 ## Usage
 
-> Not a developer? Check out the section on Flightplan's [Command-Line Interface](#command-line-interface).
+> Not a developer? Check out the section on Flightplan's [Command Line Interface](#command-line-interface).
 
 With Flightplan, you specify an airline and get back an *engine*, which supports two operations: searching and parsing.
 
@@ -102,9 +104,13 @@ const sq = fp.new('sq');
 })();
 ```
 
-## Command-Line Interface
+## API
 
-Flightplan comes bundled with a set of command-line tools and web UI, that makes it easy to search for flight awards, without knowing how to code! If you're a more visual person, please check out the tutorial on YouTube:
+[API Documentation](./docs/api.md)
+
+## Command Line Interface
+
+Flightplan comes bundled with a set of command line tools and web UI, that makes it easy to search for flight awards, without knowing how to code! If you're a more visual person, please check out the tutorial on YouTube:
 
 http://www.youtube.com/watch?feature=player_embedded&v=QMtiucIPOxs
 
@@ -116,7 +122,7 @@ alt="Screencast: Install and use Flightplan" width="240" height="180" border="10
 If you installed Flightplan globally (using the `--global` flag with `npm`) you can run the Flightplan command from anywhere. For a list of commands, run:
 
 ```bash
-❯ flightplan --help
+$ flightplan --help
 Usage: flightplan [options] [command]
 
 Options:
@@ -157,8 +163,8 @@ Search a specific *engine* for awards, over a specified date range. If no query 
 #### Example
 
 ```bash
-# Search AsiaMiles for JFK-HKG first-class awards in September 2019
-flightplan search -w CX -f JFK -t HKG -c first -s 2019-09-01 -e 2019-09-30 -q 1
+# search AsiaMiles for JFK-HKG first-class awards in September 2019
+$ flightplan search -w CX -f JFK -t HKG -c first -s 2019-09-01 -e 2019-09-30 -q 1
 ```
 
 ### Parse
@@ -168,8 +174,8 @@ By default, when searching for awards, the HTML or JSON is parsed for awards whi
 #### Example
 
 ```bash
-# Forcibly re-parse all AsiaMiles awards
-flightplan parse -w CX --force
+# forcibly re-parse all AsiaMiles awards
+$ flightplan parse -w CX --force
 ```
 
 ### Import
@@ -179,8 +185,8 @@ If you are running Flightplan on one or more computers, and wish to combine mult
 #### Example
 
 ```bash
-# Import data from another directory
-flightplan import -d ~/Downloads/my-other-flightplan
+# import data from another directory
+$ flightplan import -d ~/Downloads/my-other-flightplan
 ```
 
 > **Note:** May need some fixes to work properly in V2.
@@ -192,8 +198,8 @@ Normally, there is a one-to-one mapping between requests in the database, and re
 #### Example
 
 ```bash
-# Remove all requests older than 2 months (durations are in ISO 8601 format)
-flightplan cleanup -m P2M
+# remove all requests older than 2 months (durations are in ISO 8601 format)
+$ flightplan cleanup -m P2M
 ```
 
 > **Note:** May need some fixes to work properly in V2.
@@ -202,9 +208,36 @@ flightplan cleanup -m P2M
 
 Prints the # of requests and awards stored in the database, for all unique routes (grouped by cabin and quantity). Useful to know which routes have already been searched, and which may need additional searching to be complete.
 
+```bash
+$ flightplan stats
+Opening database...
+Analyzing requests table...
+Analyzing awards table...
+
+BKK-SYD:
+  NH [first, 1x]: 2 requests, 9 awards
+SYD-BKK:
+  NH [first, 1x]: 2 requests, 9 awards
+SIN-MEL:
+  SQ [first, 2x]: 8 requests, 80 awards
+MEL-SIN:
+  SQ [first, 2x]: 5 requests, 49 awards
+ORD-LHR:
+  BA [economy, 1x]: 35 requests, 488 awards
+LHR-ORD:
+  BA [economy, 1x]: 11 requests, 134 awards
+
+Totals:
+  6 routes (3 unique)
+  49 requests
+  769 awards
+```
+
 ### Client
 
-Runs the Web UI, which can be accessed by pointing your web browser at `http://localhost:3000`. **Important:** You must also run the API server, so the client can fetch award data (see the next command).
+Runs the Web UI, which can be accessed by pointing your web browser at `http://localhost:3000`.
+
+> **Important:** You must also run the API server, so the client can fetch award data (see the next command).
 
 ### Server
 
