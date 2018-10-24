@@ -2,8 +2,8 @@
 
 # class *Flightplan*
 
-- [Flightplan#new()](#newairline---engine) (see [`Engine`](#class-engine))
-- [Flightplan#supported()](#supporteddstring---boolean-array)
+- [Flightplan#new(airline)](#newairline---engine)
+- [Flightplan#supported([airline])](#supporteddstring---boolean-array)
 - [Flightplan#aircraft](#aircraft---array)
 - [Flightplan#airlines](#airlines---array)
 - [Flightplan#airports](#airports---object)
@@ -41,7 +41,7 @@ flightplan.aircraft.find(x => x.icao === 'B777')
 // Returns { iata: '777', icao: 'B777', name: 'Boeing 777-200/300' }
 ```
 
-### .airports -> *array*
+### .airlines -> *array*
 
 Returns an array of objects, representing known airlines. Each object may contain the following keys:
 * `iata`: *string*
@@ -79,6 +79,7 @@ Returns the list of cabins understood by Flightplan. All awards must map to a se
 ```javascript
 flightplan.cabins.first // Returns 'first'
 Object.keys(flightplan.cabins) // Returns [ 'first', 'business', 'premium', 'economy' ]
+```
 
 ### .defaults.config -> *Object*
 
@@ -138,13 +139,59 @@ Results wraps the [`Searcher`](#class-Searcher) response, and uses a [`Parser`](
 
 # class *Flightplan.Flight*
 
+- [new Flight(segments)](#new-flight-segments)
+- [new Flight(flight, award)](#new-flight-flight-award)
+- [Flight#key()](#key---string)
+- [Flight#dateObject()](#dateObject---DateTime)
+- [Flight#departureObject()](#departureObject---DateTime)
+- [Flight#arrivalObject()](#arrivalObject---DateTime)
+- [Flight#toJSON()](#toJSON---object)
+- [Flight#toString()](#toString---object)
+- [Properties](#properties)
+
 Flight represents a unique itinerary, independent of an award fare or cabin designation, having a list of [`Segments`](#class-segment). A flight can be uniquely identified by the list of flight numbers for each segment, as well as their departure dates. For example, consider the following itinerary:
 
 * AA2 (LAX-JFK) - AA100 (JFK-LHR)
 
 If both AA2 and AA100 depart on the same day, that is a different Flight than if AA100 departs the following day. Thus, the flight numbers alone are not enough to uniquely identify the Flight.
 
-A flight has the following properties:
+### new Flight(*segments*)
+
+Creates a new Flight from an array of segments.
+
+### new Flight(*flight*, *award*)
+
+Creates a new Flight from an existing flight, by associating it with an [Award](class-award). Used as a light-weight wrapper by Award to avoid copying Flight data, by referencing the original Flight.
+
+### .key() -> *string*
+
+Returns a string key that can be used to uniquely identify the itinerary. The key is created by combining the flight numbers and departure dates of each segment (with successive dates encoded as the difference in days from the first date).
+
+```javascript
+flight.key() // Returns '2018-10-01:CX636:1:CX826'
+```
+
+### .dateObject() -> [*DateTime*](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
+
+Returns the departure date of the first segment as a Luxon DateTime object (date only, without the time set).
+
+### .departureObject() -> [*DateTime*](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
+
+Returns a Luxon DateTime object representing the departure date and time (with time zone of the departure airport) of the first segment.
+
+### .arrivalObject() -> [*DateTime*](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
+
+Returns a Luxon DateTime object representing the arrival date and time (with time zone of the destination airport) of the last segment.
+
+### .toJSON() -> *Object*
+
+Returns a read-only JSON representation of the Flight. (See [Properties](#properties))
+
+### .toString()
+
+Returns a string representation of the return value of the `.toJSON()` method.
+
+## Properties
 
 * `segments`: *array* The list of segments in the itinerary
 * `fromCity`: *string* The 3-letter IATA departure airport of the first segment.
@@ -159,63 +206,16 @@ A flight has the following properties:
 * `lagDays`: *number* The difference in days between the departure date of the first segment and the arrival date of the last segment.
 * `overnight`: *boolean* True if the itinerary contains any overnight segments.
 
-### new Flight(*segments*)
-
-Creates a new Flight from an array of segments.
-
-### new Flight(*flight*, *award*)
-
-Creates a new Flight from an existing flight, by associating it with an [Award](class-award). Used as a light-weight wrapper by Award to avoid copying Flight data, by referencing the original Flight.
-
-### .dateObject() -> [*DateTime*](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
-
-Returns the departure date of the first segment as a Luxon DateTime object (date only, without the time set).
-
-### .departureObject() -> [*DateTime*](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
-
-Returns a Luxon DateTime object representing the departure date and time (with time zone of the departure airport) of the first segment.
-
-### .arrivalObject() -> [*DateTime*](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
-
-Returns a Luxon DateTime object representing the arrival date and time (with time zone of the destination airport) of the last segment.
-
-### .key() -> *string*
-
-Returns a string key that can be used to uniquely identify the itinerary (a combination of flight numbers and departure dates encoded as the difference in days from the first segment's departure date, which is always `0`).
-
-```javascript
-flight.key() // Returns '0:CX636:1:CX826'
-
-### .toJSON() -> *Object*
-
 ```javascript
 flight.toJSON()
 // Returns:
 // { segments: [
 //   { airline: 'CX',
 //     flight: 'CX636',
-//     fromCity: 'SIN',
-//     toCity: 'HKG',
-//     date: '2018-11-08',
-//     departure: '20:15',
-//     arrival: '00:05',
-//     duration: 230,
-//     nextConnection: 1090,
-//     stops: 0,
-//     lagDays: 1,
-//     overnight: false },
+//     ... },
 //   { airline: 'CX',
 //     flight: 'CX826',
-//     fromCity: 'HKG',
-//     toCity: 'YYZ',
-//     date: '2018-11-09',
-//     departure: '18:15',
-//     arrival: '20:20',
-//     duration: 905,
-//     nextConnection: null,
-//     stops: 0,
-//     lagDays: 0,
-//     overnight: true } ]
+//     ... } ]
 //   fromCity: 'SIN',
 //   toCity: 'YYZ',
 //   date: '2018-11-08',
@@ -226,12 +226,8 @@ flight.toJSON()
 //   maxLayover: 1090,
 //   stops: 1,
 //   lagDays: 1,
-     overnight: true }
+//   overnight: true }
 ```
-
-### .toString()
-
-Returns a string representation of the return value of the `.toJSON()` method.
 
 # class *Flightplan.Segment*
 
@@ -284,6 +280,8 @@ Returns a Luxon DateTime object representing the departure date and time (with t
 Returns a Luxon DateTime object representing the arrival date and time (with time zone of the destination airport).
 
 ### .toJSON() -> *Object*
+
+Returns a read-only JSON representation of the Segment.
 
 ```javascript
 segment.toJSON()
@@ -338,10 +336,12 @@ Creates a new Award. The *attributes* object may contain the following propertie
 
 ### .toJSON() -> *Object*
 
+Returns a read-only JSON representation of the Award. The Flight is rendered as the output of [Flight#key()](#flight-key---string), since the data would otherwise be duplicated across many Award instances.
+
 ```javascript
 award.toJSON()
 // Returns:
-// { flight: { ... },
+// { flight: '2018-11-01:CX888',
 //   engine: 'CX',
 //   partner: false,
 //   cabins: [ 'first' ],
