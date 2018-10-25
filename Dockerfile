@@ -10,5 +10,5 @@ RUN apk add --no-cache git python \
 	&& npm install --global -unsafe
 
 VOLUME /config
-EXPOSE 3000
-CMD cd /config && flightplan client
+EXPOSE 5000
+CMD cd /config && flightplan server

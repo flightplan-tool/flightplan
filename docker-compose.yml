@@ -1,0 +1,18 @@
+version: '2'
+services:
+
+  flightplanclient:
+    container_name: flightplanclient
+    image: flightplanclient
+    ports:
+      - '3000:3000'
+    volumes:
+     - ~/projects/flightplan/config/:/config
+
+  flightplanserver:
+    image: flightplanserver
+    container_name: flightplanserver
+    ports:
+      - '5000:5000'
+    volumes:
+     - ~/projects/flightplan/config/:/config
