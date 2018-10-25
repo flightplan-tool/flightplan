@@ -6,7 +6,7 @@ RUN apk add --update git python \
 	make \
 	g++ \
   && rm -rf /var/cache/apk/* && \
-  git clone https://github.com/Fffrank/flightplan.git
+  git clone https://github.com/Fffrank/flightplan/tree/dockerize
 
 VOLUME /config
 EXPOSE 3000
