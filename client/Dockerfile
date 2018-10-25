@@ -5,7 +5,7 @@ ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 RUN apk add --no-cache git python \
 	make \
 	g++ \	
-	&& git clone git://github.com/Fffrank/flightplan.git -b dockerize \
+	&& git clone git://github.com/Fffrank/flightplan.git \
 	&& cd flightplan \
 	&& npm install --global -unsafe
 
