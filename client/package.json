@@ -30,5 +30,5 @@
     "babel-preset-mobx": "^1.0.2",
     "react-app-rewired": "^1.5.2"
   },
-  "proxy": "http://localhost:5000/"
+  "proxy": "http://flightplanserver:5000/"
 }
