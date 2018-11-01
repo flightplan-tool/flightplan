@@ -1,6 +1,6 @@
 # Flightplan
 
-Flightplan is a Javascript library that makes it easy to scrape and parse airline websites for award inventory. It uses Puppeteer for scraping, which is built on top of headless Chrome, meaning it behaves just like a full-fledged web browser, but it can be run from the command line with no visible window (allowing you to use your computer for other things). Furthermore, it can run on any platform supported by headless Chrome, which is just about everything (Windows, Mac, or Linux).
+Flightplan is a Javascript library that makes it easy to scrape and parse airline websites for award inventory. It uses Puppeteer for scraping, which is built on top of Headless Chrome, meaning it behaves just like a full-fledged web browser, but it can be run from the command line with no visible window (allowing you to use your computer for other things). Furthermore, it can run on any platform supported by Headless Chrome, which is just about everything (Windows, Mac, or Linux).
 
 ![Flightplan Web UI](https://media.giphy.com/media/3JOyfG4DUoh4bpqUvY/giphy.gif)
 
