@@ -15,7 +15,7 @@ class Searcher {
   validate (query) {}
 
   async search (page, query, results) {
-    const msg = 'No `parse` method found on the defined Parser, did you forget to override it?'
+    const msg = 'No `search` method found on the defined Searcher, did you forget to override it?'
     throw new Error(`${this.constructor.name}(...): ${msg}`)
   }
 
@@ -103,7 +103,7 @@ class Searcher {
       const response = await page.goto(url, { waitUntil })
       this.checkResponse(response)
     } catch (err) {
-      return new SearcherError(`goto(${url}): ${err.message}`)
+      throw new SearcherError(`goto(${url}): ${err.message}`)
     }
   }
 
@@ -121,7 +121,7 @@ class Searcher {
       try {
         await page.waitFor(selector, { hidden: true, timeout: timeout2 })
       } catch (err) {
-        throw new Error('Stuck waiting for element to settle')
+        throw new SearcherError('Stuck waiting for element to settle')
       }
     }
   }
@@ -136,7 +136,7 @@ class Searcher {
         await page.waitFor(delay)
       }
     }
-    throw new Error('Too many attempts failed')
+    throw new SearcherError('Too many attempts failed')
   }
 
   async select (selector, value, wait = 500) {
@@ -195,7 +195,7 @@ class Searcher {
         Promise.all(promises),
         new Promise((resolve, reject) => {
           timer = setTimeout(() => {
-            reject(new Error(`submitForm() timed out after ${timeout} ms`))
+            reject(new SearcherError(`submitForm() timed out after ${timeout} ms`))
           }, timeout)
         })
       ])

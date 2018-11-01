@@ -197,10 +197,6 @@ class Results {
     if (!Parser) {
       throw new Error(`No Parser subclass defined for engine: ${id}`)
     }
-    if (!Parser.prototype.parse) {
-      const msg = 'No `parse` method found on the defined Parser, did you forget to override it?'
-      throw new Error(`Parser(${id}): ${msg}`)
-    }
 
     // Parse awards and flights
     let ret

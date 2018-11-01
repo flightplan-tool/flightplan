@@ -12,6 +12,11 @@ class Parser {
     this._config = config
   }
 
+  parse (results) {
+    const msg = 'No `parse` method found on the defined Parser, did you forget to override it?'
+    throw new Error(`${this.constructor.name}(...): ${msg}`)
+  }
+
   findFare (cabin, saver = true) {
     return this._config.fares.find(x => x.cabin === cabin && x.saver === saver)
   }
