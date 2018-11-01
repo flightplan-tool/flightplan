@@ -1,9 +1,7 @@
 const program = require('commander')
 const fs = require('fs')
-const humanize = require('humanize-duration')
 const { DateTime } = require('luxon')
 const prompt = require('syncprompt')
-const sleep = require('await-sleep')
 
 const fp = require('../src')
 const accounts = require('../shared/accounts')
@@ -12,7 +10,6 @@ const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
-const utils = require('../shared/utils')
 
 program
   .option('-w, --website <airline>', 'IATA 2-letter code of the airline whose website to search')
@@ -38,13 +35,25 @@ program
   })
   .parse(process.argv)
 
+// Engine-specific search strategies
+const strategies = {
+  cx: { roundtripOptimized: false },
+  ke: { oneWaySupported: false },
+  nh: { oneWaySupported: false }
+}
+
 function parseDate (strDate) {
-  const dt = DateTime.fromFormat(strDate, 'yyyy-MM-dd')
+  const dt = DateTime.fromFormat(strDate, 'yyyy-MM-dd', { zone: 'utc' })
   return dt.isValid ? dt : false
 }
 
-function fatal (message, err) {
-  logger.error(message)
+function fatal (engine, message, err) {
+  if (typeof engine === 'string') {
+    err = message
+    message = engine
+    engine = null
+  }
+  engine ? engine.error(message) : logger.error(message)
   if (err) {
     console.error(err)
   }
@@ -112,34 +121,40 @@ function validateArguments (args) {
 
   // Instantiate engine, and do further validation
   const engine = fp.new(args.website)
-  const { id, website } = engine.config
+  const { config } = engine
 
   // Calculate the valid range allowed by the engine
-  const { minDays, maxDays } = engine.config.validation
-  const [a, b] = engine.validDateRange()
+  const { minDays, maxDays } = config.validation
+  const [a, b] = config.validDateRange()
 
   // Check if our search range is completely outside the valid range
   if (args.end < a || args.start > b) {
-    fatal(`${website} (${id}) only supports searching within the range: ${a.toSQLDate()} - ${b.toSQLDate()}`)
+    fatal(engine, `Can only search within the range: ${a.toSQLDate()} - ${b.toSQLDate()}`)
   }
 
   // If only start or end are outside the valid range, we can adjust them
   if (args.start < a) {
-    logger.warn(`${website} (${id}) can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.toSQLDate()}`)
+    engine.warn(`Can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.toSQLDate()}`)
     args.start = a
   }
   if (args.end > b) {
-    logger.warn(`${website} (${id}) can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.toSQLDate()}`)
+    engine.warn(`Can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.toSQLDate()}`)
     args.end = b
   }
 }
 
 function generateQueries (args, engine, days) {
   const { start: startDate, end: endDate } = args
-  const { roundtripOptimized, tripMinDays, oneWaySupported } = engine.config
-  const gap = (args.oneway || !roundtripOptimized) ? 0 : Math.min(tripMinDays, days)
-  const validEnd = engine.validDateRange()[1]
   const queries = []
+
+  // Get search strategy based on engine
+  const {
+    roundtripOptimized = true,
+    oneWaySupported = true,
+    tripMinDays = 3
+  } = strategies[engine.id.toLowerCase()] || {}
+  const gap = (args.oneway || !roundtripOptimized) ? 0 : Math.min(tripMinDays, days)
+  const validEnd = engine.config.validDateRange()[1]
 
   // Compute cities coming from, and to
   const departCities = { fromCity: args.from, toCity: args.to }
@@ -212,14 +227,14 @@ function generateQueries (args, engine, days) {
 
   // Fill in info that's universal for each query
   queries.forEach(q => {
-    q.engine = engine.config.id
+    q.engine = engine.id
     q.partners = args.partners
     q.cabin = args.cabin
     q.quantity = args.quantity
     const routePath = routes.path(q)
     q.json = { path: routePath + '.json', gzip: true }
     q.html = { path: routePath + '.html', gzip: true }
-    q.screenshot = { path: routePath + '.jpg' }
+    q.screenshot = { path: routePath + '.jpg', enabled: true }
   })
 
   return args.reverse ? queries.reverse() : queries
@@ -290,7 +305,7 @@ const main = async (args) => {
     let lastDate = null
     console.log(`Searching ${days} days of award inventory: ${startDate.toSQLDate()} - ${endDate.toSQLDate()}`)
     for (const query of queries) {
-      const { id, loginRequired } = engine.config
+      const { id, loginRequired } = engine
 
       // Check if the query's results are already stored
       if (!args.force && await redundant(query)) {
@@ -311,43 +326,50 @@ const main = async (args) => {
       if (!initialized) {
         const credentials = loginRequired
           ? accounts.getCredentials(id, args.account) : null
-        await engine.initialize({ credentials, parse, headless })
+        await engine.initialize({ credentials, headless })
         initialized = true
       }
 
       // Print route(s) being searched
       routes.print(query)
 
-      // Run the search query
+      // Run the search query, then check for searcher errors
       let results
       try {
         results = await engine.search(query)
+        if (!results.ok) {
+          continue
+        }
       } catch (err) {
         engine.error('Unexpected error occurred while searching!')
         console.error(err)
         continue
       }
 
-      // Check for an error
-      if (results.error) {
-        continue
+      // Parse awards, then check for parser errors
+      let awards
+      if (parse) {
+        try {
+          awards = results.awards
+          if (!results.ok) {
+            engine.error(`Could not parse awards: ${results.error}`)
+            continue
+          }
+        } catch (err) {
+          engine.error('Unexpected error occurred while parsing!')
+          console.error(err)
+          continue
+        }
       }
 
       // Write request and awards (if parsed) to database
       const requestId = helpers.saveRequest(results)
-      if (results.awards) {
-        if (results.awards.length > 0) {
+      if (awards) {
+        if (awards.length > 0) {
           daysRemaining = terminate // Reset termination counter
         }
-        helpers.addPlaceholders(results, { cabins: Object.values(fp.cabins) })
-        helpers.saveAwards(requestId, results.awards)
-      }
-
-      // Insert a delay if we've been blocked
-      if (results.blocked) {
-        const delay = utils.randomInt(65, 320)
-        engine.warn(`Blocked by server, waiting for ${humanize(delay * 1000)}`)
-        await sleep(delay * 1000)
+        const placeholders = helpers.createPlaceholders(results, { cabins: Object.values(fp.cabins) })
+        helpers.saveAwards(requestId, awards, placeholders)
       }
     }
     if (skipped > 0) {

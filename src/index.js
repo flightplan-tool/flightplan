@@ -1,21 +1,14 @@
-const consts = require('./consts')
-const data = require('./data')
-const Engine = require('./base')
+const Engine = require('./Engine')
 
-const engines = {
-  ac: require('./ac'),
-  ba: require('./ba'),
-  cx: require('./cx'),
-  ke: require('./ke'),
-  nh: require('./nh'),
-  sq: require('./sq')
-}
+// Import engines
+const engines = require('./engines')
 
+// Export Flightplan API
 module.exports = {
   new: (airline) => {
     const engine = engines[airline.toLowerCase()]
     if (!engine) {
-      throw new Error(`No supported engine found for airline: ${airline}`)
+      throw new Error(`No Engine defined for airline: ${airline}`)
     }
 
     // Wrap it in a class that implements the common functionality
@@ -27,6 +20,19 @@ module.exports = {
     return airline ? set.includes(airline) : set
   },
 
-  ...consts,
-  ...data
+  cabins: Object.freeze({
+    first: 'first',
+    business: 'business',
+    premium: 'premium',
+    economy: 'economy'
+  }),
+
+  cabinCodes: Object.freeze({
+    first: 'F',
+    business: 'J',
+    premium: 'W',
+    economy: 'Y'
+  }),
+
+  ...require('./data')
 }

@@ -4,7 +4,7 @@ const path = require('path')
 const rimraf = require('rimraf')
 
 const paths = require('./paths')
-const utils = require('./utils')
+const prompts = require('../shared/prompts')
 
 let _db = null
 
@@ -35,7 +35,7 @@ function migrate () {
   if (fs.existsSync(paths.database)) {
     let migrationNeeded = false
     if (detectOldVersion()) {
-      if (utils.promptYesNo(`
+      if (prompts.askYesNo(`
 ERROR: An older version database was detected, that is incompatible with this version of Flightplan.
 
 Would you like to convert it to the newer format? (WARNING: All search and award data will be deleted!)`)) {

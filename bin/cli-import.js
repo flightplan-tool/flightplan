@@ -7,7 +7,7 @@ const db = require('../shared/db')
 const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
-const utils = require('../shared/utils')
+const prompts = require('../shared/prompts')
 
 program
   .option('-d, --directory <path>', 'Import requests from the provided path (must have "data" and "db" subdirectories)')
@@ -78,7 +78,7 @@ const main = async (args) => {
     let duplicates = 0
 
     // Prompt user to import requests
-    if (yes || utils.promptYesNo(`Import ${requestCount} requests and ${awardCount} awards?`)) {
+    if (yes || prompts.askYesNo(`Import ${requestCount} requests and ${awardCount} awards?`)) {
       console.log(`Importing ${requestCount} requests...`)
       fromDB.each('SELECT * FROM requests', (err, row) => {
         if (err) {

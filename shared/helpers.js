@@ -1,28 +1,26 @@
 const fs = require('fs')
-const { DateTime } = require('luxon')
-const path = require('path')
-const zlib = require('zlib')
 
 const db = require('./db')
-const utils = require('./utils')
+const Query = require('../src/Query')
+const Results = require('../src/Results')
 
-function addPlaceholders (results, options = {}) {
-  const { query, awards } = results
-  const { engine, fromCity, toCity, departDate, returnDate, quantity } = query
+function createPlaceholders (results, options = {}) {
+  const { engine, query } = results
+  const { fromCity, toCity, departDate, returnDate, quantity } = query
+  const rows = []
 
   // Helper function to add a placeholder
   const fn = (fromCity, toCity, date, cabin) => {
     if (date) {
-      date = typeof date === 'string' ? date : date.toSQLDate()
-      awards.push({
+      rows.push({
         engine,
         fromCity,
         toCity,
         date,
         cabin,
         quantity,
-        mixed: false,
         partner: false,
+        mixed: false,
         stops: 0,
         fares: ''
       })
@@ -35,15 +33,16 @@ function addPlaceholders (results, options = {}) {
     fn(fromCity, toCity, departDate, cabin)
     fn(toCity, fromCity, returnDate, cabin)
   }
+  return rows
 }
 
 function assetsForRequest (request) {
   const {
     html = [],
     json = [],
-    screenshots = []
+    screenshot = []
   } = JSON.parse(request.assets)
-  return [...html, ...json, ...screenshots].map(x => x.path)
+  return [...html, ...json, ...screenshot].map(x => x.path)
 }
 
 function cleanupRequest (request) {
@@ -76,114 +75,87 @@ function cleanupAwards (awards) {
 }
 
 function loadRequest (row) {
-  // Build row
-  const request = {
-    query: utils.copyAttributes(row, [
-      'engine',
-      'partners',
-      'fromCity',
-      'toCity',
-      'departDate',
-      'returnDate',
-      'cabin',
-      'quantity'
-    ])
-  }
-
-  // Transform attributes
-  request.departDate = request.departDate ? DateTime.fromSQL(request.departDate) : null
-  request.returnDate = request.returnDate ? DateTime.fromSQL(request.returnDate) : null
-
-  // Load HTML and JSON assets
-  const { html = null, json = null, screenshots = null } = JSON.parse(row.assets)
-  const loadAsset = (asset) => {
-    // Read file, and decompress if necessary
-    asset.contents = fs.readFileSync(asset.path)
-    if (path.extname(asset.path) === '.gz') {
-      asset.contents = zlib.gunzipSync(asset.contents)
-    }
-  }
-  if (html) {
-    html.forEach((x) => { loadAsset(x) })
-    request.html = html
-  }
-  if (json) {
-    json.forEach((x) => { loadAsset(x); x.contents = JSON.parse(x.contents) })
-    request.json = json
-  }
-  if (screenshots) {
-    request.screenshots = screenshots
-  }
-
-  return request
+  // Create Results from row
+  return Results.parse({
+    engine: row.engine,
+    query: new Query({
+      partners: row.partners,
+      fromCity: row.fromCity,
+      toCity: row.toCity,
+      departDate: row.departDate,
+      returnDate: row.returnDate,
+      cabin: row.cabin,
+      quantity: row.quantity
+    }),
+    ...JSON.parse(row.assets)
+  })
 }
 
 function saveRequest (results) {
-  // Create assets map (only needs ot have paths)
-  const { html, json, screenshots } = results
-  const assets = Object.entries({ html, json, screenshots })
-    .reduce((assets, entry) => {
-      const [ key, arr ] = entry
-      if (arr && arr.length) {
-        assets[key] = arr.map(x => ({ path: x.path, name: x.name }))
-      }
-      return assets
-    }, {})
+  // Get assets (only needs to have paths)
+  const { assets } = results.trimContents()
 
   // Build the row data
-  const row = utils.copyAttributes(results.query, [
-    'engine',
-    'partners',
-    'fromCity',
-    'toCity',
-    'departDate',
-    'returnDate',
-    'cabin',
-    'quantity'
-  ])
-  row.departDate = row.departDate ? row.departDate.toSQLDate() : null
-  row.returnDate = row.returnDate ? row.returnDate.toSQLDate() : null
-  row.assets = JSON.stringify(assets)
+  const { query } = results
+  const row = {
+    engine: results.engine,
+    partners: query.partners,
+    fromCity: query.fromCity,
+    toCity: query.toCity,
+    departDate: query.departDate,
+    returnDate: query.returnDate,
+    cabin: query.cabin,
+    quantity: query.quantity,
+    assets: JSON.stringify(assets)
+  }
 
   // Insert the row
   return db.insertRow('requests', row).lastInsertROWID
 }
 
-function saveAwards (requestId, awards) {
+function saveAwards (requestId, awards, placeholders) {
   const ids = []
+
+  // Transform objects to rows
+  const rows = [ ...placeholders ]
+  for (const award of awards) {
+    rows.push({
+      engine: award.engine,
+      partner: award.partner,
+      fromCity: award.flight.fromCity,
+      toCity: award.flight.toCity,
+      date: award.flight.date,
+      cabin: award.fare.cabin,
+      mixed: award.mixedCabin,
+      duration: award.flight.duration,
+      stops: award.flight.stops,
+      quantity: award.quantity,
+      mileage: award.mileageCost,
+      fees: award.fees,
+      fares: `${award.fare.code}${award.waitlisted ? '@' : '+'}`,
+      segments: award.flight.segments
+    })
+  }
 
   // Wrap everything in a transaction
   let success = false
   db.begin()
   try {
-    for (const award of awards) {
-      // Build the row data
-      const row = utils.copyAttributes(award, [
-        'engine',
-        'partner',
-        'fromCity',
-        'toCity',
-        'date',
-        'cabin',
-        'mixed',
-        'duration',
-        'stops',
-        'quantity',
-        'mileage',
-        'fees',
-        'fares'
-      ])
-      row.requestId = requestId
+    for (const row of rows) {
+      const { segments } = row
+      delete row.segments
 
       // Save the individual award and get it's ID
+      row.requestId = requestId
       const awardId = db.insertRow('awards', row).lastInsertROWID
       ids.push(awardId)
 
       // Now add each segment
-      const segments = award.segments || []
-      segments.forEach((segment, position) => {
-        saveSegment(awardId, position, segment)
-      })
+      if (segments) {
+        segments.forEach((segment, position) => {
+          saveSegment(awardId, position, segment)
+        })
+      }
     }
     success = true
   } finally {
@@ -194,22 +166,21 @@ function saveAwards (requestId, awards) {
 
 function saveSegment (awardId, position, segment) {
   // Build the row data
-  const row = utils.copyAttributes(segment, [
-    'airline',
-    'flight',
-    'aircraft',
-    'fromCity',
-    'toCity',
-    'date',
-    'departure',
-    'arrival',
-    'duration',
-    'nextConnection',
-    'cabin',
-    'stops',
-    'lagDays',
-    'bookingCode'
-  ])
+  const row = {
+    airline: segment.airline,
+    flight: segment.flight,
+    aircraft: segment.aircraft,
+    fromCity: segment.fromCity,
+    toCity: segment.toCity,
+    date: segment.date,
+    departure: segment.departure,
+    arrival: segment.arrival,
+    duration: segment.duration,
+    nextConnection: segment.nextConnection,
+    cabin: segment.cabin,
+    stops: segment.stops,
+    lagDays: segment.lagDays
+  }
   row.awardId = awardId
   row.position = position
 
@@ -218,7 +189,7 @@ function saveSegment (awardId, position, segment) {
 }
 
 module.exports = {
-  addPlaceholders,
+  createPlaceholders,
   assetsForRequest,
   cleanupRequest,
   cleanupAwards,

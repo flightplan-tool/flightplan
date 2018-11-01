@@ -7,8 +7,8 @@ const db = require('../shared/db')
 const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
+const prompts = require('../shared/prompts')
 const routes = require('../shared/routes')
-const utils = require('../shared/utils')
 
 program
   .option('-y, --yes', 'Automatically execute cleanup without confirmation')
@@ -55,7 +55,7 @@ async function cleanupResources (yes, verbose) {
   }
 
   // Prompt user to cleanup resources
-  if (yes || utils.promptYesNo(`Found ${resources.length} orphaned resources. Delete them from disk?`)) {
+  if (yes || prompts.askYesNo(`Found ${resources.length} orphaned resources. Delete them from disk?`)) {
     console.log('Cleaning up orphaned resources...')
     for (const filename of resources) {
       if (fs.existsSync(filename)) {
@@ -95,7 +95,7 @@ async function cleanupRequests (yes, verbose) {
   }
 
   // Prompt user to cleanup requests
-  if (yes || utils.promptYesNo(`Found ${requests.length} incomplete requests. Delete them from the database?`)) {
+  if (yes || prompts.askYesNo(`Found ${requests.length} incomplete requests. Delete them from the database?`)) {
     console.log('Cleaning up database entries and associated resources...')
     for (const row of requests) {
       await helpers.cleanupRequest(row)
@@ -143,7 +143,7 @@ async function cleanupRedundant (yes, verbose, cutoff) {
   }
 
   // Prompt user to cleanup requests
-  if (yes || utils.promptYesNo(`Found ${redundant.length} redundant requests. Delete them from the database?`)) {
+  if (yes || prompts.askYesNo(`Found ${redundant.length} redundant requests. Delete them from the database?`)) {
     console.log('Cleaning up database entries and associated resources...')
     for (const row of redundant) {
       await helpers.cleanupRequest(row)

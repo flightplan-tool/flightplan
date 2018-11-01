@@ -4,8 +4,8 @@ const fp = require('../src')
 const db = require('../shared/db')
 const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
+const prompts = require('../shared/prompts')
 const routes = require('../shared/routes')
-const utils = require('../shared/utils')
 
 program
   .option('-w, --website <airline>', 'Limit parsing to the specified airline (IATA 2-letter code)')
@@ -49,28 +49,21 @@ const main = async (args) => {
       const oldAwards = db.db().prepare('SELECT id FROM awards WHERE requestId = ?').all(row.id)
       helpers.cleanupAwards(oldAwards)
 
-      // Create the parser if necessary
-      const { engine } = row
-      if (!parsers.has(engine)) {
-        parsers.set(engine, fp.new(engine))
-      }
-      const parser = parsers.get(engine)
-
-      // Load all the request's resources
-      const request = helpers.loadRequest(row)
+      // Create a Results instance from the row
+      const results = helpers.loadRequest(row)
 
       // Process the request
       numRequests++
-      const { awards, error } = parser.parse(request)
+      const { awards } = results
 
       // Print the route
-      if (verbose || error) {
+      if (verbose || !results.ok) {
         routes.print(row)
       }
 
       // Handle errors by cleaning up the request
-      if (error) {
-        logger.error('Error:', error)
+      if (!results.ok) {
+        logger.error('Error:', results.error)
         failed.push(row)
         continue
       }
@@ -78,20 +71,21 @@ const main = async (args) => {
       // Print the award fares for this route
       if (verbose) {
         for (const award of awards) {
-          const { fromCity, toCity, date, fares, mileage } = award
-          const segments = award.segments.map(x => x.flight).join('-')
-          console.log(`    [${fromCity} -> ${toCity}] - ${date} ${segments} (${mileage} Miles): ${fares}`)
+          const { flight, fare, mileageCost } = award
+          const { fromCity, toCity, date } = flight
+          const segments = flight.segments.map(x => x.flight).join('-')
+          console.log(`    [${fromCity} -> ${toCity}] - ${date} ${segments} (${mileageCost} Miles): ${fare.code}${award.waitlisted ? '@' : '+'}`)
         }
       }
 
       // Update the database
-      helpers.addPlaceholders({ ...request, awards }, { cabins: Object.values(fp.cabins) })
-      helpers.saveAwards(row.id, awards)
+      const placeholders = helpers.createPlaceholders(results, { cabins: Object.values(fp.cabins) })
+      helpers.saveAwards(row.id, awards, placeholders)
       numAwards += awards.length
     }
 
     if (failed.length > 0) {
-      if (yes || utils.promptYesNo(`${failed.length} failed requests will be purged from the database. Do you want to continue?`)) {
+      if (yes || prompts.askYesNo(`${failed.length} failed requests will be purged from the database. Do you want to continue?`)) {
         console.log('Cleaning up stored files and database entries...')
         for (const row of failed) {
           await helpers.cleanupRequest(row)

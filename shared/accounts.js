@@ -3,7 +3,7 @@ const parse = require('csv-parse/lib/sync')
 const path = require('path')
 
 const paths = require('./paths')
-const utils = require('./utils')
+const prompts = require('../shared/prompts')
 
 let accounts = null
 
@@ -12,7 +12,7 @@ function loadAccounts () {
 
   // Check if we should convert an old JSON-format version
   if (!credentialsExists && fs.existsSync(paths.oldCredentials)) {
-    if (utils.promptYesNo(`
+    if (prompts.askYesNo(`
 ERROR: An older version of the airline website credentials (JSON-format) was found at "${paths.oldCredentials}"
 
 Would you like to convert it to the newer format?`)) {
@@ -35,7 +35,7 @@ Would you like to convert it to the newer format?`)) {
 
   // Ask if the user would like us to create the file, from the template
   if (!credentialsExists) {
-    if (utils.promptYesNo(`
+    if (prompts.askYesNo(`
 ERROR: Airline website credentials not found at "${paths.credentials}"
 
 Would you like to create the file?`)) {

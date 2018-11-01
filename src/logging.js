@@ -8,25 +8,25 @@ module.exports = (Base) => class extends Base {
 
   success () {
     if (this.verbose()) {
-      logger.success({ context: `[${this.config.id}]`, arguments })
+      logger.success({ context: `[${this.id}]`, arguments })
     }
   }
 
   info () {
     if (this.verbose()) {
-      logger.info({ context: `[${this.config.id}]`, arguments })
+      logger.info({ context: `[${this.id}]`, arguments })
     }
   }
 
   warn () {
     if (this.verbose()) {
-      logger.warn({ context: `[${this.config.id}]`, arguments })
+      logger.warn({ context: `[${this.id}]`, arguments })
     }
   }
 
   error () {
     if (this.verbose()) {
-      logger.error({ context: `[${this.config.id}]`, arguments })
+      logger.error({ context: `[${this.id}]`, arguments })
     }
   }
 }
