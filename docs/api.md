@@ -23,6 +23,8 @@
 
 In the diagram below, you can see the full class hierarchy. The classes with a dotted outline have a subclass defined for each supported airline website, that provides the knowledge specific to that website. Searches are run by creating a [`Query`], and passing it to the [`engine.search()`](#engine-search-query) method. In return, you receive back a [`Results`] object, that contains the assets (HTML, JSON, screenshots) collected from the search results. You can access the list of either [`Award`] or [`Flight`] instances, from the [`Results`]. Each [`Flight`] has one or more [`Segment's`](#class-segment), which fully describes the flight itinerary (airlines, aircraft, cities, date and times of departure and arrival, etc...). The flight itself contains one or more [`Award`] instances, which represent the award availability for that flight. Each [`Award`] *belongs* to a single [`Flight`], and it's unique parent can always be accessed using the [`award.flight`](#award-flight) property. When a flight is accessed this way, it's segments automatically populate their `cabin` property with the cabin of service indicated by the [`Award`]. When a flight is accessed directly (not via [`award.flight`](#award-flight)) the segments will have no cabin assignment.
 
+<img src="https://raw.githubusercontent.com/flightplan-tool/flightplan/master/docs/Classes.png" width="830" height="812">
+
 # Error Handling
 
 Flightplan has two special error types: `Searcher.Error` and `Parser.Error`. You can think of two classes of errors:
