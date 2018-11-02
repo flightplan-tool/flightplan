@@ -1,4 +1,13 @@
+const Award = require('./Award')
+const BookingClass = require('./BookingClass')
+const Config = require('./Config')
 const Engine = require('./Engine')
+const Flight = require('./Flight')
+const Parser = require('./Parser')
+const Query = require('./Query')
+const Results = require('./Results')
+const Searcher = require('./Searcher')
+const Segment = require('./Segment')
 
 // Import engines
 const engines = require('./engines')
@@ -34,5 +43,17 @@ module.exports = {
     economy: 'Y'
   }),
 
-  ...require('./data')
+  ...require('./data'),
+
+  // Export classes
+  Award,
+  BookingClass,
+  Config,
+  Engine,
+  Flight,
+  Parser,
+  Query,
+  Results,
+  Searcher,
+  Segment
 }
