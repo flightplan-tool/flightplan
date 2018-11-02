@@ -112,6 +112,7 @@ class Segment {
     delete ret.dateObject
     delete ret.departureObject
     delete ret.arrivalObject
+    return ret
   }
 
   toString () {

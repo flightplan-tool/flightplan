@@ -180,17 +180,7 @@ class Flight {
       ret.awards = this._state.awards.map(x => x.toJSON(false))
     }
     ret.segments = this._segments.map(x => x.toJSON())
-    ret.fromCity = this.fromCity
-    ret.toCity = this.toCity
-    ret.date = this.date
-    ret.departure = this.departure
-    ret.arrival = this.arrival
-    ret.duration = this.duration
-    ret.minLayover = this.minLayover
-    ret.maxLayover = this.maxLayover
-    ret.stops = this.stops
-    ret.lagDays = this.lagDays
-    ret.overnight = this.overnight
+    return ret
   }
 
   toString () {
@@ -257,7 +247,7 @@ class Flight {
     const { _state } = this
     if (!_state.hasOwnProperty('minLayover')) {
       const arr = this._layoverTimes()
-      _state.maxLayover = (arr.length > 0) ? Math.min(...arr) : null
+      _state.minLayover = (arr.length > 0) ? Math.min(...arr) : null
     }
     return _state.minLayover
   }

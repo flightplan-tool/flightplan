@@ -3,8 +3,10 @@ const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')
 
+const Award = require('./Award')
 const Flight = require('./Flight')
 const Query = require('./Query')
+const Segment = require('./Segment')
 const utils = require('./utils')
 
 const assetTypes = [ 'html', 'json', 'screenshot' ]
@@ -25,7 +27,7 @@ class Results {
   }
 
   static parse (json) {
-    const { engine, query, error } = json
+    const { engine, query, error, flights } = json
 
     // Validate query
     if (!query) {
@@ -44,6 +46,20 @@ class Results {
       error
     }
     assetTypes.forEach(type => instance._populateAssets(type, json))
+
+    // Reconstruct flights and awards
+    if (flights) {
+      const _flights = []
+      const _awards = []
+      for (const flight of flights) {
+        const segments = flight.segments.map(x => new Segment(x))
+        const awards = flight.awards.map(x => new Award(x))
+        _flights.push(new Flight(segments, awards))
+        _awards.push(...awards)
+      }
+      this._state.flights = _flights
+      this._state.awards = _awards
+    }
 
     return instance
   }
@@ -123,7 +139,7 @@ class Results {
     return this
   }
 
-  toJSON () {
+  toJSON (includeAwards = false) {
     const { engine, query, error } = this._state
     const ret = { engine, query: query.toJSON() }
     if (error) {
@@ -141,6 +157,9 @@ class Results {
         })
       }
     })
+    if (includeAwards) {
+      ret.flights = this.flights.map(x => x.toJSON(true))
+    }
     return ret
   }
 
