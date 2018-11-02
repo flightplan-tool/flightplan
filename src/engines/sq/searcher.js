@@ -126,14 +126,14 @@ module.exports = class extends Searcher {
     // If partners requested, check those as well
     if (partners) {
       // Show "Star Alliance" flights
-      await this.save('.orb-selectflight-btn-group > a:nth-child(3)', 'partners1')
+      await this.save(results, '.orb-selectflight-btn-group > a:nth-child(3)', 'partners1')
 
       // Show "Other Partner" flights
-      await this.save('.orb-selectflight-btn-group > a:nth-child(4)', 'partners2')
+      await this.save(results, '.orb-selectflight-btn-group > a:nth-child(4)', 'partners2')
     }
   }
 
-  async save (sel, id) {
+  async save (results, sel, id) {
     const response = await this.clickAndWait(sel)
     await this.settle()
 
@@ -141,7 +141,7 @@ module.exports = class extends Searcher {
     this.checkResponse(response)
 
     // Save the results
-    await this.saveHTML(id)
+    await results.saveHTML(id)
   }
 
   async prepare () {
