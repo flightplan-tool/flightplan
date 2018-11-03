@@ -34,6 +34,9 @@ class Results {
       throw new Error(`The "query" key is required to parse Results from JSON`)
     }
 
+    // Need the engine's config
+    const { config } = Results._findEngine(engine)
+
     // Create new instance
     const instance = Object.create(this.prototype)
     instance._state = {
@@ -49,19 +52,29 @@ class Results {
 
     // Reconstruct flights and awards
     if (flights) {
-      const _flights = []
-      const _awards = []
+      instance._state.flights = []
+      instance._state.awards = []
       for (const flight of flights) {
         const segments = flight.segments.map(x => new Segment(x))
-        const awards = flight.awards.map(x => new Award(x))
-        _flights.push(new Flight(segments, awards))
-        _awards.push(...awards)
+        const awards = flight.awards.map(x => {
+          const obj = { ...x }
+          obj.fare = config.fares.find(f => f.code === x.fare)
+          return new Award(obj)
+        })
+        instance._state.flights.push(new Flight(segments, awards))
+        instance._state.awards.push(...awards)
       }
-      this._state.flights = _flights
-      this._state.awards = _awards
     }
 
     return instance
+  }
+
+  static _findEngine (id) {
+    const module = Results._engines[id.toLowerCase()]
+    if (!module) {
+      throw new Error(`No Engine defined for airline: ${id}`)
+    }
+    return module
   }
 
   async saveHTML (name = 'default', contents = undefined) {
@@ -111,6 +124,9 @@ class Results {
     }
     if (asset.contents) {
       return asset.contents
+    }
+    if (!asset.path) {
+      return null
     }
 
     // Read file, and decompress if necessary
@@ -206,10 +222,7 @@ class Results {
   _parseAwards () {
     // Get Parser subclass
     const id = this._state.engine.toUpperCase()
-    const module = this.constructor._engines[id.toLowerCase()]
-    if (!module) {
-      throw new Error(`No Engine defined for airline: ${id}`)
-    }
+    const module = Results._findEngine(id)
     const { parser: Parser, config } = module
 
     // Validate the Parser subclass
@@ -337,9 +350,6 @@ class Results {
       // Make sure the asset is valid
       if (!name || typeof name !== 'string' || (path && typeof path !== 'string')) {
         throw new Error(`Invalid Results ${type} asset: ${asset}`)
-      }
-      if (!contents && !path) {
-        throw new Error(`Invalid Results ${type} asset (must provide either "contents" or "path"): ${asset}`)
       }
       if (contents && type !== 'json' && typeof contents !== 'string') {
         throw new Error(`Expected string-type contents for Results ${type} asset: ${asset}`)

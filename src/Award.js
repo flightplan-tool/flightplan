@@ -72,14 +72,21 @@ class Award {
     }
 
     // Properly assign the flight this award
-    flight._assignAward(this)
+    if (flight) {
+      flight._assignAward(this)
+    }
   }
 
   toJSON (includeFlight = true) {
     const ret = { ...this._state }
-    ret.flight = (ret.flight && includeFlight) ? ret.flight.toJSON(false) : null
+    if (includeFlight) {
+      ret.flight = ret.flight ? ret.flight.toJSON(false) : null
+    } else {
+      delete ret.flight
+    }
     ret.cabins = [...ret.cabins]
-    ret.fare = ret.fare.toJSON()
+    ret.fare = ret.fare.code
+    delete ret.mixedCabin
     return ret
   }
 

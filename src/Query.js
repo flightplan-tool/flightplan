@@ -105,6 +105,7 @@ class Query {
     const ret = { ...this._state }
     delete ret.departDateObject
     delete ret.returnDateObject
+    delete ret.oneWay
     delete ret.json
     delete ret.html
     delete ret.screenshot

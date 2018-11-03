@@ -25,12 +25,15 @@ class Flight {
     }
     awards = new Set(awards) // De-dupe awards
 
+    // Clone the segments (so we have our own copy)
+    segments = segments.map(x => Segment._clone(x, x._cabin))
+
     // Compute nextConnection for every segment
     for (let i = 1; i < segments.length; i++) {
       const prev = segments[i - 1]
       const curr = segments[i]
-      const nextConnection = utils.duration(prev.arrivalObject(), curr.departureObject())
-      if (nextConnection < 0) {
+      prev._nextConnection = utils.duration(prev.arrivalObject(), curr.departureObject())
+      if (prev._nextConnection < 0) {
         throw new Error(`Invalid segment nextConnection: ["${prev}", "${curr}"]`)
       }
     }
@@ -81,13 +84,10 @@ class Flight {
     ]
     for (const key of [...map.keys()].sort()) {
       const arr = [...map.get(key)]
-      const flight = arr[0]
+      const flight = new Flight(arr[0].segments)
 
-      // Check if there's nothing to dedupe under this key
-      if (arr.length === 1) {
-        flights.push(flight)
-        continue
-      }
+      // Since the consolidated flight belongs to no award, null out cabin
+      flight.segments.forEach(x => { x._cabin = null })
 
       // Compare each flight's segments
       const { segments } = flight

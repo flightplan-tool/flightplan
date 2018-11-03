@@ -73,18 +73,19 @@ class Segment {
       arrival,
       arrivalObject,
       duration,
-      nextConnection: null,
       stops,
       lagDays,
       overnight
     }
     this._state.key = `${this.date}:${this.fromCity}:${this.flight}`
+    this._nextConnection = null
     this._cabin = cabin
   }
 
   static _clone (segment, cabin) {
     const instance = Object.create(this.prototype)
     instance._state = segment._state
+    instance._nextConnection = segment._nextConnection
     instance._cabin = cabin
     return instance
   }
@@ -107,11 +108,15 @@ class Segment {
 
   toJSON () {
     const ret = { ...this._state }
-    ret.cabin = this._cabin
+    if (this._cabin) {
+      ret.cabin = this._cabin
+    }
     delete ret.key
     delete ret.dateObject
     delete ret.departureObject
     delete ret.arrivalObject
+    delete ret.duration
+    delete ret.overnight
     return ret
   }
 
@@ -156,7 +161,7 @@ class Segment {
   }
 
   get nextConnection () {
-    return this._state.nextConnection
+    return this._nextConnection
   }
 
   get cabin () {
