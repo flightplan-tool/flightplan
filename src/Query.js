@@ -55,7 +55,7 @@ class Query {
 
     // Set internal state
     this._state = {
-      partners,
+      partners: !!partners,
       cabin,
       quantity,
       fromCity,
@@ -67,7 +67,7 @@ class Query {
       oneWay: !returnDateObject,
       json: Object.freeze({ ...json }),
       html: Object.freeze({ ...html }),
-      screenshot: Object.freeze({ ...screenshot })
+      screenshot: Object.freeze({ enabled: !!screenshot.path, ...screenshot })
     }
   }
 

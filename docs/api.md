@@ -877,7 +877,7 @@ The Query object is used to define search parameters that are passed to the [`En
     - `path` <[string]> The path (including extension) to save assets
     - `gzip` <[boolean]> Whether assets should be gzip compressed
   - `screenshot` <[Object]> Optional settings for screenshots
-    - `enabled` <[boolean]> Whether to take screenshots
+    - `enabled` <[boolean]> Optional flag to enable screenshots, defaults to `true` if `screenshot.path` is defined
     - `path` <[string]> The path (including extension) to save screenshots
 
 Creates a new query with the parameters provided. These values are used to populate the airline website's search form, but it is not gauranteed that the awards returned will be limited to these parameters. For example, searching `"economy"` on AC will also return `"premium"` cabin awards. Some websites will also include partner awards even when `partners` is `false`, or include non-partner awards when `partners` is `true`. This behavior is specific to each airline website.
