@@ -162,17 +162,6 @@ function appendPath (strPath, str) {
   return path.join(dir, base.slice(0, pos) + str + base.slice(pos))
 }
 
-function snapshot (obj) {
-  if (obj === null || typeof obj !== 'object') {
-    return obj
-  }
-
-  return Object.keys(obj).reduce((output, key) => {
-    output[key] = snapshot(obj[key])
-    return output
-  }, {})
-}
-
 function ppJSON (obj) {
   const str = JSON.stringify(obj)
   if (str.length <= 160) {
@@ -206,6 +195,5 @@ module.exports = {
   randomInt,
   truthy,
   appendPath,
-  snapshot,
   ppJSON
 }

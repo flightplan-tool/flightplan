@@ -75,7 +75,12 @@ class Config {
   }
 
   toJSON () {
-    return utils.snapshot(this._state)
+    const ret = { ...this._state }
+    ret.validation = { ...this._state.validation }
+    ret.modifiable = [ ...this._state.modifiable ]
+    ret.throttling = { ...this._state.throttling }
+    ret.fares = this._state.fares.map(x => x.toJSON())
+    return ret
   }
 
   toString () {

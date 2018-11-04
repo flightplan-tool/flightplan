@@ -12,7 +12,7 @@ app.get('/api/config', async (req, res, next) => {
   try {
     // Insert each website engine
     const engines = fp.supported().map((id) => {
-      const config = fp.new(id).config
+      const config = fp.new(id).config.toJSON()
       const { name, website, fares } = config
       return { id, name, website, fares }
     })
