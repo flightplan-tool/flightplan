@@ -13,7 +13,8 @@ const engines = {
 // Validate all engine configs
 Object.values(engines).forEach(x => { x.config = new Config(x.config) })
 
-// Expose registered engines to Results
+// Expose registered engines to Award and Results
+require('../Award')._engines = engines
 require('../Results')._engines = engines
 
 module.exports = engines

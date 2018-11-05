@@ -8,7 +8,7 @@ class Award {
       engine,
       partner = flight ? !flight.airlineMatches(engine) : false,
       cabins,
-      fare,
+      fare: fareCode,
       quantity,
       exact = false,
       waitlisted = false,
@@ -26,7 +26,7 @@ class Award {
       arrCabins = flight.segments.map(x => x.cabin)
     }
 
-    // Validate attributes
+    // Validate other attributes
     if (!utils.validAirlineCode(engine)) {
       throw new Error(`Invalid award engine: ${engine}`)
     }
@@ -41,8 +41,9 @@ class Award {
     if (flight && arrCabins.length !== flight.segments.length) {
       throw new Error(`Invalid award cabin: ${flight.segments.length} segments defined, but only ${arrCabins.length} cabins`)
     }
-    if (!fare || fare.constructor.name !== 'BookingClass') {
-      throw new Error(`Invalid award fare: ${fare}`)
+    const fare = Award._validateFare(fareCode, engine)
+    if (!fare) {
+      throw new Error(`Invalid award fare: ${fareCode}`)
     }
     if (!quantity || !utils.positiveInteger(quantity)) {
       throw new Error(`Invalid award quantity: ${quantity}`)
@@ -75,6 +76,27 @@ class Award {
     if (flight) {
       flight._assignAward(this)
     }
+  }
+
+  static _validateFare (fareCode, engine) {
+    if (!fareCode) {
+      return null
+    }
+
+    // Get fares for this engine
+    const module = Award._engines[engine.toLowerCase()]
+    if (!module) {
+      throw new Error(`No Engine defined for airline: ${engine}`)
+    }
+    const { fares } = module.config
+
+    // If fare code is a string, get it's BookingClass
+    if (typeof fareCode === 'string') {
+      return fares.find(x => x.code === fareCode)
+    }
+
+    // Otherwise, make sure it belongs to this engine
+    return (fares.indexOf(fareCode) >= 0) ? fareCode : null
   }
 
   toJSON (includeFlight = true) {
