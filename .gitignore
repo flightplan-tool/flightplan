@@ -64,3 +64,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# Dockerfiles
+Dockerfile.cli
+Dockerfile.server
+Dockerfile.client
+docker-compose.yml
+.dockerignore

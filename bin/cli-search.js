@@ -23,6 +23,7 @@ program
   .option('-q, --quantity <n>', `# of passengers traveling`, (x) => parseInt(x), 1)
   .option('-a, --account <n>', `Index of account to use`, (x) => parseInt(x), 0)
   .option('-h, --headless', `Run Chrome in headless mode`)
+  .option('-d, --docker', `Enable flags to make allow execution in docker environment`)
   .option('-P, --no-parser', `Do not parse search results`)
   .option('-r, --reverse', `Run queries in reverse chronological order`)
   .option('--terminate <n>', `Terminate search if no results are found for n successive days`, (x) => parseInt(x), 0)
@@ -88,6 +89,7 @@ function populateArguments (args) {
   args.partners = !!args.partners
   args.oneway = !!args.oneway
   args.headless = !!args.headless
+  args.docker = !!args.docker
   args.parser = !!args.parser
   args.force = !!args.force
 }
@@ -279,7 +281,7 @@ function redundantSegment (routeMap, query) {
 }
 
 const main = async (args) => {
-  const { start: startDate, end: endDate, headless, parser: parse, terminate } = args
+  const { start: startDate, end: endDate, headless, docker, parser: parse, terminate } = args
 
   // Create engine
   const engine = fp.new(args.website)
@@ -326,7 +328,7 @@ const main = async (args) => {
       if (!initialized) {
         const credentials = loginRequired
           ? accounts.getCredentials(id, args.account) : null
-        await engine.initialize({ credentials, headless })
+        await engine.initialize({ credentials, headless, docker })
         initialized = true
       }
 

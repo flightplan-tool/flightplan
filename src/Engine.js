@@ -45,6 +45,7 @@ class Engine {
       credentials,
       args = [],
       headless = false,
+	  docker,
       width = utils.randomInt(1200, 1280),
       height = utils.randomInt(1400, 1440),
       proxy,
@@ -66,6 +67,7 @@ class Engine {
       headless,
       defaultViewport: { width, height },
       proxy,
+	  docker,
       timeout,
       verbose,
       cookies
@@ -160,9 +162,14 @@ class Engine {
   }
 
   async _newBrowser () {
-    const { headless, args, proxy, defaultViewport } = this._state
+    const { headless, args, proxy, docker, defaultViewport } = this._state
     if (proxy) {
       args.push(`--proxy-server=${proxy.server}`)
+    }
+	if (docker) {
+      args.push('--no-sandbox')
+	  args.push('--headless')
+	  args.push('--disable-dev-shm-usage')
     }
     return puppeteer.launch({ headless, args, defaultViewport })
   }
