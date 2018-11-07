@@ -13,8 +13,9 @@ const utils = require('../../utils')
 const cabinCodes = [
   { cabin: cabins.first, code: 'F' },
   { cabin: cabins.business, code: 'B' },
-  { cabin: cabins.premium, code: 'R' },
-  { cabin: cabins.economy, code: 'N' }
+  { cabin: cabins.premium, code: 'N' },
+  { cabin: cabins.economy, code: 'R' },
+  { cabin: cabins.economy, code: 'E' }
 ]
 
 // Tier codes
@@ -81,7 +82,7 @@ module.exports = class extends Parser {
         const { status } = this.highestCabin(segment.cabins)
         if (status === 'L') {
           waitlisted = true
-          quantity = 0
+          quantity = results.query.quantity
         } else {
           quantity = Math.min(quantity, parseInt(status))
         }
@@ -118,6 +119,7 @@ module.exports = class extends Parser {
         return { cabin: x.cabin, ...cabins[x.code] }
       }
     }
+    debugger
   }
 
   airportCodes (json) {

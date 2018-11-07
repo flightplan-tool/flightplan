@@ -106,7 +106,11 @@ class Results {
     if (this._state.$.has(name)) {
       return this._state.$.get(name)
     }
-    const result = cheerio.load(this.contents('html', name))
+    const contents = this.contents('html', name)
+    if (!contents) {
+      return null
+    }
+    const result = cheerio.load(contents)
     this._state.$.set(name, result)
     return result
   }

@@ -19,12 +19,15 @@ module.exports = class extends Parser {
     const awards = this.parseResults(results.$('results'), false)
     if (results.query.partners) {
       awards.push(...this.parseResults(results.$('partners1'), true))
-      awards.push(...this.parseResults(results.$('partners2'), true))
     }
     return awards
   }
 
   parseResults ($, partner) {
+    if (!$) {
+      return []
+    }
+
     // Check if no available awards
     if ($('h2.main-heading').text().includes('Select alternative date') ||
       $('div.alert__message').text().includes('There are no seats available')) {
