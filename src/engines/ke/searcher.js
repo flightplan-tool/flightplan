@@ -174,7 +174,10 @@ module.exports = class extends Searcher {
     await this.clear(selector)
     await page.keyboard.type(value, { delay: 10 })
     await page.waitFor(1000)
-    await page.keyboard.press('Tab')
+    await page.keyboard.press('ArrowDown')
+    await page.waitFor(500)
+    await page.keyboard.press('Enter')
+    await page.waitFor(1000)
   }
 
   async chooseDateTab (selector, oldDate, newDate) {
