@@ -221,6 +221,7 @@ An Engine is used to execute a flight award search. Each Engine instance is asso
   - `credentials` <[Array<[string]>]> Required if [`engine.loginRequired`](#engine-loginrequired) is `true`. Usually consists of just a `username` and `password`, though some Engine's may require additional credentials.
   - `args` <[Array<[string]>]> Extra arguments to pass to Chromium when it is launched, defaults to `[]`
   - `headless` <[boolean]> Instructs Puppeteer to launch Chromium in headless mode, defaults to `false`
+  - `docker` <[boolean]> Changes certain environment flags to allow Chromium to launch in a docker container, defaults to `false`
   - `width` <[number]> Width of the default viewport, defaults to a random integer in the range `[1200, 1280]`
   - `height` <[number]> Height of the default viewport, defaults to a random integer in the range `[1400, 1440]`
   - `proxy` <[Object]> Specifies a proxy for Headless Chrome to use
