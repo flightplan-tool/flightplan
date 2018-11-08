@@ -159,6 +159,10 @@ class Engine {
     return this._state.page
   }
 
+  set page (newPage) {
+    this._state.page = newPage
+  }
+
   async _newBrowser () {
     const { headless, args, proxy, defaultViewport } = this._state
     if (proxy) {

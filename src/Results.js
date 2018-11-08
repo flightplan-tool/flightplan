@@ -13,17 +13,16 @@ const assetTypes = [ 'html', 'json', 'screenshot' ]
 
 class Results {
   constructor (engine, query) {
-    const { id, page } = engine
     this._state = {
-      engine: id,
+      engine: engine.id,
       query,
-      page,
       html: [],
       json: [],
       screenshot: [],
       $: new Map(),
       error: null
     }
+    this._engine = engine
   }
 
   static parse (json) {
@@ -82,7 +81,7 @@ class Results {
 
     // If no HTML provided, extract it from the page
     if (contents === undefined) {
-      contents = await this._state.page.content()
+      contents = await this._engine.page.content()
     }
     return this._saveAsset('html', name, contents)
   }
@@ -285,7 +284,8 @@ class Results {
   }
 
   async _saveAsset (type, name, contents) {
-    const { page, query } = this._state
+    const { query } = this._state
+    const { page } = this._engine
     const options = query[type]
     const assets = this._state[type]
     const entry = { name, contents }
@@ -334,7 +334,7 @@ class Results {
   }
 
   _checkFixedAssets () {
-    if (!this._state.page) {
+    if (!this._engine) {
       throw new Error(`Results parsed from JSON are fixed, and cannot have new assets added`)
     }
   }
