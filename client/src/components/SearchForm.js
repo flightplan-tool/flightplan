@@ -88,7 +88,7 @@ class SearchForm extends Component {
               maxDate={moment(searchStore.endDate.toISO())}
               monthsShown={2}
               fixedHeight
-              onChange={(val) => searchStore.update({ startDate: val })}
+              onChange={(val) => searchStore.update({ startDate: DateTime.fromISO(val.toISOString()) })}
               style={{ gridArea: 'startDate' }}
             />
             <label style={{ gridArea: 'endLabel' }}>End Date</label>
@@ -99,7 +99,7 @@ class SearchForm extends Component {
               maxDate={moment().add(1, 'y')}
               monthsShown={2}
               fixedHeight
-              onChange={(val) => searchStore.update({ endDate: val })}
+              onChange={(val) => searchStore.update({ endDate: DateTime.fromISO(val.toISOString()) })}
               style={{ gridArea: 'endDate' }}
             />
           </div>
