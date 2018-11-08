@@ -10,20 +10,16 @@ const { aircraft } = require('../../data')
 const utils = require('../../utils')
 
 // Cabin codes
-const cabinCodes = [
-  { cabin: cabins.first, code: 'F' },
-  { cabin: cabins.business, code: 'B' },
-  { cabin: cabins.premium, code: 'N' },
-  { cabin: cabins.economy, code: 'R' },
-  { cabin: cabins.economy, code: 'E' }
-]
-
-// Tier codes
-const tierMap = {
-  'STD': 'S',
-  'PT1': '1',
-  'PT2A': '2'
+const cabinCodes = {
+  'E': cabins.economy,
+  'R': cabins.economy,
+  'N': cabins.premium,
+  'B': cabins.business,
+  'F': cabins.first
 }
+
+// Order of cabins from best to worst
+const cabinOrder = [ cabins.first, cabins.business, cabins.premium, cabins.economy ]
 
 module.exports = class extends Parser {
   parse (results) {
@@ -32,13 +28,17 @@ module.exports = class extends Parser {
     // Get airport codes
     const airports = this.airportCodes(json)
 
-    // get pricing info
-    const { milesInfo } = json
-
     // Get flights
     const { engine } = results
-    const flights = jspath.apply(`.pageBom.modelObject.availabilities.upsell.bounds.flights`, json)
-    const awards = flights.map(f => {
+    const flightData = jspath.apply(`.pageBom.modelObject.availabilities.upsell.bounds.flights`, json)
+    const flights = flightData.map(f => {
+      // Determine availability
+      const availability = this.availabilityMap(f)
+      if (availability.size === 0) {
+        return null
+      }
+
+      // Build list of segments for this flight
       const segments = f.segments.map(x => {
         const flightId = x.flightIdentifier
         const airline = flightId.marketingAirline
@@ -61,49 +61,30 @@ module.exports = class extends Parser {
           date: departure.toSQLDate(),
           departure: departure.toFormat('HH:mm'),
           arrival: arrival.toFormat('HH:mm'),
-          cabin: this.highestCabin(x.cabins).cabin,
           stops: parseInt(x.numberOfStops),
           lagDays: utils.days(departure, arrival)
         })
       })
 
-      // Create flight
-      const flight = new Flight(segments)
+      // Determine partner status
+      const partner = !segments.every(x => ['CX', 'KA'].includes(x.airline))
 
-      // Parse flight id string, to compute fare code
-      const tierSuffix = tierMap[f.flightIdString.split('_').slice(-2)[0]]
-      const cabin = flight.highestCabin()
-      const fare = this.config.fares.find(x => x.cabin === cabin && x.code.endsWith(tierSuffix))
-
-      // Calculate waitlist and quantity
-      let quantity = Number.MAX_SAFE_INTEGER
-      let waitlisted = false
-      for (const segment of f.segments) {
-        const { status } = this.highestCabin(segment.cabins)
-        if (status === 'L') {
-          waitlisted = true
-          quantity = results.query.quantity
-        } else {
-          quantity = Math.min(quantity, parseInt(status))
-        }
+      // Create list of awards
+      const awards = []
+      for (const [ cabin, data ] of availability) {
+        awards.push(new Award({
+          engine,
+          partner,
+          fare: this.findFare(cabin),
+          ...data
+        }))
       }
-      quantity = (quantity > 0) ? quantity : results.query.quantity
 
-      // Calculate mileage cost
-      const mileageCost = (f.flightIdString in milesInfo) ? milesInfo[f.flightIdString] : null
-
-      // Create and return award
-      return new Award({
-        engine,
-        fare,
-        quantity,
-        waitlisted,
-        mileageCost
-      }, flight)
-    })
+      return new Flight(segments, awards)
+    }).filter(x => !!x)
 
     // Return results
-    return awards
+    return flights
   }
 
   findAircraft (equipment) {
@@ -111,15 +92,69 @@ module.exports = class extends Parser {
     return result ? result.icao : equipment
   }
 
-  highestCabin (cabins) {
-    const { query } = this.results
-    const start = cabinCodes.findIndex(x => x.cabin === query.cabin)
-    for (const x of cabinCodes.slice(start)) {
-      if (x.code in cabins) {
-        return { cabin: x.cabin, ...cabins[x.code] }
+  availabilityMap (flight) {
+    const { segments } = flight
+
+    // Validate the flight info first
+    if (segments.length === 0) {
+      throw new Error(`Empty segments on flight: ${flight}`)
+    }
+    for (const segment of segments) {
+      if (segment.cabins.E && segment.cabins.R) {
+        throw new Error(`Conflicting cabin status: ${segment}`)
       }
     }
-    debugger
+
+    // Transform the per-segment availability
+    const availability = segments.map(segment => {
+      const obj = {}
+      jspath.apply(`.cabins.*`, segment).forEach(x => {
+        obj[cabinCodes[x.code]] = x.status
+      })
+      return obj
+    })
+
+    // Create a cabin-to-segment mapping, for each possible cabin
+    const map = new Map()
+    for (const cabin of cabinOrder) {
+      const mapping = this.cabinAvailability(availability, cabin)
+      if (mapping) {
+        map.set(cabin, mapping)
+      }
+    }
+    return map
+  }
+
+  cabinAvailability (availability, cabin) {
+    const ordering = [ cabins.premium, cabins.economy ].includes(cabin)
+      ? [ cabin ]
+      : cabinOrder.slice(cabinOrder.indexOf(cabin))
+    const values = []
+    const cabinList = []
+    for (const segment of availability) {
+      // Search from our cabin, to lower levels of service, until we find something
+      const segmentCabin = ordering.find(x => x in segment)
+      if (!segmentCabin) {
+        return null // No availability for this segment
+      }
+      values.push(segment[segmentCabin])
+      cabinList.push(segmentCabin)
+    }
+
+    // If no availability for this cabin, move on
+    if (values.includes('N') || !cabinList.includes(cabin)) {
+      return null // No availability
+    }
+
+    // Check for waitlisted awards
+    if (values.includes('L')) {
+      const quantity = this.query.quantity
+      return { cabins: cabinList, quantity, exact: false, waitlisted: true }
+    }
+
+    // Compute numerical quantity
+    const quantity = Math.min(...values.map(x => parseInt(x)))
+    return { cabins: cabinList, quantity, exact: true, waitlisted: false }
   }
 
   airportCodes (json) {

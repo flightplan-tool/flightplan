@@ -1,10 +1,16 @@
 module.exports = {
-  cabins: {
+  cabins: Object.freeze({
     first: 'first',
     business: 'business',
     premium: 'premium',
     economy: 'economy'
-  },
+  }),
+  cabinCodes: Object.freeze({
+    first: 'F',
+    business: 'J',
+    premium: 'W',
+    economy: 'Y'
+  }),
   defaults: {
     config: {
       waitUntil: 'networkidle0',

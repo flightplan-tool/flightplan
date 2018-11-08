@@ -138,7 +138,7 @@ module.exports = class extends Searcher {
       }
 
       // Click through each award type (Standard / Choice / Tailored)
-      let idx = 0
+      // let idx = 0
       while (true) {
         // If there's a "No flights available" modal pop-up, dismiss it
         await this.clickIfVisible('#flights-not-available-modal button.btn-modal-close')
@@ -146,27 +146,29 @@ module.exports = class extends Searcher {
         // Make sure results have finished loading
         await this.settle()
 
-        // Insert a small wait (to simulate throttling between tabs)
-        await this.waitBetween([4, 6])
+        // // Insert a small wait (to simulate throttling between tabs)
+        // await this.waitBetween([4, 6])
 
         // Obtain flight data
         pageBom.push(await page.evaluate(() => window.pageBom))
 
         // Take a screenshot
-        await results.screenshot(`results${idx}`)
-        idx++
+        await results.screenshot(`results`)
+        // idx++
 
-        // Find the next tab's selector
-        const tabSel = await this.nextTab()
-        if (!tabSel) {
-          break
-        }
+        // // Find the next tab's selector
+        // const tabSel = await this.nextTab()
+        // if (!tabSel) {
+        //   break
+        // }
 
-        // Click on the tab
-        await page.click(tabSel)
+        // // Click on the tab
+        // await page.click(tabSel)
 
-        // Dismiss modal pop-up, warning us about changing award type
-        await this.dismissWarning()
+        // // Dismiss modal pop-up, warning us about changing award type
+        // await this.dismissWarning()
+
+        break
       }
     } finally {
       if (fn) {
@@ -207,25 +209,22 @@ module.exports = class extends Searcher {
     const tabIndex = await page.evaluate((itemSel, activeSel) => {
       let idx = 1
       let foundActive = false
-      const activeTab = document.querySelector(activeSel + ' span.cabin-class')
+      const activeTab = document.querySelector(activeSel)
       if (activeTab) {
-        const cabin = activeTab.textContent.trim()
         for (const item of document.querySelectorAll(itemSel)) {
-          if (item.querySelector('span.cabin-class').textContent.trim() === cabin) {
-            if (foundActive) {
-              // This is the item after the active one
-              return idx
-            } else if (item.querySelector(activeSel)) {
-              // This is the active item
-              foundActive = true
-            }
+          if (foundActive) {
+            // This is the item after the active one
+            return idx
+          } else if (item.querySelector(activeSel)) {
+            // This is the active item
+            foundActive = true
           }
           idx++
         }
       }
       return 0
     }, '#flightlistDept div.owl-item', 'div.cabin-ticket-card-wrapper-outer.active')
-    return tabIndex ? `div.owl-item:nth-child(${tabIndex}) div.cabin-ticket-card` : null
+    return tabIndex ? `div.owl-item:nth-of-type(${tabIndex}) div.cabin-ticket-card` : null
   }
 
   async dismissWarning () {

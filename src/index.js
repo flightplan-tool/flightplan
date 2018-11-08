@@ -9,6 +9,9 @@ const Results = require('./Results')
 const Searcher = require('./Searcher')
 const Segment = require('./Segment')
 
+// Import constants
+const { cabins, cabinCodes } = require('./consts')
+
 // Import engines
 const engines = require('./engines')
 
@@ -29,21 +32,11 @@ module.exports = {
     return airline ? set.includes(airline) : set
   },
 
-  cabins: Object.freeze({
-    first: 'first',
-    business: 'business',
-    premium: 'premium',
-    economy: 'economy'
-  }),
-
-  cabinCodes: Object.freeze({
-    first: 'F',
-    business: 'J',
-    premium: 'W',
-    economy: 'Y'
-  }),
-
   ...require('./data'),
+
+  // Export consts
+  cabins,
+  cabinCodes,
 
   // Export classes
   Award,
