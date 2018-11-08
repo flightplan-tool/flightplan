@@ -5,7 +5,7 @@ module.exports = {
   parser: require('./parser'),
   config: {
     name: 'Aeroplan',
-    homeURL: 'https://www.aeroplan.com/language.do?lang=E',
+    homeURL: 'https://www.aeroplan.com/landing/process.do?lang=E',
     searchURL: 'https://www.aeroplan.com/en/use-your-miles/travel.html',
     validation: {
       minDays: 0,

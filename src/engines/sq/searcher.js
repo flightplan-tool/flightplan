@@ -120,16 +120,22 @@ module.exports = class extends Searcher {
     await this.submitForm('form-book-travel-1')
     await this.settle()
 
+    // Check state of buttons
+    const selBtn = '.orb-selectflight-btn-group > a:nth-of-type'
+    const partnersExists = await page.$(`${selBtn}(2)`)
+    const partnersActive = await page.$(`${selBtn}(2).active`)
+    const partnersDisabled = await page.$(`${selBtn}(2).disabled`)
+
     // Save the results
-    await results.saveHTML('results')
+    if (!partnersActive) {
+      await results.saveHTML('results')
+    } else {
+      await results.saveHTML('partners1')
+    }
 
     // If partners requested, check those as well
-    if (partners) {
-      // Show "Star Alliance" flights
-      await this.save(results, '.orb-selectflight-btn-group > a:nth-child(3)', 'partners1')
-
-      // Show "Other Partner" flights
-      await this.save(results, '.orb-selectflight-btn-group > a:nth-child(4)', 'partners2')
+    if (partners && partnersExists && !partnersActive && !partnersDisabled) {
+      await this.save(results, `${selBtn}(2)`, 'partners1')
     }
   }
 

@@ -80,16 +80,30 @@ module.exports = class extends Searcher {
     }
 
     // Submit the form, and capture the AJAX response
-    const responses = await this.submitForm(oneWay
+    await this.submitForm(oneWay
       ? 'travelFlightsOneWayTab'
       : 'travelFlightsRoundTripTab',
-      { capture: '/adr/Results_Ajax.jsp' })
+      { waitUntil: 'none' })
 
-    // Wait for the AJAX response to finish loading
-    await responses.json()
+    // Check if a new tab opened
+    await page.waitFor(2000)
+    const pages = await this.browser.pages()
+    const oldPage = page
+    page = pages[pages.length - 1]
+    this.page = page
+
+    // Wait for results to load
+    await this.monitor('.waiting-spinner-inner')
 
     // Obtain the JSON from the browser itself, which will have calculated prices
     const json = await page.evaluate(() => this.results.results)
     await results.saveJSON('results', json)
+    await results.screenshot('results')
+
+    // If a new tab was opened, we can close it now and restore the old page
+    if (page !== oldPage) {
+      this.page = oldPage
+      await page.close()
+    }
   }
 }

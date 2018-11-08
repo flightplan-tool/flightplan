@@ -20,16 +20,10 @@ async function cleanupResources (yes, verbose) {
   // Iterate over requests
   console.log('Scanning data resources...')
   const associatedFiles = new Set()
-  db.db().each('SELECT * FROM requests', (err, row) => {
-    if (err) {
-      throw new Error('Could not scan search requests: ' + err)
-    }
-
+  for (const row of db.db().prepare('SELECT * FROM requests').all()) {
     // Keep track of every file associated with a request
-    const assets = helpers.assetsForRequest(row)
-    assets.htmlFiles.forEach(x => associatedFiles.add(x))
-    assets.screenshots.forEach(x => associatedFiles.add(x))
-  })
+    helpers.assetsForRequest(row).forEach(x => associatedFiles.add(x))
+  }
 
   // Iterate over resources
   let resources = fs.readdirSync(paths.data)
@@ -70,14 +64,10 @@ async function cleanupResources (yes, verbose) {
 async function cleanupRequests (yes, verbose) {
   console.log('Scanning search requests...')
   const requests = []
-  db.db().each('SELECT * FROM requests', (err, row) => {
-    if (err) {
-      throw new Error('Could not scan search requests: ' + err)
-    }
-
+  for (const row of db.db().prepare('SELECT * FROM requests').all()) {
     // Check for any missing resources
     const assets = helpers.assetsForRequest(row)
-    const missing = !!assets.htmlFiles.find(x => !fs.existsSync(x))
+    const missing = !!assets.find(x => !fs.existsSync(x))
 
     // If any files were missing, cleanup the request
     if (missing) {
@@ -86,7 +76,7 @@ async function cleanupRequests (yes, verbose) {
         console.log(JSON.stringify(row, null, 4))
       }
     }
-  })
+  }
 
   // Check what we found
   if (requests.length === 0) {

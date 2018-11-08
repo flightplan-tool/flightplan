@@ -558,6 +558,7 @@ The only method you must define in your Searcher subclass is called `search()`. 
 #### Properties
 - [searcher.id](#searcher-id)
 - [searcher.config](#searcher-config)
+- [searcher.browser](#searcher-browser)
 - [searcher.page](#searcher-page)
 
 ### searcher.isLoggedIn(*page*)
@@ -724,19 +725,25 @@ Prints a message to `stdout` with newline, prefixed with the ID of the [Engine] 
 
 > Color output can be completely disabled by setting the environment variable `FORCE_COLOR=0`.
 
-### engine.id
+### searcher.id
 
 - returns: <[string]>
 
 The ID of the [Engine] this Searcher belongs to.
 
-### engine.config
+### searcher.config
 
 - returns: <[Config]>
 
 The [Config] instance associated with the [Engine] this Searcher belongs to.
 
-### engine.page
+### searcher.browser
+
+- returns: <[Browser]>
+
+The [Browser] created by Puppeteer by the [Engine] this Searcher belongs to.
+
+### searcher.page
 
 - returns: <[Page]>
 

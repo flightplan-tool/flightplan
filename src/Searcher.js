@@ -165,9 +165,11 @@ class Searcher {
     try {
       // Create initial array of promises that need to resolve
       const promises = [
-        page.evaluate((name) => { document.forms[name].submit() }, name),
-        page.waitForNavigation({ waitUntil })
+        page.evaluate((name) => { document.forms[name].submit() }, name)
       ]
+      if (waitUntil !== 'none') {
+        promises.push(page.waitForNavigation({ waitUntil }))
+      }
 
       // If capturing responses, set up the event handler
       const responses = {}
@@ -242,8 +244,16 @@ class Searcher {
     return this._engine.config
   }
 
+  get browser () {
+    return this._engine.browser
+  }
+
   get page () {
     return this._engine.page
+  }
+
+  set page (newPage) {
+    this._engine.page = newPage
   }
 }
 
