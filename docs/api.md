@@ -1690,7 +1690,7 @@ award.toJSON()
 - `attributes` <[Object]>
   - `engine` <[string]> 2-letter IATA code of the airline website providing the award
   - `partner` <[boolean]> Optional flag specifying whether this is a partner award, defaults to comparing the segments on `flight` to `engine`, otherwise `false` if `flight` is `null`
-  - `cabins` <[Array]<[string]>> Optional list of values belonging to [`Flightplan.cabins`](#flightplan-cabins)). Defaults to the value of [Segment.cabin](#segment-cabin) for each [Segment] on the provided `*flight*`.
+  - `cabins` <[Array]<[string]>> Optional list of values belonging to [`Flightplan.cabins`](#flightplan-cabins)). Defaults to the value of [Segment.cabin](#segment-cabin) for each [Segment] on the provided `*flight*`. If a [Segment] does not have a `cabin` defined, the `cabin` from the `fare` will be substituted.
   - `fare` <[BookingClass]|[string]> A booking class (or booking class code) corresponding to the list returned by [`Config.fares`](#config-fares)
   - `quantity` <[number]> Number of passengers for which the award is available
   - `exact` <[boolean]> Optional flag specifying whether the quantity provided is exact, or a lower bound, defaults to `false`

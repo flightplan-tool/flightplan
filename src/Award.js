@@ -16,14 +16,20 @@ class Award {
       fees = null
     } = attributes
 
-    // Populate cabins from flight, if not defined
+    // Validate fare first
+    const fare = Award._validateFare(fareCode, engine)
+    if (!fare) {
+      throw new Error(`Invalid award fare: ${fareCode}`)
+    }
+
+    // Populate cabins from flight or fare code, if not defined
     let arrCabins
     if (cabins) {
       arrCabins = [...cabins]
     } else if (flight === null) {
       throw new Error(`Invalid award cabins: ${cabins} (cabins must be defined when no flight is given)`)
     } else {
-      arrCabins = flight.segments.map(x => x.cabin)
+      arrCabins = flight.segments.map(x => x.cabin || fare.cabin)
     }
 
     // Validate other attributes
@@ -40,10 +46,6 @@ class Award {
     }
     if (flight && arrCabins.length !== flight.segments.length) {
       throw new Error(`Invalid award cabin: ${flight.segments.length} segments defined, but only ${arrCabins.length} cabins`)
-    }
-    const fare = Award._validateFare(fareCode, engine)
-    if (!fare) {
-      throw new Error(`Invalid award fare: ${fareCode}`)
     }
     if (!quantity || !utils.positiveInteger(quantity)) {
       throw new Error(`Invalid award quantity: ${quantity}`)

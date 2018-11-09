@@ -5,7 +5,6 @@ const Flight = require('../../Flight')
 const Parser = require('../../Parser')
 const Segment = require('../../Segment')
 const { cabins } = require('../../consts')
-const { aircraft } = require('../../data')
 const utils = require('../../utils')
 
 // Cabin classes
@@ -37,22 +36,33 @@ module.exports = class extends Parser {
 
     // Transform flight data
     const { engine } = results
-    const awards = [...outbound, ...inbound].map(f => {
-      const e = Object.entries(f.remainingSeatsByCabinClass)[0]
-      const cabin = cabinClasses[e[0]]
-      const quantity = e[1]
+    const flights = []
+    for (const f of [...outbound, ...inbound]) {
+      // Check availability per cabin
+      const availability = new Map()
+      for (const [ key, quantity ] of Object.entries(f.remainingSeatsByCabinClass)) {
+        if (quantity === 0) {
+          continue
+        }
 
-      // Get pricing info (may not always be available)
-      const pricingInfo = {}
-      const fareKeys = tripFareMapper[`${f.key}-${e[0]}`]
-      if (fareKeys && fareKeys.length) {
-        const fare = fares[fareKeys[0]]
-        if (fare) {
-          pricingInfo.mileageCost = fare.awardFare
-          pricingInfo.fees = `${fare.fare} ${fare.currency}`
+        // Record quantity and fare
+        const cabin = cabinClasses[key]
+        const info = { quantity, exact: true, fare: this.findFare(cabin) }
+        availability.set(cabin, info)
+
+        // Get pricing info (may not always be available)
+        const fareKeys = tripFareMapper[`${f.key}-${key}`]
+        if (fareKeys && fareKeys.length) {
+          const fare = fares[fareKeys[0]]
+          if (fare) {
+            info.mileageCost = fare.awardFare
+            info.fees = `${fare.fare} ${fare.currency}`
+          }
         }
       }
-      const { mileageCost, fees } = pricingInfo
+      if (availability.size === 0) {
+        continue // No availability for this flight
+      }
 
       // Create segments
       const segments = f.flights.map(x => {
@@ -61,34 +71,39 @@ module.exports = class extends Parser {
         return new Segment({
           airline: x.airlineCode,
           flight: x.flightNumber,
-          aircraft: this.getAircraft(x.aircraft),
+          aircraft: x.aircraft,
           fromCity: x.departureAirportCode,
           toCity: x.destinationAirportCode,
           date: departure.toSQLDate(),
           departure: departure.toFormat('HH:mm'),
           arrival: arrival.toFormat('HH:mm'),
           lagDays: utils.days(departure, arrival),
-          cabin,
           stops: x.stops
         })
       })
+      if (segments.length === 0) {
+        throw new Parser.Error(`Flight had no segments: ${f}`)
+      }
 
-      // Create award
-      return new Award({
-        engine,
-        fare: this.findFare(cabin),
-        quantity,
-        mileageCost,
-        fees
-      }, new Flight(segments))
-    })
+      // Determine partner status
+      const partner = this.isPartner(segments)
+
+      // Create awards
+      const awards = []
+      for (const [ cabin, info ] of availability) {
+        awards.push(new Award({
+          engine,
+          partner,
+          cabins: Array(segments.length).fill(cabin),
+          fare: this.findFare(cabin),
+          ...info
+        }))
+      }
+
+      flights.push(new Flight(segments, awards))
+    }
 
     // Return results
-    return awards
-  }
-
-  getAircraft (iataCode) {
-    const result = aircraft.find(x => x.iata === iataCode)
-    return result ? result.icao : iataCode
+    return flights
   }
 }

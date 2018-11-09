@@ -2,7 +2,7 @@ const fp = require('../src/index')
 
 let results
 
-describe('NH: HKG-PVG', () => {
+describe('NH: HKG-HND', () => {
   beforeAll(() => {
     results = fp.Results.parse({
       engine: 'NH',
