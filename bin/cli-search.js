@@ -40,7 +40,7 @@ program
 const strategies = {
   cx: { roundtripOptimized: false },
   ke: { oneWaySupported: false },
-  nh: { oneWaySupported: false }
+  nh: { roundtripOptimized: false }
 }
 
 function parseDate (strDate) {
