@@ -249,6 +249,7 @@ class Results {
         throw err
       } else {
         this._setError(err)
+        return
       }
     }
 

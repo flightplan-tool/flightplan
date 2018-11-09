@@ -38,8 +38,11 @@ module.exports = class extends Parser {
     }
 
     // Check if no available awards
-    if ($('h2.main-heading').text().includes('Select alternative date') ||
-      $('div.alert__message').text().includes('There are no seats available')) {
+    if ($('h2.main-heading').text().includes('Select alternative date')) {
+      return []
+    }
+    const msg = $('div.alert__message').text().trim()
+    if (msg.includes('no seats available') || msg.includes('no flights available')) {
       return []
     }
 
