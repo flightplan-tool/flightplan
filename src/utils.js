@@ -50,7 +50,9 @@ function validDate (str) {
 }
 
 function parseDate (str, zone = 'utc') {
-  return DateTime.fromISO(str, { zone }).startOf('day')
+  return (typeof str === 'string')
+    ? DateTime.fromISO(str, { zone }).startOf('day')
+    : DateTime.fromSQL(str.toSQLDate(), { zone })
 }
 
 function joinDateTime (date, time) {

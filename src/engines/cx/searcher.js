@@ -147,7 +147,7 @@ module.exports = class extends Searcher {
         await this.settle()
 
         // // Insert a small wait (to simulate throttling between tabs)
-        // await this.waitBetween([4, 6])
+        // await this.waitBetween(4000, 6000)
 
         // Obtain flight data
         pageBom.push(await page.evaluate(() => window.pageBom))

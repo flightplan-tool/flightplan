@@ -230,10 +230,23 @@ class Searcher {
     }, selector, defaultValue)
   }
 
-  waitBetween (range) {
+  visible (selector) {
     const { page } = this._engine
-    const [min, max] = range
-    return page.waitFor(utils.randomInt(min * 1000, max * 1000))
+    return page.evaluate((sel) => {
+      const ele = document.querySelector(sel)
+      if (ele) {
+        const style = window.getComputedStyle(ele)
+        return style && style.display !== 'none' &&
+          style.visibility !== 'hidden' &&
+          style.opacity !== '0'
+      }
+      return false
+    }, selector)
+  }
+
+  waitBetween (min, max) {
+    const { page } = this._engine
+    return page.waitFor(max ? utils.randomInt(min, max) : min)
   }
 
   get id () {

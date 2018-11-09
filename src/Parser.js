@@ -21,6 +21,11 @@ class Parser {
     return this._config.fares.find(x => x.cabin === cabin && x.saver === saver)
   }
 
+  isPartner (segments, others = []) {
+    const operators = [ this.results.engine, ...others.map(x => x.toUpperCase()) ]
+    return !segments.every(x => operators.includes(x.airline))
+  }
+
   get id () {
     return this._engine
   }

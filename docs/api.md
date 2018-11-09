@@ -549,6 +549,7 @@ The only method you must define in your Searcher subclass is called `search()`. 
 - [searcher.setValue(*selector*, *value*)](#searcher-setvalue-selector-value)
 - [searcher.submitForm(*name*, *options*)](#searcher-submitform-name-options)
 - [searcher.textContent(*selector*, [*defaultValue*])](#searcher-textcontent-selector-defaultvalue)
+- [searcher.visible(*selector*)](#searcher-visible-selector)
 - [searcher.waitBetween(*range*)](#searcher-waitbetween-range)
 - [searcher.success(*obj1* [, *obj2*, ..., *objN*])](#searcher-success-obj1-obj2-objn)
 - [searcher.info(*obj1* [, *obj2*, ..., *objN*])](#searcher-info-obj1-obj2-objn)
@@ -702,12 +703,20 @@ Calls the `submit()` method of the named form. If `capture` is provided, the met
 
 Fetches an element's `textContent`, returning `defualtValue` if the selector had no match.
 
-### searcher.waitBetween(*range*)
+### searcher.visible(*selector*)
 
-- `range` <[SimpleDuration]> Amount of time to wait for
+- `selector` <[string]> A [selector] to query page for
+- returns: <[Promise]<[boolean]>> Resolves to `true` if the element is visible
+
+Tests element visibility by checking the `display`, `visibility`, and `opacity` CSS properties.
+
+### searcher.waitBetween(*min*, *max*)
+
+- `min` <[number]> Lower bound of time to wait for, in milliseconds
+- `max` <[number]> Optional upper bound of time to wait for, in milliseconds
 - returns: <[Promise]>
 
-Waits for a variable amount of time (unlike `page.waitFor()` which waits for an exact amount of time).
+Waits for a variable amount of time (unlike `page.waitFor()` which waits for an exact amount of time). If `max` is not given, the wait time will be exactly `min`.
 
 ### parser.success(*obj1* [, *obj2*, ..., *objN*])
 ### parser.info(*obj1* [, *obj2*, ..., *objN*])
@@ -778,6 +787,7 @@ Parser has only a single lifecycle method, `parse()`, and every Parser subclass 
 
 #### Other Methods
 - [parser.findFare(*cabin*, *saver*)](#parser-findfare-cabin-saver)
+- [parser.isPartner(*segments*, *other*)](#parser-ispartner-segments-other)
 - [parser.success(*obj1* [, *obj2*, ..., *objN*])](#parser-success-obj1-obj2-objn)
 - [parser.info(*obj1* [, *obj2*, ..., *objN*])](#parser-info-obj1-obj2-objn)
 - [parser.warn(*obj1* [, *obj2*, ..., *objN*])](#parser-warn-obj1-obj2-objn)
@@ -803,6 +813,14 @@ This is the primary lifecycle method of the Parser, which does all the heavy lif
 - returns: <[BookingClass]> If no matching fare was found, then `undefined`
 
 Searches the list of fares supported by this Parser's [Engine] instance (defined by [`config.fares`](#config-fares)).
+
+### parser.isPartner(*segments*, *other*)
+
+- `segments` <[Array]<[Segment]>> List of [Segment] instances
+- `other` <[Array]<[string]>> Optional set of additional non-partner airlines
+- returns: <[boolean]> `false` if none of the segments are operated by a partner airline
+
+Checks whether every segment is operated by a partner airline or not. By default, the only non-partner airline is `parser.query.engine`, though `other` can specify additional non-partner airlines as a list of two-letter IATA airline codes.
 
 ### parser.success(*obj1* [, *obj2*, ..., *objN*])
 ### parser.info(*obj1* [, *obj2*, ..., *objN*])

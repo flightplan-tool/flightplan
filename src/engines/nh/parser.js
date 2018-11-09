@@ -1,4 +1,3 @@
-const cheerio = require('cheerio')
 const { DateTime } = require('luxon')
 
 const Award = require('../../Award')
@@ -6,123 +5,137 @@ const Flight = require('../../Flight')
 const Parser = require('../../Parser')
 const Segment = require('../../Segment')
 const { cabins } = require('../../consts')
-const { aircraft } = require('../../data')
+const utils = require('../../utils')
 
 // Regex patterns
-const reCabin = /^(.+)\s+Class/
 const reDate = /^\w{3}\s\d+/
 const reTime = /\d{2}:\d{2}/
-const reLagDays = /\+(\d)day/
+const reAircraft = /^[A-Z0-9]{3,4}\b/
 
 module.exports = class extends Parser {
   parse (results) {
-    const $ = results.$('results')
-    const json = results.contents('json', 'extra')
-    this.airports = json.airports
-    this.recommendationList = json.recommendationList
+    this.airports = results.contents('json', 'airports').airports
 
     // Parse inbound and outbound flights
-    const departures = this.parseFlights($, json.outboundFlightInfoList, 'div.selectItineraryOutbound', true)
-    const arrivals = this.parseFlights($, json.inboundFlightInfoList, 'div.selectItineraryInbound', false)
+    const departures = this.parseFlights(results.$('outbound'), true)
+    const arrivals = this.parseFlights(results.$('inbound'), false)
     return [...departures, ...arrivals]
   }
 
-  parseFlights ($, json, sel, isOutbound) {
+  parseFlights ($, isOutbound) {
     const { query } = this
+    const { engine } = this.results
+    const referenceDate = isOutbound ? query.departDateObject() : query.returnDateObject()
 
-    // Extract flights from JSON first
+    const flights = []
+    if ($) {
+      $('tr.oneWayDisplayPlan').each((_, row) => {
+        // Check which cabins have availability
+        const availability = this.parseAvailability($, row)
+        if (availability.size === 0) {
+          return // No availability for this flight
+        }
+
+        // Create segments
+        const segments = []
+        let lastDate = referenceDate
+        $(row).find('div.designTr').each((_, seg) => {
+          // Check if the departure date of the segment is a different date
+          const dateChange = $(seg).find('div.optionalRow.dateChange')
+          if (dateChange.length) {
+            lastDate = this.parseDate($(dateChange[0]).text().trim(), referenceDate)
+          }
+
+          // Parse the schedule
+          const sections = $(seg).find('div.designTr')
+          if (sections.length === 0) {
+            return
+          }
+          const departure = this.parseTimeAndCity($, sections[0])
+          const arrival = this.parseTimeAndCity($, sections[1])
+          const flightInfo = this.parseFlightInfo($, sections[2])
+
+          segments.push(new Segment({
+            ...flightInfo,
+            fromCity: departure.city,
+            toCity: arrival.city,
+            date: lastDate.toSQLDate(),
+            departure: departure.time,
+            arrival: arrival.time,
+            lagDays: arrival.lagDays
+          }))
+        })
+        if (segments.length === 0) {
+          throw new Parser.Error('Unable to parse flight segments')
+        }
+
+        // Determine partner status
+        const partner = this.isPartner(segments)
+
+        // Create awards
+        const awards = []
+        for (const [cabin, status] of availability) {
+          awards.push(new Award({
+            engine,
+            partner,
+            cabins: Array(segments.length).fill(cabin),
+            fare: this.findFare(cabin),
+            quantity: query.quantity,
+            exact: false,
+            waitlisted: status === '@'
+          }))
+        }
+
+        flights.push(new Flight(segments, awards))
+      })
+    }
+
+    return flights
+  }
+
+  parseAvailability ($, row) {
     const map = new Map()
-    json.forEach(x => {
-      // De-dupe based on flightId
-      const { flightId } = x[0]
-      map.set(flightId, x)
+    const cols = $(row).find('td')
+    const arrCabins = [cabins.economy, cabins.business, cabins.first]
+
+    // Iterate over available cabins
+    arrCabins.forEach((cabin, i) => {
+      const text = $(cols.get(i)).text().trim().toLowerCase()
+      const status = text.includes('available') ? '+' : (text.includes('waitlisted') ? '@' : '')
+      if (status !== '') {
+        map.set(cabin, status)
+      }
     })
 
-    // Check if there are any flights
-    if (map.size === 0) {
-      return []
-    }
-
-    // Get the flights table
-    const table = $(sel).first()
-    if (table.length === 0) {
-      throw new Parser.Error(`Flight table missing: ${sel}`)
-    }
-
-    // Map data from the HTML table back to the JSON
-    const awards = []
-    for (const [flightId, segments] of map) {
-      const flight = this.createFlight($, table, flightId, segments)
-
-      // Calculate award fare code and mileage
-      const quantity = this.quantity(flightId, isOutbound)
-      awards.push(new Award({
-        engine: this.results.engine,
-        fare: this.findFare(flight.highestCabin()),
-        quantity: (quantity > 0) ? quantity : query.quantity,
-        waitlisted: quantity > 0,
-        mileageCost: this.mileage(flightId, isOutbound)
-      }, flight))
-    }
-
-    return awards
+    return map
   }
 
-  createFlight ($, table, flightId, list) {
-    const sel = $(table).find(`.selectItineraryCheck i[data-value="${flightId}"]`)
-    if (sel.length === 0) {
-      throw new Parser.Error(`Missing HTML entry corresponding to flightId: ${flightId}`)
+  parseTimeAndCity ($, ele) {
+    const fields = $(ele).find('div.designTd')
+    if (fields.length !== 2) {
+      throw new Parser.Error(`Invalid time / city structure: ${$(ele).html().trim()}`)
     }
-    const result = sel.parentsUntil('.itinModeAvailabilityResult').last()
-    if (result.length === 0) {
-      throw new Parser.Error(`Non-standard parent structure for HTML flight entries`)
+    const strTime = $(fields[0]).text().trim()
+    const strCity = $(fields[1]).text().trim()
+    return {
+      time: this.flightTime(strTime),
+      lagDays: this.lagDays(strTime),
+      city: this.airportCode(strCity)
     }
-
-    // Get details for each segment
-    const detailsMap = new Map()
-    $(result).find('div.detailWrap').each((_, wrap) => {
-      const details = $(wrap).find('div.detailInformation span')
-      const flightNumber = details.first().text().trim()
-      detailsMap.set(flightNumber, details)
-    })
-
-    // Fill out segment information
-    const segments = []
-    let flightDate = null
-    for (const segment of list) {
-      const { flightNumber, depDate, depAirport, arrAirport, depTime, arrTime } = segment
-
-      // If depDate is missing, use the value from the previous segment (it will be same)
-      if (depDate && depDate !== '') {
-        flightDate = depDate
-      }
-
-      // Get details from HTML
-      const details = detailsMap.get(flightNumber)
-      if (!details) {
-        throw new Parser.Error(`Missing segment details in HTML for flight: ${flightNumber}`)
-      }
-
-      segments.push(new Segment({
-        airline: flightNumber.substring(0, 2),
-        flight: flightNumber,
-        aircraft: this.aircraft($, details),
-        fromCity: this.airportCode(depAirport),
-        toCity: this.airportCode(arrAirport),
-        date: this.departureDate(flightDate),
-        departure: this.flightTime(depTime),
-        arrival: this.flightTime(arrTime),
-        cabin: this.cabin($, details),
-        lagDays: this.lagDays(arrTime)
-      }))
-    }
-    return new Flight(segments)
   }
 
-  aircraft ($, details) {
-    const iata = $(details).not('.starAlliance').eq(1).text().trim()
-    const result = aircraft.find(x => x.iata === iata)
-    return result ? result.icao : iata
+  parseFlightInfo ($, ele) {
+    const fields = $(ele).find('div.designTd')
+    if (fields.length !== 2) {
+      throw new Parser.Error(`Invalid flight info structure: ${$(ele).html().trim()}`)
+    }
+    const flight = $(fields[0]).text().trim()
+    const strOther = $(fields[1]).text().trim()
+    return {
+      airline: flight.slice(0, 2),
+      flight,
+      aircraft: this.aircraft(strOther)
+    }
   }
 
   airportCode (name) {
@@ -133,14 +146,16 @@ module.exports = class extends Parser {
     return result.codeSuggest
   }
 
-  departureDate (str) {
-    const result = reDate.exec(cheerio.load(str).text()) // Strip HTML tags
-    if (!result) {
-      throw new Parser.Error(`Failed to parse departure date: ${str}`)
+  parseDate (str, referenceDate) {
+    const result = reDate.exec(str)
+    if (result) {
+      const dt = DateTime.fromFormat(result[0], 'LLL d', { zone: 'utc' })
+      if (dt.isValid) {
+        // Fill in year from query
+        return utils.setNearestYear(referenceDate, dt)
+      }
     }
-
-    // Start with base departure date, from query
-    return DateTime.fromFormat(result[0], 'LLL d', { zone: 'utc' }).toSQLDate()
+    throw new Parser.Error(`Failed to parse date: ${str}`)
   }
 
   flightTime (str) {
@@ -152,35 +167,12 @@ module.exports = class extends Parser {
   }
 
   lagDays (str) {
-    const result = reLagDays.exec(str)
-    return result ? parseInt(result[1]) : 0
+    const idx = str.indexOf('+')
+    return (idx >= 0) ? parseInt(str.slice(idx + 1)) : 0
   }
 
-  cabin ($, details) {
-    const displayCodes = {
-      'Economy': cabins.economy,
-      'Business': cabins.business,
-      'First': cabins.first
-    }
-    const cabin = reCabin.exec(details.last().text().trim())
-    return displayCodes[cabin[1]]
-  }
-
-  offers (flightId, isOutbound) {
-    flightId = parseInt(flightId)
-    return this.recommendationList.filter(x =>
-      (isOutbound ? x.outBoundFlightId : x.inBoundFlightId) === flightId)
-  }
-
-  mileage (flightId, isOutbound) {
-    const arr = this.offers(flightId, isOutbound)
-      .map(x => x.milesCost).filter(x => x > 0)
-    return (arr.length === 0) ? 0 : (Math.min(...arr) / 2)
-  }
-
-  quantity (flightId, isOutbound) {
-    const arr = this.offers(flightId, isOutbound)
-      .map(x => isOutbound ? x.outBoundSeats : x.inBoundSeats)
-    return (arr.length === 0) ? 0 : Math.max(...arr)
+  aircraft (str) {
+    const result = reAircraft.exec(str)
+    return result ? result[0] : null
   }
 }

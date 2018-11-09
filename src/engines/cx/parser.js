@@ -67,7 +67,7 @@ module.exports = class extends Parser {
       })
 
       // Determine partner status
-      const partner = !segments.every(x => ['CX', 'KA'].includes(x.airline))
+      const partner = this.isPartner(segments, [ 'KA' ])
 
       // Create list of awards
       const awards = []

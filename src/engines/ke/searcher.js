@@ -146,7 +146,7 @@ module.exports = class extends Searcher {
       }
 
       // Insert a small wait (to make sure response is set)
-      await this.waitBetween([5, 10])
+      await this.waitBetween(5000, 10000)
     } finally {
       if (fn) {
         page.removeListener('response', fn)

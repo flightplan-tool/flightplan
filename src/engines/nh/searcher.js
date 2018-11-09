@@ -47,56 +47,42 @@ module.exports = class extends Searcher {
   }
 
   validate (query) {
-    const { cabin, oneWay } = query
-
     // Prem. economy is not a supported cabin
-    if (cabin === cabins.premium) {
+    if (query.cabin === cabins.premium) {
       throw new Searcher.Error(`Unsupported cabin class: ${query.cabin}`)
-    }
-
-    // One way searches are not supported
-    if (oneWay) {
-      throw new Searcher.Error(`One-way award search is not supported by this engine`)
     }
   }
 
   async search (page, query, results) {
-    const { fromCity, toCity, cabin, quantity } = query
+    const { fromCity, toCity, quantity, oneWay } = query
     const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
+    const returnDate = oneWay ? departDate : query.returnDateObject()
 
     // Wait a little bit for the form to load
     await page.waitFor(1000)
 
-    // Get cabin values
-    const cabinCode = {
-      [cabins.economy]: 'CFF1',
-      [cabins.business]: 'CFF2',
-      [cabins.first]: 'CFF3'
-    }
+    // Choose multiple cities / mixed classes
+    await this.clickAndWait('li.lastChild.deselection')
+    await page.waitFor(1000)
 
     // Weekday strings
     const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 
     await this.fillForm({
-      'hiddenSearchMode': 'ROUND_TRIP',
-      'itineraryButtonCheck': 'roundTrip',
-      'hiddenAction': 'AwardRoundTripSearchInputAction',
-      'roundTripOpenJawSelected': '0',
-      'hiddenRoundtripOpenJawSelected': '0',
-      'departureAirportCode:field': fromCity,
-      'departureAirportCode:field_pctext': await this.airportName(fromCity),
-      'arrivalAirportCode:field': toCity,
-      'arrivalAirportCode:field_pctext': await this.airportName(toCity),
-      'awardDepartureDate:field': departDate.toFormat('yyyyMMdd'),
-      'awardDepartureDate:field_pctext': departDate.toFormat('MM/dd/yyyy') + ` (${weekdays[departDate.weekday - 1]})`,
-      'awardReturnDate:field': returnDate.toFormat('yyyyMMdd'),
-      'awardReturnDate:field_pctext': returnDate.toFormat('MM/dd/yyyy') + ` (${weekdays[returnDate.weekday - 1]})`,
-      'hiddenBoardingClassType': '0',
-      'boardingClass': cabinCode[cabin],
+      'requestedSegment:0:departureAirportCode:field': fromCity,
+      'requestedSegment:1:arrivalAirportCode:field': fromCity,
+      'requestedSegment:0:departureAirportCode:field_pctext': await this.airportName(fromCity),
+      'requestedSegment:1:arrivalAirportCode:field_pctext': await this.airportName(fromCity),
+      'requestedSegment:0:arrivalAirportCode:field': toCity,
+      'requestedSegment:1:departureAirportCode:field': toCity,
+      'requestedSegment:0:arrivalAirportCode:field_pctext': await this.airportName(toCity),
+      'requestedSegment:1:departureAirportCode:field_pctext': await this.airportName(toCity),
+      'requestedSegment:0:departureDate:field': departDate.toFormat('yyyyMMdd'),
+      'requestedSegment:0:departureDate:field_pctext': departDate.toFormat('MM/dd/yyyy') + ` (${weekdays[departDate.weekday - 1]})`,
+      'requestedSegment:1:departureDate:field': returnDate.toFormat('yyyyMMdd'),
+      'requestedSegment:1:departureDate:field_pctext': returnDate.toFormat('MM/dd/yyyy') + ` (${weekdays[returnDate.weekday - 1]})`,
       'adult:count': quantity.toString(),
       'youngAdult:count': 0,
-      'hiddenDomesticChildAge': false,
       'child:count': 0
     })
 
@@ -104,37 +90,47 @@ module.exports = class extends Searcher {
     if (await page.$('#travelArranger:checked')) {
       await page.click('#travelArranger')
     }
-
-    // Make sure form is ready
-    await this.settle()
+    await page.waitFor(500)
 
     // Submit the form
-    const response = await this.clickAndWait('#itinerarySearch input[type="submit"]')
+    const response = await this.clickAndWait('input[value="Search"]')
     await this.settle()
 
     // Check response code
     this.checkResponse(response)
 
+    // Save airports (need the names to map back to codes later)
+    const airports = await page.evaluate(() => {
+      const { airports } = Asw.AirportList
+      return { airports }
+    })
+    await results.saveJSON(`airports`, airports)
+
+    // Save outbound flights
+    await this.save('outbound', results)
+
+    // If roundtrip, select a flight and move to the next page
+    if (!oneWay) {
+      const radioButton = await page.$('i[role="radio"]')
+      if (radioButton) {
+        await radioButton.click()
+        await this.waitBetween(3000, 6000)
+        await this.clickAndWait('#nextButton')
+        await this.settle()
+
+        // Save inbound flights
+        await this.save('inbound', results)
+      }
+    }
+  }
+
+  async save (name, results) {
     // Check for errors
     await this.checkPage()
 
     // Save the results
-    await results.saveHTML('results')
-
-    // Obtain JSON data from the browser itself (for pricing)
-    const json = await page.evaluate(() => {
-      const { recommendationList, awardExcludeList } = this
-      const { inboundFlightInfoList, outboundFlightInfoList } = Asw.SummaryArea
-      const { airports } = Asw.AirportList
-      return {
-        recommendationList,
-        awardExcludeList,
-        inboundFlightInfoList,
-        outboundFlightInfoList,
-        airports
-      }
-    })
-    await results.saveJSON('extra', json)
+    await results.saveHTML(name)
+    await results.screenshot(name)
   }
 
   async settle () {
@@ -153,9 +149,17 @@ module.exports = class extends Searcher {
   async checkPage () {
     const { page } = this
 
+    if (await this.visible('.modalError')) {
+      const msg = this.textContent('.modalError', '')
+      if (msg.toLowerCase().includes('there are errors')) {
+        throw new Searcher.Error(`The website encountered an error processing the request: ${msg}`)
+      }
+    }
+
     if (await page.$('#cmnContainer .messageArea')) {
+      const msg = await this.textContent('#cmnContainer .messageArea', '')
       await page.click('#cmnContainer .buttonArea input')
-      throw new Searcher.Error('The website encountered an error processing the request')
+      throw new Searcher.Error(`The website encountered an error processing the request: ${msg}`)
     }
   }
 }
