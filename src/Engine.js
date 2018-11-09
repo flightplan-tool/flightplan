@@ -45,7 +45,7 @@ class Engine {
       credentials,
       args = [],
       headless = false,
-	  docker,
+    docker,
       width = utils.randomInt(1200, 1280),
       height = utils.randomInt(1400, 1440),
       proxy,
@@ -67,7 +67,7 @@ class Engine {
       headless,
       defaultViewport: { width, height },
       proxy,
-	  docker,
+      docker,
       timeout,
       verbose,
       cookies
@@ -170,10 +170,8 @@ class Engine {
     if (proxy) {
       args.push(`--proxy-server=${proxy.server}`)
     }
-	if (docker) {
-      args.push('--no-sandbox')
-	  args.push('--headless')
-	  args.push('--disable-dev-shm-usage')
+    if (docker) {
+      args.push('--no-sandbox', '--headless', '--disable-dev-shm-usage')
     }
     return puppeteer.launch({ headless, args, defaultViewport })
   }

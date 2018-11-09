@@ -129,8 +129,10 @@ module.exports = class extends Searcher {
     // Save the results
     if (!partnersActive) {
       await results.saveHTML('results')
+      await results.screenshot('results')
     } else {
       await results.saveHTML('partners1')
+      await results.screenshot('partners1')
     }
 
     // If partners requested, check those as well
@@ -148,6 +150,7 @@ module.exports = class extends Searcher {
 
     // Save the results
     await results.saveHTML(id)
+    await results.screenshot(id)
   }
 
   async prepare () {

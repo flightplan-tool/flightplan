@@ -96,6 +96,7 @@ module.exports = {
     { iata: '762', icao: 'B762', name: 'Boeing 767-200' },
     { iata: '763', icao: 'B763', name: 'Boeing 767-300' },
     { iata: '764', icao: 'B764', name: 'Boeing 767-400' },
+    { iata: '777', icao: 'B777', name: 'Boeing 777' },
     { iata: '777', icao: 'B777', name: 'Boeing 777-200/300' },
     { iata: '772', icao: 'B772', name: 'Boeing 777-200/200ER' },
     { iata: '773', icao: 'B773', name: 'Boeing 777-300' },

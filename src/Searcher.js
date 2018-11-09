@@ -27,9 +27,12 @@ class Searcher {
       // 304's (cached response) are OK too
       if (!response.ok() && response.status() !== 304) {
         // Trigger an immediate cool-down period
-        const { checkpoint = null } = this.throttling
-        if (checkpoint) {
-          checkpoint.remaining = 0
+        const { throttling } = this._state
+        if (throttling) {
+          const { checkpoint = null } = throttling
+          if (checkpoint) {
+            checkpoint.remaining = 0
+          }
         }
 
         // Throw SearchError

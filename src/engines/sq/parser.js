@@ -9,18 +9,27 @@ const { aircraft } = require('../../data')
 const utils = require('../../utils')
 
 // Regex patterns
+const reFlight = /FLIGHT\s+([A-Z0-9]{3,6})\b/
 const reAircraft = /Aircraft type:\s+\((.+)\)/
 const reHour = /(\w{3})\s+(\d{1,2}:\d{2})/
 const reDate = /\d{1,2}\s+\w{3}/
 const reMileage = /[,\d]+/
 
+// Cabin codes
+const cabinCodes = {
+  [cabins.economy]: 'economy',
+  [cabins.premium]: 'premium',
+  [cabins.business]: 'business',
+  [cabins.first]: 'suites'
+}
+
 module.exports = class extends Parser {
   parse (results) {
-    const awards = this.parseResults(results.$('results'), false)
-    if (results.query.partners) {
-      awards.push(...this.parseResults(results.$('partners1'), true))
-    }
-    return awards
+    return [
+      ...this.parseResults(results.$('results'), false),
+      ...this.parseResults(results.$('partners1'), true),
+      ...this.parseResults(results.$('partners2'), true)
+    ]
   }
 
   parseResults ($, partner) {
@@ -34,43 +43,46 @@ module.exports = class extends Parser {
       return []
     }
 
-    // Find the awards table
-    const tables = $('#redemptionChooseFlightsForm > fieldset > div.flights__searchs')
-    if (tables.length === 0) {
-      throw new Parser.Error('Award table not found')
+    // Scan for flights
+    for (const cabin of Object.keys(cabins)) {
+      const flights = this.parseFlights($, cabin, partner)
+      if (flights) {
+        return flights // Results page only has one cabin type
+      }
     }
 
-    // Parse both departure and return awards
-    const departures = this.parseTable($, tables[0], partner)
-    const returns = (tables.length <= 1) ? []
-      : this.parseTable($, tables[1])
-
-    // Create final list of awards, and return it
-    return [...departures, ...returns]
+    // Failed to find any flights, should not happen
+    throw new Error('Failed to parse flights from HTML')
   }
 
-  parseTable ($, table, partner) {
-    const awards = []
+  parseFlights ($, cabin, partner) {
+    const rows = $(`table.type-${cabinCodes[cabin]}-orb`)
+    if (rows.length === 0) {
+      return null
+    }
 
     // Iterate over flights
-    $('td.flight-part').each((_, row) => {
+    const flights = []
+    rows.each((_, row) => {
       // Build up segments
       const segments = []
+      const cabins = []
       let details = null
+      let currentCabin = null
+      let referenceDate = null
       $(row).find('.flights__info').each((_, x) => {
         // Check for flight number
         const header = $(x).find('div.flights--detail.left').first()
         if (header.length) {
           const airline = header.first().attr('data-carrier-code')
-          const flightNumber = header.first().attr('data-flight-number')
-          const flight = airline + parseInt(flightNumber).toString()
+          const flight = reFlight.exec(header.first().find('span').text())[1]
           details = { airline, flight }
         }
 
         // Check for cabin
         const cabin = this.cabinDisplayed($, x)
         if (cabin) {
-          details.cabin = cabin
+          currentCabin = cabin
         }
 
         // Check for aircraft
@@ -91,39 +103,55 @@ module.exports = class extends Parser {
           const {
             city: fromCity,
             time: departure,
-            date
+            date: date1
           } = this.parseFlightDetails($, info.eq(0))
 
           // Parse arrival info
           const {
             city: toCity,
             time: arrival,
-            date: arrivalDate
+            date: date2
           } = this.parseFlightDetails($, info.eq(1))
+
+          // Set reference date, and year
+          if (!referenceDate) {
+            referenceDate = (fromCity === this.query.fromCity)
+              ? this.query.departDateObject()
+              : this.query.returnDateObject()
+          }
+          const departDate = utils.setNearestYear(referenceDate, date1)
+          const arrivalDate = utils.setNearestYear(referenceDate, date2)
 
           // Add segment
           segments.push(new Segment({
             ...details,
             fromCity,
             toCity,
-            date: date.toSQLDate(),
+            date: departDate.toSQLDate(),
             departure,
             arrival,
-            lagDays: utils.days(date, arrivalDate)
+            lagDays: utils.days(departDate, arrivalDate)
           }))
+
+          // Add the cabin for this segment
+          cabins.push(currentCabin)
         }
       })
 
-      // Create a flight from the segments
-      const flight = new Flight(segments)
-
       // Parse award availability and pricing
-      const saverAward = this.parseAward($, $(row).find('td.hidden-mb.package-1'), true, partner, flight)
-      const advantageAward = this.parseAward($, $(row).find('td.hidden-mb.package-2'), false, partner, flight)
-      awards.push(...[ saverAward, advantageAward ].filter(x => !!x))
+      const saverAward = this.parseAward($,
+        $(row).find('td.hidden-mb.package-1'),
+        this.findFare(cabin, true), partner, cabins)
+      const advantageAward = this.parseAward($,
+        $(row).find('td.hidden-mb.package-2'),
+        this.findFare(cabin, false), partner, cabins)
+      const awards = [ saverAward, advantageAward ].filter(x => !!x)
+
+      // Create a flight from the segments
+      flights.push(new Flight(segments, awards))
     })
 
-    return awards
+    return flights
   }
 
   cabinDisplayed ($, details) {
@@ -147,7 +175,7 @@ module.exports = class extends Parser {
     return { city, time, date }
   }
 
-  parseAward ($, element, saver, partner, flight) {
+  parseAward ($, element, fare, partner, cabins) {
     const { results, query } = this
     const { engine } = results
     const { quantity } = query
@@ -165,18 +193,17 @@ module.exports = class extends Parser {
 
       // Calculate other award details
       const waitlisted = utils.truthy(radio.attr('data-waitlisted'))
-      const cabin = flight.highestCabin()
-      const fare = this.findFare(cabin, saver)
 
       // Return the award
       return new Award({
         engine,
         partner,
+        cabins,
         fare,
         quantity,
         waitlisted,
         mileageCost
-      }, flight)
+      })
     }
     if (element.length === 0 || element.text().includes('Not available')) {
       return null

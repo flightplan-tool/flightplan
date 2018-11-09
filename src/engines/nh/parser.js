@@ -66,7 +66,7 @@ module.exports = class extends Parser {
           }))
         })
         if (segments.length === 0) {
-          throw new Parser.Error('Unable to parse flight segments')
+          throw new Error('Unable to parse flight segments')
         }
 
         // Determine partner status
@@ -113,7 +113,7 @@ module.exports = class extends Parser {
   parseTimeAndCity ($, ele) {
     const fields = $(ele).find('div.designTd')
     if (fields.length !== 2) {
-      throw new Parser.Error(`Invalid time / city structure: ${$(ele).html().trim()}`)
+      throw new Error(`Invalid time / city structure: ${$(ele).html().trim()}`)
     }
     const strTime = $(fields[0]).text().trim()
     const strCity = $(fields[1]).text().trim()
@@ -127,7 +127,7 @@ module.exports = class extends Parser {
   parseFlightInfo ($, ele) {
     const fields = $(ele).find('div.designTd')
     if (fields.length !== 2) {
-      throw new Parser.Error(`Invalid flight info structure: ${$(ele).html().trim()}`)
+      throw new Error(`Invalid flight info structure: ${$(ele).html().trim()}`)
     }
     const flight = $(fields[0]).text().trim()
     const strOther = $(fields[1]).text().trim()
@@ -141,7 +141,7 @@ module.exports = class extends Parser {
   airportCode (name) {
     const result = this.airports.find(x => x.name === name)
     if (!result) {
-      throw new Parser.Error(`Unrecognized airport: ${name}`)
+      throw new Error(`Unrecognized airport: ${name}`)
     }
     return result.codeSuggest
   }
@@ -155,13 +155,13 @@ module.exports = class extends Parser {
         return utils.setNearestYear(referenceDate, dt)
       }
     }
-    throw new Parser.Error(`Failed to parse date: ${str}`)
+    throw new Error(`Failed to parse date: ${str}`)
   }
 
   flightTime (str) {
     const result = reTime.exec(str)
     if (!result) {
-      throw new Parser.Error(`Failed to parse flight time: ${str}`)
+      throw new Error(`Failed to parse flight time: ${str}`)
     }
     return result[0]
   }
