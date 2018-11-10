@@ -30,7 +30,6 @@
     "luxon": "^1.4.2",
     "parse-duration": "^0.1.1",
     "puppeteer": "^1.6.0-next.1532381444032",
-    "react-spinkit": "^3.0.0",
     "shelljs": "^0.8.2",
     "syncprompt": "^2.0.0"
   },

@@ -16,6 +16,7 @@
     "react-responsive-modal": "^3.2.0",
     "react-scripts": "1.1.4",
     "react-select": "^2.0.0-beta.2",
+    "react-spinkit": "^3.0.0",
     "url-search-params": "^0.10.0"
   },
   "scripts": {
