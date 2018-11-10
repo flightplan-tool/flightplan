@@ -4,7 +4,7 @@ const { cabins } = require('../../consts')
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
     await page.waitFor(
-      'button.header-login-btn, a.header-logout-btn', {visible: true, timeout: 10000})
+      'button.header-login-btn, a.header-logout-btn', {visible: true, timeout: 30000})
     return !!(await page.$('a.header-logout-btn'))
   }
 
@@ -96,6 +96,7 @@ module.exports = class extends Searcher {
     await this.monitor('.waiting-spinner-inner')
 
     // Obtain the JSON from the browser itself, which will have calculated prices
+    await page.waitFor(5000)
     const json = await page.evaluate(() => this.results.results)
     await results.saveJSON('results', json)
     await results.screenshot('results')

@@ -27,7 +27,7 @@ class Searcher {
       // 304's (cached response) are OK too
       if (!response.ok() && response.status() !== 304) {
         // Trigger an immediate cool-down period
-        const { throttling } = this._state
+        const { throttling } = this._engine._state
         if (throttling) {
           const { checkpoint = null } = throttling
           if (checkpoint) {
@@ -229,7 +229,13 @@ class Searcher {
     const { page } = this._engine
     return page.evaluate((sel, defVal) => {
       const ele = document.querySelector(sel)
-      return ele ? ele.textContent : defVal
+      if (ele) {
+        const textVal = ele.textContent
+        if (typeof textVal === 'string') {
+          return textVal
+        }
+      }
+      return defVal
     }, selector, defaultValue)
   }
 
