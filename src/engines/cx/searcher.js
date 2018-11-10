@@ -137,8 +137,8 @@ module.exports = class extends Searcher {
         throw new Searcher.Error(msg)
       }
 
-      // Click through each award type (Standard / Choice / Tailored)
-      // let idx = 0
+      // Click through each tab (to cover every cabin and tier)
+      let idx = 0
       while (true) {
         // If there's a "No flights available" modal pop-up, dismiss it
         await this.clickIfVisible('#flights-not-available-modal button.btn-modal-close')
@@ -147,28 +147,28 @@ module.exports = class extends Searcher {
         await this.settle()
 
         // // Insert a small wait (to simulate throttling between tabs)
-        // await this.waitBetween(4000, 6000)
+        await this.waitBetween(4000, 6000)
 
         // Obtain flight data
         pageBom.push(await page.evaluate(() => window.pageBom))
 
         // Take a screenshot
-        await results.screenshot(`results`)
-        // idx++
+        await results.screenshot(`results-${idx}`)
 
-        // // Find the next tab's selector
-        // const tabSel = await this.nextTab()
-        // if (!tabSel) {
-        //   break
-        // }
+        // Find the next tab's selector
+        idx++
+        const tabSel = await this.nextTab()
+        if (!tabSel) {
+          break
+        } else if (idx > 12) {
+          throw new Searcher.Error('Too many award tabs detected')
+        }
 
-        // // Click on the tab
-        // await page.click(tabSel)
+        // Click on the tab
+        await page.click(tabSel)
 
-        // // Dismiss modal pop-up, warning us about changing award type
-        // await this.dismissWarning()
-
-        break
+        // Dismiss modal pop-up, warning us about changing award type
+        await this.dismissWarning()
       }
     } finally {
       if (fn) {
