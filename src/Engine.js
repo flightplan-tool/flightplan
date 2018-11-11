@@ -201,7 +201,7 @@ class Engine {
     return page
   }
 
-  async _login () {
+  async _login (retries = 4) {
     const { config, searcher, page, loginRequired, credentials, verbose } = this._state
 
     if (!loginRequired) {
@@ -212,7 +212,7 @@ class Engine {
     while (true) {
       // Check whether we're logged in (or had too many attempts)
       const success = await searcher.isLoggedIn(page)
-      if (success || attempts >= 4) {
+      if (success || attempts >= retries) {
         if (attempts > 0 && verbose) {
           success ? this.success('Login succeeded') : this.error('Login failed')
         }
