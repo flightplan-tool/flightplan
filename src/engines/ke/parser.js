@@ -19,13 +19,17 @@ module.exports = class extends Parser {
     const json = results.contents('json', 'results')
 
     // Check for errors
-    const { isBlocking, message } = json
+    const { isBlocking, severity, message } = json
     if (isBlocking) {
-      if (message.includes('We are unable to find recommendations')) {
+      if (message.includes('unable to find recommendations') ||
+        message.includes('unable to find departing flights')) {
         return []
       } else {
         throw new Parser.Error(message)
       }
+    }
+    if (severity === 'error') {
+      throw new Parser.Error(message)
     }
 
     // Get pricing info
