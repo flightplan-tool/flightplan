@@ -29,8 +29,6 @@ module.exports = class extends Parser {
   parse (results) {
     const json = results.contents('json', 'results')
 
-    debugger
-
     // Get airport codes
     const airports = this.airportCodes(json)
 

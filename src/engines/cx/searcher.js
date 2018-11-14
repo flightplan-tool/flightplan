@@ -95,7 +95,8 @@ module.exports = class extends Searcher {
       await page.waitFor(250)
     }
 
-    return this.submitForm(results)
+    // Get results
+    await this.submitForm(results)
   }
 
   async submitForm (results) {
@@ -127,27 +128,30 @@ module.exports = class extends Searcher {
         this.checkResponse(response)
       }
 
-      // Check for error messages
-      const msg = await this.textContent('span.label-error')
-      if (msg.length > 0 && !msg.includes('no flights available')) {
-        // If session becomes invalid, logout
-        if (msg.includes('please login again')) {
-          await this.logout()
-        }
-        throw new Searcher.Error(msg)
-      }
-
-      // Click through each tab (to cover every cabin and tier)
+      // Get results for every single tab
       let idx = 0
+      let tabs = null
       while (true) {
-        // If there's a "No flights available" modal pop-up, dismiss it
-        await this.clickIfVisible('#flights-not-available-modal button.btn-modal-close')
-
         // Make sure results have finished loading
         await this.settle()
 
-        // // Insert a small wait (to simulate throttling between tabs)
+        // Insert a small wait (to simulate throttling between tabs)
         await this.waitBetween(4000, 6000)
+
+        // Check for error messages
+        const msg = await this.textContent('span.label-error')
+        if (msg.length > 0) {
+          if (msg.includes('no flights available')) {
+            break
+          } else if (msg.includes('please login again')) {
+            // If session becomes invalid, logout
+            await this.logout()
+          }
+          throw new Searcher.Error(msg)
+        }
+
+        // If there's a "No flights available" modal pop-up, dismiss it
+        await this.clickIfVisible('#flights-not-available-modal button.btn-modal-close')
 
         // Obtain flight data
         pageBom.push(await page.evaluate(() => window.pageBom))
@@ -155,17 +159,22 @@ module.exports = class extends Searcher {
         // Take a screenshot
         await results.screenshot(`results-${idx}`)
 
-        // Find the next tab's selector
-        idx++
-        const tabSel = await this.nextTab()
-        if (!tabSel) {
-          break
-        } else if (idx > 12) {
-          throw new Searcher.Error('Too many award tabs detected')
+        // Get the selectors of every tab, if not already done
+        if (!tabs) {
+          tabs = await this.findTabs()
+          if (!tabs) {
+            throw new Searcher.Error(`Failed to locate tab selectors`)
+          }
         }
+        if (tabs.length === 0) {
+          break // No more tabs
+        }
+        const nextTab = tabs.shift()
+        idx++
 
-        // Click on the tab
-        await page.click(tabSel)
+        // Make sure the tab is visible, then click it
+        await this.scrollTab(nextTab)
+        await page.click(nextTab)
 
         // Dismiss modal pop-up, warning us about changing award type
         await this.dismissWarning()
@@ -185,7 +194,7 @@ module.exports = class extends Searcher {
     json.milesInfo = milesInfo.reduce((result, curr) => ({ ...result, ...curr.milesInfo }), {})
 
     // Save results
-    return results.saveJSON('results', json)
+    await results.saveJSON('results', json)
   }
 
   async logout () {
@@ -202,29 +211,67 @@ module.exports = class extends Searcher {
     } catch (err) {}
   }
 
-  async nextTab () {
+  async findTabs () {
     const { page } = this
 
-    // Calculate the index of the next tab (in same cabin) after currently selected one
-    const tabIndex = await page.evaluate((itemSel, activeSel) => {
-      let idx = 1
-      let foundActive = false
-      const activeTab = document.querySelector(activeSel)
-      if (activeTab) {
-        for (const item of document.querySelectorAll(itemSel)) {
-          if (foundActive) {
-            // This is the item after the active one
-            return idx
-          } else if (item.querySelector(activeSel)) {
-            // This is the active item
-            foundActive = true
+    const tabs = await page.evaluate(() => {
+      const types = [ 'standard', 'choice', 'tailored' ]
+      const cabins = [ 'economy', 'premium economy', 'business', 'first' ]
+
+      return [...document.querySelectorAll('#flightlistDept div.owl-item')]
+        .map((item, idx) => {
+          // Skip the active tab
+          if (item.querySelector('div.cabin-ticket-card-wrapper-outer.active')) {
+            return null
           }
-          idx++
-        }
+
+          // Get the cabin and award type
+          const cabin = item.querySelector('span.cabin-class').textContent.trim().toLowerCase()
+          const type = item.querySelector('span.ticket-type').textContent.trim().toLowerCase()
+
+          // Add the tab
+          const sel = `div.owl-item:nth-of-type(${idx + 1}) div.cabin-ticket-card`
+          return { sel, cabin, type }
+        })
+        .filter(x => !!x)
+        // Sort by award type, since routes with only partner flights will error out when choosing
+        // the non-standard award types
+        .sort((a, b) => {
+          const aType = types.indexOf(a.type)
+          const bType = types.indexOf(b.type)
+          const aCabin = cabins.indexOf(a.cabin)
+          const bCabin = cabins.indexOf(b.cabin)
+          return (aType === bType) ? (aCabin - bCabin) : aType - bType
+        })
+        .map(x => x.sel)
+    })
+
+    return tabs
+  }
+
+  async scrollTab (sel) {
+    const { page } = this
+    const tabIndex = parseInt(/nth-of-type\((\d+)\)/.exec(sel)[1])
+
+    // Scroll back to first tab
+    while (true) {
+      try {
+        await page.waitFor('div.owl-prev', { visible: true, timeout: 1000 })
+        await page.click('div.owl-prev')
+      } catch (err) {
+        break
       }
-      return 0
-    }, '#flightlistDept div.owl-item', 'div.cabin-ticket-card-wrapper-outer.active')
-    return tabIndex ? `div.owl-item:nth-of-type(${tabIndex}) div.cabin-ticket-card` : null
+    }
+
+    // Scroll forward to desired tab
+    for (let i = 0; i < tabIndex - 2; i++) {
+      try {
+        await page.waitFor('div.owl-next', { visible: true, timeout: 1000 })
+        await page.click('div.owl-next')
+      } catch (err) {
+        break
+      }
+    }
   }
 
   async dismissWarning () {
