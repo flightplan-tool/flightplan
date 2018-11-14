@@ -63,7 +63,7 @@ const main = async (args) => {
 
       // Handle errors by cleaning up the request
       if (!results.ok) {
-        logger.error('Error:', results.error)
+        logger.error(results.error)
         failed.push(row)
         continue
       }
