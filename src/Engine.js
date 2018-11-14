@@ -45,7 +45,7 @@ class Engine {
       credentials,
       args = [],
       headless = false,
-    docker,
+      docker,
       width = utils.randomInt(1200, 1280),
       height = utils.randomInt(1400, 1440),
       proxy,
