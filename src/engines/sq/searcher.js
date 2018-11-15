@@ -77,9 +77,18 @@ module.exports = class extends Searcher {
     await this.prepare()
 
     // Check the Redeem Flights radio button
-    await page.waitFor('#travel-radio-2', { visible: true })
-    await page.click('#travel-radio-2')
-    await this.settle()
+    this.attemptWhile(
+      async () => {
+        return page.evaluate(() => !document.querySelector('#travel-radio-2').checked)
+      },
+      async () => {
+        await page.waitFor('#travel-radio-2', { visible: true })
+        await page.click('#travel-radio-2')
+        await this.settle()
+      },
+      5,
+      new Searcher.Error(`Failed to select "Redeem Flights" checkbox`)
+    )
 
     // Check the Return or One-way radio button
     if (oneWay) {
@@ -176,7 +185,7 @@ module.exports = class extends Searcher {
 
   async settle () {
     // Wait for spinner
-    await this.monitor('div.overlay-loading')
+    await this.monitor('div.overlay-loading', 4000)
 
     // Check for survey pop-up
     await this.clickIfVisible('div[class^="ins-survey-"][class$="-close"]')

@@ -347,10 +347,7 @@ module.exports = class extends Searcher {
         if (direction && btnSel !== direction) {
           throw new Searcher.Error(`Infinite loop detected searching calendar for date: ${date}`)
         }
-        ret = await this.changeMonth(btnSel, date)
-        if (ret && ret.error) {
-          return ret
-        }
+        await this.changeMonth(btnSel, date)
         direction = btnSel
       } else {
         throw new Searcher.Error(`Did not find date on active calendar pages: ${date}`)
@@ -391,11 +388,12 @@ module.exports = class extends Searcher {
     const { page } = this
 
     // Check if the desired link is not present
-    if (!await page.$(selector)) {
-      throw new Searcher.Error(`Requested month is outside of bounds: ${date}`)
+    try {
+      await page.waitFor(selector, { visible: true, timeout: 5000 })
+    } catch (err) {
+      throw new Searcher.Error(`Failed to navigate calendar to date: ${date}`)
     }
     await page.click(selector)
     await page.waitFor(500)
-    return {}
   }
 }

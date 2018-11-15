@@ -150,7 +150,7 @@ module.exports = class extends Searcher {
     const { page } = this
 
     if (await this.visible('.modalError')) {
-      const msg = this.textContent('.modalError', '')
+      const msg = await this.textContent('.modalError', '')
       if (msg.toLowerCase().includes('there are errors')) {
         throw new Searcher.Error(`The website encountered an error processing the request: ${msg}`)
       }

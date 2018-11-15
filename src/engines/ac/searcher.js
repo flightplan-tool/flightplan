@@ -95,9 +95,19 @@ module.exports = class extends Searcher {
     // Wait for results to load
     await this.monitor('.waiting-spinner-inner')
 
+    // Wait up to 15 seconds to get the JSON from the browser itself
+    let json = null
+    this.attemptWhile(
+      async () => { return !json },
+      async () => {
+        await page.waitFor(1000)
+        json = await page.evaluate(() => this.results ? this.results.results : null)
+      },
+      15,
+      new Searcher.Error(`Timed out waiting for JSON results to be created`)
+    )
+
     // Obtain the JSON from the browser itself, which will have calculated prices
-    await page.waitFor(5000)
-    const json = await page.evaluate(() => this.results.results)
     await results.saveJSON('results', json)
     await results.screenshot('results')
 

@@ -21,6 +21,18 @@ class Searcher {
 
   async modify (page, diff, query, lastQuery, results) {}
 
+  async attemptWhile (condition, action, maxAttempts, err) {
+    let attempts = 0
+    while (attempts < maxAttempts) {
+      if (!(await condition())) {
+        return // Success!
+      }
+      await action()
+      attempts++
+    }
+    throw err
+  }
+
   checkResponse (response) {
     // If no response, that's usually OK (data was likely pre-fetched)
     if (response) {

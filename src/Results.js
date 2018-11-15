@@ -20,7 +20,8 @@ class Results {
       json: [],
       screenshot: [],
       $: new Map(),
-      error: null
+      error: null,
+      invalid: false
     }
     this._engine = engine
   }
@@ -159,10 +160,11 @@ class Results {
   }
 
   toJSON (includeAwards = false) {
-    const { engine, query, error } = this._state
+    const { engine, query, error, invalid } = this._state
     const ret = { engine, query: query.toJSON() }
     if (error) {
       ret.error = error
+      ret.invalid = invalid
     }
     assetTypes.forEach(type => {
       const assets = this._state[type]
@@ -177,7 +179,8 @@ class Results {
       }
     })
     if (includeAwards) {
-      ret.flights = this.flights.map(x => x.toJSON(true))
+      const { flights } = this
+      ret.flights = flights ? flights.map(x => x.toJSON(true)) : null
     }
     return ret
   }
@@ -196,6 +199,10 @@ class Results {
 
   get engine () {
     return this._state.engine
+  }
+
+  get invalid () {
+    return this._state.invalid
   }
 
   get query () {
@@ -245,11 +252,15 @@ class Results {
       this._state.awards = null
 
       // Handle Parser-specific errors differently
-      if (err.constructor.name !== 'ParserError') {
-        throw err
-      } else {
+      if (err.constructor.name === 'ParserError') {
         this._setError(err)
         return
+      } else if (err.constructor.name !== 'ParserInvalidRouteError') {
+        this._setError(err)
+        this._state.invalid = true
+        return
+      } else {
+        throw err
       }
     }
 

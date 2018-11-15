@@ -14,7 +14,7 @@ const reAircraft = /^[A-Z0-9]{3,4}\b/
 
 module.exports = class extends Parser {
   parse (results) {
-    this.airports = results.contents('json', 'airports').airports
+    this.loadAirports(results)
 
     // Parse inbound and outbound flights
     const departures = this.parseFlights(results.$('outbound'), true)
@@ -138,8 +138,48 @@ module.exports = class extends Parser {
     }
   }
 
+  loadAirports (results) {
+    const json = results.contents('json', 'airports')
+    if (!json) {
+      throw new Parser.Error(`Missing airports JSON`)
+    }
+
+    const reMeta = /^(.+)(\(.+\))$/
+
+    // Transform into a map
+    this.airports = new Map()
+    const meta = new Map()
+    for (const airport of json.airports) {
+      this.airports.set(airport.name, airport)
+
+      // Handle meta airports
+      const result = reMeta.exec(airport.name)
+      if (result) {
+        const basename = result[1].trim()
+        let arr = meta.get(basename)
+        if (!arr) {
+          arr = []
+          meta.set(basename, arr)
+        }
+        arr.push(airport)
+      }
+    }
+
+    // Replace weird meta airports with actual values
+    for (const [basename, list] of meta) {
+      if (list.length === 1) {
+        const airport = list[0]
+        const result = reMeta.exec(airport.name)
+        if (result[2] === '(All)') {
+          this.airports.set(basename, airport)
+          airport.name = basename // Drop the "(All)" from end
+        }
+      }
+    }
+  }
+
   airportCode (name) {
-    const result = this.airports.find(x => x.name === name)
+    const result = this.airports.get(name)
     if (!result) {
       throw new Error(`Unrecognized airport: ${name}`)
     }

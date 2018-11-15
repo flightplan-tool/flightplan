@@ -44,6 +44,8 @@ module.exports = class extends Parser {
     const msg = $('div.alert__message').text().trim()
     if (msg.includes('no seats available') || msg.includes('no flights available')) {
       return []
+    } else if (msg.includes('constitutes a backtrack routing')) {
+      throw new Parser.InvalidError(`Backtrack routing`)
     }
 
     // Scan for flights
@@ -55,7 +57,7 @@ module.exports = class extends Parser {
     }
 
     // Failed to find any flights, should not happen
-    throw new Error('Failed to parse flights from HTML')
+    throw new Parser.Error('Failed to parse flights from HTML')
   }
 
   parseFlights ($, cabin, partner) {
@@ -190,7 +192,7 @@ module.exports = class extends Parser {
       const mileageText = $(element).find('.package--price-number').text()
       const mileageResult = reMileage.exec(mileageText)
       if (!mileageResult) {
-        throw new Error('Could not parse award mileage:', mileageText)
+        throw new Parser.Error('Could not parse award mileage:', mileageText)
       }
       const mileageCost = parseInt(mileageResult[0].replace(',', '')) / quantity
 
@@ -211,6 +213,6 @@ module.exports = class extends Parser {
     if (element.length === 0 || element.text().includes('Not available')) {
       return null
     }
-    throw new Error('Could not parse award element:', element.text())
+    throw new Parser.Error('Could not parse award element:', element.text())
   }
 }

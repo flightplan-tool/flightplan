@@ -1064,6 +1064,7 @@ Results is used to contain the results of a search. It is created by [Engine], p
 - [results.ok](#results-ok)
 - [results.error](#results-error)
 - [results.engine](#results-engine)
+- [results.invalid](#results-invalid)
 - [results.query](#results-query)
 - [results.assets](#results-query)
 - [results.awards](#results-awards)
@@ -1181,13 +1182,19 @@ Returns `true` if no error occurred while executing the search. In other words, 
 
 - returns: <[string]> `null` if no error occurred during searching
 
-If the [Searcher] encounters an error while searching, due to a fault beyond its control (for example, an error returned by the airline website), it will set the `error` on the Results, rather than throwing an exception. For more details, see [Error handling](#error-handling).
+If the [Searcher] or [Parser] encounter an error, due to a fault beyond its own control (for example, an error returned by the airline website), it will set the `error` on the Results, rather than throwing an exception. For more details, see [Error handling](#error-handling).
 
 ### results.engine
 
 - returns: <[string]>
 
 Returns the ID of the [Engine] which created this Results instance.
+
+### results.invalid
+
+- returns: <[boolean]> `true` if the [Query] was considered invalid, based on the search results.
+
+Most invalid queries are discovered before the [Searcher] ever runs, but in some scenarios this might not be possible. For exampe, the airline website may respond that the queried route is not supported. In these cases, `results.error` will be set, in addition to the `invalid` returning `true`, indicating that all similar queries are likely to fail.
 
 ### results.query
 
