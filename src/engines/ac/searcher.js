@@ -35,6 +35,7 @@ module.exports = class extends Searcher {
     const { oneWay, fromCity, toCity, cabin, quantity } = query
     const departDate = query.departDateObject()
     const returnDate = query.returnDateObject()
+    debugger
 
     // Wait a few seconds for the form to auto-fill itself
     await page.waitFor(3000)
@@ -97,7 +98,7 @@ module.exports = class extends Searcher {
 
     // Wait up to 15 seconds to get the JSON from the browser itself
     let json = null
-    this.attemptWhile(
+    await this.attemptWhile(
       async () => { return !json },
       async () => {
         await page.waitFor(1000)

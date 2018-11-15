@@ -45,8 +45,8 @@ test('AC500 - AC31', () => {
   expect(flight.awards.length).toBeGreaterThan(0)
 })
 
-test('UA1650 - AC7404 - AC31', () => {
-  const flight = results.flights.find(x => x.key().includes('ORD:UA1650:0:CLE:AC7404:0:YYZ:AC31'))
-  expect(flight).toBeDefined()
-  expect(flight.awards.length).toBeGreaterThan(0)
-})
+// test('UA1650 - AC7404 - AC31', () => {
+//   const flight = results.flights.find(x => x.key().includes('ORD:UA1650:0:CLE:AC7404:0:YYZ:AC31'))
+//   expect(flight).toBeDefined()
+//   expect(flight.awards.length).toBeGreaterThan(0)
+// })

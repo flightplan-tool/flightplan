@@ -77,7 +77,7 @@ module.exports = class extends Searcher {
     await this.prepare()
 
     // Check the Redeem Flights radio button
-    this.attemptWhile(
+    await this.attemptWhile(
       async () => {
         return page.evaluate(() => !document.querySelector('#travel-radio-2').checked)
       },
