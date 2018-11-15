@@ -27,7 +27,7 @@ class Results {
   }
 
   static parse (json) {
-    const { engine, query, error, flights } = json
+    const { engine, query, error, invalid, flights } = json
 
     // Validate query
     if (!query) {
@@ -46,7 +46,8 @@ class Results {
       json: [],
       screenshot: [],
       $: new Map(),
-      error
+      error: error ? new Error(error) : null,
+      invalid
     }
     assetTypes.forEach(type => instance._populateAssets(type, json))
 
@@ -163,7 +164,7 @@ class Results {
     const { engine, query, error, invalid } = this._state
     const ret = { engine, query: query.toJSON() }
     if (error) {
-      ret.error = error
+      ret.error = error.message
       ret.invalid = invalid
     }
     assetTypes.forEach(type => {
