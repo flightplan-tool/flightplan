@@ -4,7 +4,6 @@ import { autorun } from 'mobx'
 import { inject } from 'mobx-react'
 import * as d3 from 'd3'
 import d3Tip from "d3-tip"
-import { DateTime } from 'luxon'
 
 import * as utilities from '../lib/utilities'
 import Awards from './Awards'
@@ -171,14 +170,14 @@ class Chart extends Component {
         .on('mouseover.highlight', (d) => {
           if (d.data.date) {
             var monthIndex = d.data.index
-            var dayIndex = d.data.date.day - 1
+            var dayIndex = d.data.date.date() - 1
             this.focusEvent(monthIndex, dayIndex, true)
           }
         })
         .on('mouseout.highlight', (d) => {
           if (d.data.date) {
             var monthIndex = d.data.index
-            var dayIndex = d.data.date.day - 1
+            var dayIndex = d.data.date.date() - 1
             this.focusEvent(monthIndex, dayIndex, false)
           }
         })
@@ -409,7 +408,7 @@ class Chart extends Component {
     // Generate HTML markup
     return `
       <div class="date">
-        <h2>${date.toLocaleString(DateTime.DATE_MED)}</h2>
+        <h2>${date.format('ll')}</h2>
       </div>
       ${engines.size === 0 ? '<div class="no-results"><p>Sorry, no awards found!</p></div>' : ''}
       ${[...engines.entries()].map(row => renderRow(row[1])).join('')}

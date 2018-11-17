@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import { DateTime } from 'luxon'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import Select from 'react-select'
@@ -83,24 +82,24 @@ class SearchForm extends Component {
           <div className='grid'>
             <label style={{ gridArea: 'startLabel' }}>Start Date</label>
             <DatePicker
-              name='fromCity'
-              selected={moment(searchStore.startDate.toISO())}
+              name='startDate'
+              selected={searchStore.startDate}
               minDate={moment()}
-              maxDate={moment(searchStore.endDate.toISO())}
+              maxDate={searchStore.endDate}
               monthsShown={2}
               fixedHeight
-              onChange={(val) => searchStore.update({ startDate: DateTime.fromISO(val.toISOString()) })}
+              onChange={(val) => searchStore.update({ startDate: val })}
               style={{ gridArea: 'startDate' }}
             />
             <label style={{ gridArea: 'endLabel' }}>End Date</label>
             <DatePicker
-              name='toCity'
-              selected={moment(searchStore.endDate.toISO())}
-              minDate={moment(searchStore.startDate.toISO())}
+              name='endDate'
+              selected={searchStore.endDate}
+              minDate={searchStore.startDate}
               maxDate={moment().add(1, 'y')}
               monthsShown={2}
               fixedHeight
-              onChange={(val) => searchStore.update({ endDate: DateTime.fromISO(val.toISOString()) })}
+              onChange={(val) => searchStore.update({ endDate: val })}
               style={{ gridArea: 'endDate' }}
             />
           </div>

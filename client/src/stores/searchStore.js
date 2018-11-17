@@ -1,5 +1,5 @@
 import { observable, computed, action, autorun } from 'mobx'
-import { DateTime } from 'luxon'
+import moment from 'moment'
 import URLSearchParams from 'url-search-params'
 
 import { strcmp } from '../lib/utilities'
@@ -305,7 +305,7 @@ export default class SearchStore {
   }
 
   validDate (val) {
-    return val.isValid
+    return val.isValid()
   }
 
   validQuantity (val) {
@@ -323,8 +323,8 @@ export default class SearchStore {
       toCity: this.toCity.toUpperCase(),
       quantity,
       direction,
-      startDate: this.startDate.toSQLDate(),
-      endDate: this.endDate.toSQLDate(),
+      startDate: this.startDate.format('YYYY-MM-DD'),
+      endDate: this.endDate.format('YYYY-MM-DD'),
       cabin: cabinClasses.join(',')
     }
 
@@ -361,8 +361,8 @@ export default class SearchStore {
       direction: 'roundtrip',
       cabinClasses: ['first'],
       showMixedCabin: true,
-      startDate: DateTime.local().plus({ days: 1 }),
-      endDate: DateTime.local().plus({ years: 1 })
+      startDate: moment().add(1, 'd'),
+      endDate: moment().add(1, 'y')
     }
     for (const [key, defaultVal] of Object.entries(defaults)) {
       let val = localStorage.getItem(key)
@@ -393,8 +393,8 @@ export default class SearchStore {
             break
           case 'startDate':
           case 'endDate':
-            val = DateTime.fromSQL(val)
-            val = val.isValid ? val : defaultVal
+            val = moment(val, 'YYYY-MM-DD', true)
+            val = val.isValid() ? val : defaultVal
             break
           default:
             val = defaultVal
@@ -430,7 +430,7 @@ export default class SearchStore {
           break
         case 'startDate':
         case 'endDate':
-          val = val.toSQLDate()
+          val = val.format('YYYY-MM-DD')
           break
         default:
       }
