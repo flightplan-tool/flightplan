@@ -355,7 +355,7 @@ Creates a new Config from the provided `*settings*`. The resulting Config is usu
 
 ### config.validDateRange()
 
-- returns: <[<Moment>, <Moment>]>
+- returns: <[<string>, <string>]>
 
 Returns the minimum and maximum allowable date range for searching.
 
