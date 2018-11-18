@@ -1,155 +1,37 @@
-const { DateTime, Duration, Interval } = require('luxon')
+const moment = require('moment-timezone')
 const path = require('path')
 const url = require('url')
 
 const data = require('./data')
+const timetable = require('./timetable')
 
 const reAirline = /^[A-Z0-9]{2}$/
 const reFlightNo = /^[A-Z0-9]{2}\d{1,4}$/
 const reAirport = /^[A-Z0-9]{3}$/
 const reCurrency = /((?=.*?\d)^(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?)\s+([A-Z]{3})$/
-const reTime = /^\d\d:\d\d$/
 
-function validAirlineCode (str) {
-  return (str && typeof str === 'string') ? reAirline.exec(str) : false
-}
+const timezones = new Map()
 
-function validFlightDesignator (str) {
-  return (str && typeof str === 'string') ? reFlightNo.exec(str) : false
-}
-
-function validAirportCode (str) {
-  return (str && typeof str === 'string') ? reAirport.exec(str) : false
-}
-
-function validCurrency (str) {
-  return (str && typeof str === 'string') ? reCurrency.exec(str) : false
-}
-
-function validURL (str) {
-  let failed = false
-  let result = null
-  try {
-    result = new url.URL(str)
-  } catch (err) {
-    failed = true
-  }
-  return !failed && result
-}
-
-function validTime (str) {
-  return (str && typeof str === 'string') ? reTime.exec(str) : false
-}
-
-function parseTime (str, zone = 'utc') {
-  return DateTime.fromFormat(str, 'HH:mm', { zone })
-}
-
-function validDate (str) {
-  return (str && typeof str === 'string') ? parseDate(str).isValid : false
-}
-
-function parseDate (str, zone = 'utc') {
-  return (typeof str === 'string')
-    ? DateTime.fromISO(str, { zone }).startOf('day')
-    : DateTime.fromSQL(str.toSQLDate(), { zone })
-}
-
-function joinDateTime (date, time) {
-  const { hour, minute } = time
-  return date.set({ hour, minute, second: 0 })
-}
-
-function duration (start, end) {
-  const interval = Interval.fromDateTimes(start, end)
-  if (!interval.isValid) {
-    return -1
-  }
-  const val = interval.toDuration().as('minutes')
-  return (val >= 0) ? val : -1
-}
-
-function days (start, end) {
-  start = start.setZone('utc', { keepLocalTime: true })
-  end = end.setZone('utc', { keepLocalTime: true })
-  return end.startOf('day').diff(start.startOf('day'), 'days').days
-}
-
-function setNearestYear (referenceDate, unknownDate) {
-  // Set the year of unknownDate that places it closest to referenceDate
-  const year = referenceDate.year
-
-  const years = [ year - 1, year, year + 1 ]
-  const diffs = years.map(x => Math.abs(unknownDate.set({ year: x }).diff(referenceDate, 'days').days))
-
-  // Choose the year that had the smallest absolute difference in days
-  const bestYear = years[diffs.indexOf(Math.min(...diffs))]
-  return unknownDate.set({ year: bestYear })
-}
-
-function positiveInteger (val) {
-  return typeof val === 'number' && val > 0 && val % 1 === 0
-}
-
-function airportTimeZone (iataCode) {
-  const airport = data.airports[iataCode]
-  if (airport) {
-    const { timezone, offset } = airport
-    if (timezone && DateTime.utc().setZone(timezone).isValid) {
-      return timezone
-    }
-    if (Number.isInteger(offset)) {
-      const fixed = (offset >= 0) ? `UTC+${offset}` : `UTC${offset}`
-      if (DateTime.utc().setZone(fixed).isValid) {
-        return fixed
+function airportTimezone (strAirport) {
+  let tz = timezones.get(strAirport)
+  if (!tz) {
+    tz = 'UTC' // Default to UTC
+    const airport = data.airports[strAirport]
+    if (airport) {
+      const { timezone, offset } = airport
+      if (timezone && moment.tz.zone(timezone)) {
+        tz = timezone // Timezone is known and valid
+      } else if (Number.isInteger(offset)) {
+        if (offset !== 0) {
+          tz = (offset > 0) ? `Etc/GMT-${offset}` : `Etc/GMT+${-offset}`
+        }
       }
     }
-  }
-  return 'utc'
-}
 
-function parseDurationISO8601 (text) {
-  const arr = text.split(':')
-  if (arr.length <= 0 || arr.length > 4) {
-    return Duration.invalid('unparsable')
+    // Cache the timezone for future use
+    timezones.set(strAirport, tz)
   }
-  const mult = [ 24, 60, 60, 1000 ]
-  const secs = arr.pop()
-  if (secs.includes('.')) {
-    mult.push(1)
-    const subarr = secs.split('.')
-    if (subarr.length !== 2) {
-      return Duration.invalid('unparsable')
-    }
-    arr.push(...subarr)
-  } else {
-    arr.push(secs)
-  }
-  let val = 0
-  let base = 1
-  while (arr.length > 0) {
-    base *= mult.pop()
-    const num = parseInt(arr.pop())
-    if (Number.isNaN(num) || (mult.length > 0 && num >= mult[mult.length - 1])) {
-      return Duration.invalid('unparsable')
-    }
-    val += num * base
-  }
-  return Duration.fromMillis(val)
-}
-
-function randomDuration (range) {
-  const [min, max] = Array.isArray(range) ? range : [range, range]
-  return Duration.fromMillis(randomInt(...[min, max].map(x => parseDurationISO8601(x).valueOf())))
-}
-
-function randomInt (min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
-function truthy (val) {
-  const truthyValues = { 'true': 1, '1': 1, 'yes': 1, 'y': 1 }
-  return val && val.toString().toLowerCase() in truthyValues
+  return tz
 }
 
 function appendPath (strPath, str) {
@@ -164,6 +46,85 @@ function appendPath (strPath, str) {
   return path.join(dir, base.slice(0, pos) + str + base.slice(pos))
 }
 
+function closestYear (unknownDate, referenceDate) {
+  // Convert to moment objects
+  unknownDate = moment.isMoment(unknownDate) ? unknownDate : moment.utc(unknownDate)
+  referenceDate = moment.isMoment(referenceDate) ? referenceDate : moment.utc(referenceDate)
+
+  // Set the year of unknownDate that places it closest to referenceDate
+  const year = referenceDate.year()
+  const years = [ year - 1, year, year + 1 ]
+  const arr = years.map(x => unknownDate.clone().set({ year: x }))
+  const diffs = arr.map(x => Math.abs(referenceDate.diff(x, 'days')))
+
+  // Choose the year that had the smallest absolute difference in days
+  return arr[diffs.indexOf(Math.min(...diffs))]
+}
+
+function dateTimeTz (date, time, timezone) {
+  return moment.tz(`${date} ${time}`, 'YYYY-MM-DD HH:mm', true, timezone)
+}
+
+function daysBetween (start, end) {
+  return timetable.diff(timetable.coerce(start), timetable.coerce(end))
+}
+
+function duration (start, end) {
+  return end.diff(start, 'minutes')
+}
+
+function durationRange (range) {
+  range = Array.isArray(range) ? range : [ range ]
+  range = range.map(x => parseDurationISO8601(x))
+  if (range.includes(NaN)) {
+    throw new Error(`Unparsable duration range: ${ppJSON(range)}`)
+  }
+  const val = (range.length > 1) ? randomInt(...range) : range[0]
+  return moment.duration(val)
+}
+
+function now () {
+  return moment()
+}
+
+function parseDurationISO8601 (text) {
+  const arr = text.split(':')
+  if (arr.length <= 0 || arr.length > 4) {
+    return NaN
+  }
+  const mult = [ 24, 60, 60, 1000 ]
+  const secs = arr.pop()
+  if (secs.includes('.')) {
+    mult.push(1)
+    const subarr = secs.split('.')
+    if (subarr.length !== 2) {
+      return NaN
+    }
+    arr.push(...subarr)
+  } else {
+    arr.push(secs)
+  }
+  let val = 0
+  let base = 1
+  while (arr.length > 0) {
+    base *= mult.pop()
+    const num = parseInt(arr.pop())
+    if (Number.isNaN(num) || (mult.length > 0 && num >= mult[mult.length - 1])) {
+      return NaN
+    }
+    val += num * base
+  }
+  return val
+}
+
+function positiveInteger (val) {
+  return typeof val === 'number' && val > 0 && val % 1 === 0
+}
+
+function randomInt (min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
 function ppJSON (obj) {
   const str = JSON.stringify(obj)
   if (str.length <= 160) {
@@ -176,26 +137,65 @@ function ppJSON (obj) {
   return str
 }
 
+function truthy (val) {
+  const truthyValues = { 'true': 1, '1': 1, 'yes': 1, 'y': 1 }
+  return val && val.toString().toLowerCase() in truthyValues
+}
+
+function validAirlineCode (str) {
+  return (str && typeof str === 'string') ? reAirline.exec(str) : false
+}
+
+function validAirportCode (str) {
+  return (str && typeof str === 'string') ? reAirport.exec(str) : false
+}
+
+function validCurrency (str) {
+  return (str && typeof str === 'string') ? reCurrency.exec(str) : false
+}
+
+function validDate (str) {
+  return timetable.valid(str)
+}
+
+function validFlightDesignator (str) {
+  return (str && typeof str === 'string') ? reFlightNo.exec(str) : false
+}
+
+function validTime (str) {
+  return timetable.validTime(str)
+}
+
+function validURL (str) {
+  let failed = false
+  let result = null
+  try {
+    result = new url.URL(str)
+  } catch (err) {
+    failed = true
+  }
+  return !failed && result
+}
+
 module.exports = {
+  airportTimezone,
+  appendPath,
+  closestYear,
+  dateTimeTz,
+  daysBetween,
+  duration,
+  durationRange,
+  now,
+  parseDurationISO8601,
+  positiveInteger,
+  randomInt,
+  ppJSON,
+  truthy,
   validAirlineCode,
-  validFlightDesignator,
   validAirportCode,
   validCurrency,
-  validURL,
-  validTime,
-  parseTime,
   validDate,
-  parseDate,
-  joinDateTime,
-  duration,
-  days,
-  setNearestYear,
-  positiveInteger,
-  airportTimeZone,
-  parseDurationISO8601,
-  randomDuration,
-  randomInt,
-  truthy,
-  appendPath,
-  ppJSON
+  validFlightDesignator,
+  validTime,
+  validURL
 }

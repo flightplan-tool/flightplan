@@ -1,9 +1,9 @@
 const express = require('express')
-const { DateTime, Interval } = require('luxon')
 
 const fp = require('../src')
 const db = require('../shared/db')
 const logger = require('../shared/logger')
+const utils = require('../src/utils')
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -49,35 +49,34 @@ app.get('/api/search', async (req, res, next) => {
     } = req.query
 
     // Validate dates
-    const start = DateTime.fromISO(startDate)
-    const end = DateTime.fromISO(endDate)
-    if (!start.isValid) {
+    if (!utils.validDate(startDate)) {
       throw new Error('Invalid start date:', startDate)
     }
-    if (!end.isValid) {
+    if (!utils.validDate(endDate)) {
       throw new Error('Invalid end date:', endDate)
     }
-    if (!Interval.fromDateTimes(start, end).isValid) {
-      throw new Error(`Invalid date range for search: ${start.toSQLDate()} -> ${end.toSQLDate()}`)
+    if (endDate < startDate) {
+      throw new Error(`Invalid date range for search: ${startDate} -> ${endDate}`)
     }
 
     let query = 'SELECT * FROM awards WHERE '
     const params = []
 
     // Add cities
+    const cities = [ fromCity.toUpperCase(), toCity.toUpperCase() ]
     if (direction === 'oneway') {
       query += 'fromCity = ? AND toCity = ?'
-      params.push(fromCity, toCity)
+      params.push(...cities)
     } else if (direction === 'roundtrip') {
       query += '((fromCity = ? AND toCity = ?) OR (toCity = ? AND fromCity = ?))'
-      params.push(fromCity, toCity, fromCity, toCity)
+      params.push(...cities, ...cities.reverse())
     } else {
       throw new Error('Unrecognized direction parameter:', direction)
     }
 
     // Add dates
     query += ' AND date BETWEEN ? AND ?'
-    params.push(start.toSQLDate(), end.toSQLDate())
+    params.push(startDate, endDate)
 
     // Add quantity
     query += ' AND quantity >= ?'

@@ -1,4 +1,4 @@
-const { DateTime } = require('luxon')
+const moment = require('moment-timezone')
 
 const Award = require('../../Award')
 const Flight = require('../../Flight')
@@ -70,18 +70,18 @@ module.exports = class extends Parser {
 
       // Create segments
       const segments = f.flights.map(x => {
-        const departure = DateTime.fromISO(x.departure, { setZone: true })
-        const arrival = DateTime.fromISO(x.arrival, { setZone: true })
+        const departure = moment.parseZone(x.departure)
+        const arrival = moment.parseZone(x.arrival)
         return new Segment({
           airline: x.airlineCode,
           flight: x.flightNumber,
           aircraft: x.aircraft,
           fromCity: x.departureAirportCode,
           toCity: x.destinationAirportCode,
-          date: departure.toSQLDate(),
-          departure: departure.toFormat('HH:mm'),
-          arrival: arrival.toFormat('HH:mm'),
-          lagDays: utils.days(departure, arrival),
+          date: departure,
+          departure: departure,
+          arrival: arrival,
+          lagDays: utils.daysBetween(departure, arrival),
           stops: x.stops
         })
       })

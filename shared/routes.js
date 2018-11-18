@@ -9,7 +9,7 @@ function path (route) {
     engine,
     fromCity,
     toCity,
-    departDate.toSQLDate(),
+    departDate,
     (new Date()).getTime()
   ]
   return `${paths.data}/${fields.join('-')}`
@@ -17,9 +17,7 @@ function path (route) {
 
 function key (row, date, reverse = false) {
   let { engine, cabin, fromCity, toCity } = row
-  const dateStr = (date && typeof date !== 'string')
-    ? date.toSQLDate() : date
-  return [engine, cabin, reverse ? toCity : fromCity, reverse ? fromCity : toCity, dateStr].join('|')
+  return [engine, cabin, reverse ? toCity : fromCity, reverse ? fromCity : toCity, date].join('|')
 }
 
 function getOrSet (map, key) {
@@ -62,8 +60,8 @@ function requests (route, database) {
 
   // Format dates
   const { engine, partners, cabin, quantity, fromCity, toCity, departDate, returnDate } = route
-  const departStr = departDate ? departDate.toSQLDate() : null
-  const returnStr = returnDate ? returnDate.toSQLDate() : null
+  const departStr = departDate || null
+  const returnStr = returnDate || null
 
   // Select only the relevant segments
   if (returnDate) {
@@ -99,8 +97,8 @@ function awards (route, database) {
 
   // Format dates
   const { engine, cabin, quantity, fromCity, toCity, departDate, returnDate } = route
-  const departStr = departDate ? departDate.toSQLDate() : null
-  const returnStr = returnDate ? returnDate.toSQLDate() : null
+  const departStr = departDate || null
+  const returnStr = returnDate || null
 
   // Select only the relevant segments
   if (returnDate) {
@@ -134,9 +132,9 @@ function print (route) {
 
   // Format dates if necessary
   const departStr = (departDate && typeof departDate !== 'string')
-    ? departDate.toSQLDate() : departDate
+    ? departDate : departDate
   const returnStr = (returnDate && typeof returnDate !== 'string')
-    ? returnDate.toSQLDate() : returnDate
+    ? returnDate : returnDate
 
   // Print departure and arrival routes
   const context = chalk.bold(`[${engine}]`)

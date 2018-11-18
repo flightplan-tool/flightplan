@@ -256,7 +256,7 @@ class Results {
       if (err.constructor.name === 'ParserError') {
         this._setError(err)
         return
-      } else if (err.constructor.name !== 'ParserInvalidRouteError') {
+      } else if (err.constructor.name === 'ParserInvalidRouteError') {
         this._setError(err)
         this._state.invalid = true
         return

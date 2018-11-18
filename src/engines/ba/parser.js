@@ -1,4 +1,4 @@
-const { DateTime } = require('luxon')
+const moment = require('moment-timezone')
 
 const Award = require('../../Award')
 const Flight = require('../../Flight')
@@ -27,28 +27,43 @@ module.exports = class extends Parser {
     // Iterate over flights
     const awards = []
     $(sel).each((_, row) => {
+      let originCity = null
+      let outbound = null
+
       // Iterate over each segment
       const segments = []
       $(row).find('.travel-time-detail').each((_, x) => {
-        // Calculate departure / arrival times
-        const departDate = DateTime.fromFormat($(x).find('p.departdate').first().text().trim(), 'd LLL', { zone: 'utc' })
+        // Get cities, and direction
+        const airports = $(x).find('p.airport-code')
+        const fromCity = airports.eq(0).text().trim()
+        const toCity = airports.eq(1).text().trim()
+        if (!originCity) {
+          originCity = fromCity
+          outbound = (originCity === query.fromCity)
+        }
+
+        // Get departure / arrival dates
+        const strDepartDate = $(x).find('p.departdate').first().text().trim()
+        const strArrivalDate = $(x).find('p.arrivaldate').first().text().trim()
+        const departDate = this.parseDate(strDepartDate, query, outbound)
+        const arrivalDate = this.parseDate(strArrivalDate, query, outbound)
+
+        // Get departure / arrival times
         const departTime = $(x).find('p.departtime').first().text().trim()
-        const arrivalDate = DateTime.fromFormat($(x).find('p.arrivaldate').first().text().trim(), 'd LLL', { zone: 'utc' })
         const arrivalTime = $(x).find('p.arrivaltime').first().text().trim()
 
         // Add segment
-        const airports = $(x).find('p.airport-code')
         const flightInfo = $(x).find('p.career-and-flight').first().text().split('-')
         const flightNumber = flightInfo[flightInfo.length - 1].trim()
         segments.push(new Segment({
           airline: flightNumber.substring(0, 2),
           flight: flightNumber,
-          fromCity: airports.eq(0).text().trim(),
-          toCity: airports.eq(1).text().trim(),
-          date: departDate.toSQLDate(),
+          fromCity,
+          toCity,
+          date: departDate,
           departure: departTime,
           arrival: arrivalTime,
-          lagDays: utils.days(departDate, arrivalDate)
+          lagDays: utils.daysBetween(departDate, arrivalDate)
         }))
       })
 
@@ -67,6 +82,16 @@ module.exports = class extends Parser {
     })
 
     return awards
+  }
+
+  parseDate (str, query, outbound) {
+    const m = moment.utc(str, 'D MMM', true)
+    if (m.isValid()) {
+      return outbound
+        ? query.closestDeparture(m)
+        : query.closestReturn(m)
+    }
+    return null
   }
 
   parseQuantity (ele) {

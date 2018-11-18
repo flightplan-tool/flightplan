@@ -1,4 +1,4 @@
-const { DateTime } = require('luxon')
+const moment = require('moment-timezone')
 
 const Award = require('../../Award')
 const Flight = require('../../Flight')
@@ -6,14 +6,15 @@ const Parser = require('../../Parser')
 const Segment = require('../../Segment')
 const { cabins } = require('../../consts')
 const { aircraft } = require('../../data')
+const timetable = require('../../timetable')
 const utils = require('../../utils')
 
 // Regex patterns
 const reFlight = /FLIGHT\s+([A-Z0-9]{3,6})\b/
 const reAircraft = /Aircraft type:\s+\((.+)\)/
 const reHour = /(\w{3})\s+(\d{1,2}:\d{2})/
-const reDate = /\d{1,2}\s+\w{3}/
-const reMileage = /[,\d]+/
+const reDate = /\d{1,2}\s+[A-Za-z]{3}/
+const reMileage = /[\d,]+/
 
 // Cabin codes
 const cabinCodes = {
@@ -121,21 +122,21 @@ module.exports = class extends Parser {
           // Set reference date, and year
           if (!referenceDate) {
             referenceDate = (fromCity === this.query.fromCity)
-              ? this.query.departDateObject()
-              : this.query.returnDateObject()
+              ? this.query.departDate
+              : this.query.returnDate
           }
-          const departDate = utils.setNearestYear(referenceDate, date1)
-          const arrivalDate = utils.setNearestYear(referenceDate, date2)
+          const departDate = timetable.coerce(utils.closestYear(date1, referenceDate))
+          const arrivalDate = timetable.coerce(utils.closestYear(date2, referenceDate))
 
           // Add segment
           segments.push(new Segment({
             ...details,
             fromCity,
             toCity,
-            date: departDate.toSQLDate(),
+            date: departDate,
             departure,
             arrival,
-            lagDays: utils.days(departDate, arrivalDate)
+            lagDays: timetable.diff(departDate, arrivalDate)
           }))
 
           // Add the cabin for this segment
@@ -174,9 +175,9 @@ module.exports = class extends Parser {
   parseFlightDetails ($, details) {
     const hourResult = reHour.exec($(details).find('span.hour').text())
     const city = hourResult[1]
-    const time = hourResult[2]
+    const time = moment.utc(hourResult[2], 'H:mm', true)
     const dateResult = reDate.exec($(details).find('span.date').text())
-    const date = DateTime.fromFormat(dateResult[0], 'dd LLL', { zone: 'utc' })
+    const date = moment.utc(dateResult[0], 'DD MMM', true)
     return { city, time, date }
   }
 

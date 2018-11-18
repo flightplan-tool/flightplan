@@ -355,11 +355,11 @@ Creates a new Config from the provided `*settings*`. The resulting Config is usu
 
 ### config.validDateRange()
 
-- returns: <[<LuxonDateTime>, <LuxonDateTime>]>
+- returns: <[<Moment>, <Moment>]>
 
 Returns the minimum and maximum allowable date range for searching.
 
-### config.toString() -> *string*
+### config.toString()
 
 - returns: <[string]>
 
@@ -868,8 +868,8 @@ The Query object is used to define search parameters that are passed to the [`En
 
 #### Methods
 - [new Query(*params*)](#new-query-params)
-- [query.departDateObject()](#query-departdateobject)
-- [query.returnDateObject()](#query-returndateobject)
+- [query.departDateMoment()](#query-departdatemoment)
+- [query.returnDateMoment()](#query-returndatemoment)
 - [query.closestDeparture(*date*)](#query-closest-departure)
 - [query.closestReturn(*date*)](#query-closest-return)
 - [query.diff(*other*)](#query-diff-other)
@@ -897,8 +897,8 @@ The Query object is used to define search parameters that are passed to the [`En
   - `quantity` <[number]> Optional number of passengers to search for, defaults to `1`
   - `fromCity` <[string]> 3-letter ICAO code of the departure city to search for
   - `toCity` <[string]> 3-letter ICAO code of the destination city to search for
-  - `departDate` <[string]|[LuxonDateTime]> Departure date to search, as a ISO 8601 [string] or [LuxonDateTime] object
-  - `returnDate` <[string]|[LuxonDateTime]> Optional return date to search, as a ISO 8601 [string] or [LuxonDateTime] object, or `null` if searching one-way awards. Defaults to `null`.
+  - `departDate` <[string]|[Moment]> Departure date to search, as an ISO 8601 [string] or [Moment] object
+  - `returnDate` <[string]|[Moment]> Optional return date to search, as an ISO 8601 [string] or [Moment] object, or `null` if searching one-way awards. Defaults to `null`.
   - `json`, `html` <[Object]> Optional settings for JSON and HTML assets
     - `path` <[string]> The path (including extension) to save assets
     - `gzip` <[boolean]> Whether assets should be gzip compressed
@@ -908,46 +908,46 @@ The Query object is used to define search parameters that are passed to the [`En
 
 Creates a new query with the parameters provided. These values are used to populate the airline website's search form, but it is not gauranteed that the awards returned will be limited to these parameters. For example, searching `"economy"` on AC will also return `"premium"` cabin awards. Some websites will also include partner awards even when `partners` is `false`, or include non-partner awards when `partners` is `true`. This behavior is specific to each airline website.
 
-### query.departDateObject()
+### query.departDateMoment()
 
-- returns: <[LuxonDateTime]>
+- returns: <[Moment]>
 
 Departure date (no time set) of the query, with the time zone set to UTC.
 
-### query.returnDateObject()
+### query.returnDateMoment()
 
-- returns: <[LuxonDateTime]>
+- returns: <[Moment]>
 
 Return date (no time set) of the query, with the time zone set to UTC, if searching for round-trip awards. If only searching one-way awards, returns `null`.
 
 ### query.closestDeparture(*date*)
 
-- `date` <[LuxonDateTime]>
-- returns: <[LuxonDateTime]>
+- `date` <[string]|[Moment]> A date to inspect, as an ISO 8601 [string] or [Moment] object
+- returns: <[Moment]>
 
-Often an airline website will provide an ambiguous date, in the form of "MM/DD". This method takes a [LuxonDateTime] and sets the year such that it is closest to [`query.departDate`](#query-departdate).
+Often an airline website will provide an ambiguous date, in the form of "MM/DD". This method takes a date, and returns a copy as a [Moment] with the year set such that it is closest to [`query.departDate`](#query-departdate).
 
 Examples:
 
 ```javascript
 query.departDate // Returns: '2018-01-01'
-const newDate = DateTime.fromFormat('12-28', 'MM-dd', { zone: 'utc' })
-query.closestDeparture(newDate).toSQLDate() // Returns: '2017-12-28'
+const newDate = moment('12-28', 'MM-dd')
+query.closestDeparture(newDate).format('YYYY-MM-DD') // Returns: '2017-12-28'
 ```
 
 ### query.closestReturn(*date*)
 
-- `date` <[LuxonDateTime]>
-- returns: <[LuxonDateTime]>
+- `date` <[string]|[Moment]> A date to inspect, as an ISO 8601 [string] or [Moment] object
+- returns: <[Moment]>
 
-Often an airline website will provide an ambiguous date, in the form of "MM/DD". This method takes a [LuxonDateTime] and sets the year such that it is closest to [`query.returnDate`](#query-returndate).
+Often an airline website will provide an ambiguous date, in the form of "MM/DD". This method takes a date, and returns a copy as a [Moment] with the year set such that it is closest to [`query.returnDate`](#query-returndate).
 
 Examples:
 
 ```javascript
 query.returnDate // Returns: '2019-12-28'
-const newDate = DateTime.fromFormat('01-02', 'MM-dd', { zone: 'utc' })
-query.closestReturn(newDate).toSQLDate() // Returns: '2020-01-02'
+const newDate = moment('01-02', 'MM-dd')
+query.closestReturn(newDate).format('YYYY-MM-DD') // Returns: '2020-01-02'
 ```
 
 ### query.diff(*other*)
@@ -965,7 +965,7 @@ Creates a JSON representation of the Query.
 
 > The Query's JSON output does not include asset options (`html`, `json`, or `screenshot` keys) since this information can be inferred from Results.
 
-### query.toString() -> *string*
+### query.toString()
 
 - returns: <[string]>
 
@@ -1270,9 +1270,8 @@ flight.toJSON()
 #### Methods
 - [new Flight(*segments*, [*awards*])](#new-flight-segments-awards)
 - [flight.key()](#flight-key)
-- [flight.dateObject()](#flight-dateobject)
-- [flight.departureObject()](#flight-departureobject)
-- [flight.arrivalObject()](#flight-arrivalobject)
+- [flight.departureMoment()](#flight-departuremoment)
+- [flight.arrivalMoment()](#flight-arrivalmoment)
 - [flight.airlineMatches(*airline*)](#flight-airlinematches-airline)
 - [flight.highestCabin()](#flight-highestcabin)
 - [flight.toJSON(*includeAwards*)](#flight-tojson-includeawards)
@@ -1314,21 +1313,15 @@ flight.key() // Returns '2018-10-01:SIN:CX636:1:HKG:CX826'
 
 > Note that flight numbers alone are not sufficient to uniquely identify an itinerary. It is possible for two itineraries to have the same series of flight numbers, but on different dates (even if the first segment is on the same date). In fact, this is quite common with stopovers, where a traveler may choose to stay for longer than 24 hours in a connecting city. The same flight number can also be used for two distinct flights on the same date (so called "direct flights" with a stop in the middle, which continue under the same flight number the entire route).
 
-### flight.dateObject()
+### flight.departureMoment()
 
-- returns: <[LuxonDateTime]>
-
-Departure date of the first segment with only date (the time is not set).
-
-### flight.departureObject()
-
-- returns: <[LuxonDateTime]>
+- returns: <[Moment]>
 
 Departure date and time (with time zone of the departure airport) of the first segment.
 
-### flight.arrivalObject()
+### flight.arrivalMoment()
 
-- returns: <[LuxonDateTime]>
+- returns: <[Moment]>
 
 Arrival date and time (with time zone of the destination airport) of the last segment.
 
@@ -1465,9 +1458,8 @@ segment.toJSON()
 #### Methods
 - [new Segment(*attributes*)](#segment-new-airline)
 - [segment.key()](#segment-key)
-- [segment.dateObject()](#segment-dateobject)
-- [segment.departureObject()](#segment-departureobject)
-- [segment.arrivalObject()](#segment-arrivalobject)
+- [segment.departureMoment()](#segment-departuremoment)
+- [segment.arrivalMoment()](#segment-arrivalmoment)
 - [segment.toJSON()](#segment-tojson)
 - [segment.toString()](#segment-tostring)
 
@@ -1495,9 +1487,9 @@ segment.toJSON()
   - `aircraft` <[string]> Optional 4-letter ICAO code of the aircraft (although may be an IATA code or regular description if the ICAO code cannot be found), defaults to `null`
   - `fromCity` <[string]> The 3-letter IATA departure airport
   - `toCity` <[string]> The 3-letter IATA destination airport
-  - `date` <[string]> Departure date in ISO 8601 format
-  - `departure` <[string]> Departure time in ISO 8601 format
-  - `arrival` <[string]> Arrival time in ISO 8601 format
+  - `date` <[string]|[Moment]> Departure date as an ISO 8601 [string] (`'YYYY-MM-DD'`) or [Moment] object
+  - `departure` <[string]|[Moment]> Departure time as an ISO 8601 [string] (`'HH:mm'`) or [Moment] object
+  - `arrival` <[string]|[Moment]> Arrival time as an ISO 8601 [string] (`'HH:mm'`) or [Moment] object
   - `cabin` <[string]> Optional value belonging to [`Flightplan.cabins`](#flightplan-cabins) used to populate the `cabins` property of the parent [Award]. Defaults to `null`.
   - `stops` <[number]> Optional number of stops, defaults to `0`
   - `lagDays` <[number]> Optional difference in days between departure and arrival dates, defaults to `0`
@@ -1516,31 +1508,25 @@ Examples:
 segment.key() // Returns '2018-10-01:SIN:CX636'
 ```
 
-### segment.dateObject()
+### segment.departureMoment()
 
-- returns: <[LuxonDateTime]>
-
-Departure date with only date (the time is not set).
-
-### segment.departureObject()
-
-- returns: <[LuxonDateTime]>
+- returns: <[Moment]>
 
 Departure date and time (with time zone of the departure airport).
 
-### segment.arrivalObject() -> [*DateTime*](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
+### segment.arrivalMoment()
 
-- returns: <[LuxonDateTime]>
+- returns: <[Moment]>
 
 Arrival date and time (with time zone of the destination airport).
 
-### segment.toJSON() -> *Object*
+### segment.toJSON()
 
 - returns: <[Object]>
 
 Creates a JSON representation of the Segment.
 
-### segment.toString() -> *string*
+### segment.toString()
 
 - returns: <[string]>
 
@@ -1580,19 +1566,19 @@ The 3-letter IATA destination airport.
 
 - returns: <[string]>
 
-The departure date in ISO 8601 format.
+The departure date in ISO 8601 format (`'YYYY-MM-DD'`).
 
 ### segment.departure
 
 - returns: <[string]>
 
-The departure time in ISO 8601 format.
+The departure time in ISO 8601 format (`'HH:mm'`).
 
 ### segment.arrival
 
 - returns: <[string]>
 
-The arrival time in ISO 8601 format.
+The arrival time in ISO 8601 format (`'HH:mm'`).
 
 ### segment.duration
 
@@ -1637,14 +1623,16 @@ If the flight arrives on a different date than it departed, this will be the dif
 Examples:
 
 ```javascript
+const iso = 'YYYY-MM-DD HH:mm Z'
+
 // NH 106 (HND - LAX) arrives 1 day earlier than it departs
-segment.departureObject().toSQL() // Returns: '2018-11-10 00:05:00.000 +09:00'
-segment.arrivalObject().toSQL()   // Returns: '2018-11-09 17:00:00.000 -08:00'
+segment.departureMoment().format(iso) // Returns: '2018-11-10 00:05 +09:00'
+segment.arrivalMoment().format(iso)   // Returns: '2018-11-09 17:00 -08:00'
 segment.lagDays // Returns: -1
 
 // NZ 5 (LAX - AKL) arrives 2 days later than it departs
-segment.departurObject().toSQL()  // Returns: '2018-10-25 22:30:00.000 +09:00'
-segment.arrivalObject().toSQL()   // Returns: '2018-10-27 07:15:00.000 +13:00'
+segment.departurMoment().format(iso)  // Returns: '2018-10-25 22:30 +09:00'
+segment.arrivalMoment().format(iso)   // Returns: '2018-10-27 07:15 +13:00'
 segment.lagDays // Returns: 2
 ```
 
@@ -1823,7 +1811,7 @@ When providing a time range, if an array is provided, it will be interpreted as 
 [Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser "Browser"
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
-[LuxonDateTime]: https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html "Luxon DateTime"
+[Moment]: http://momentjs.com "Moment"
 [SimpleDuration]: #simple-duration "Simple Duration"
 [ISO8601Duration]: https://en.wikipedia.org/wiki/ISO_8601#Durations "ISO 8601 Duration"
 [Engine]: #class-engine

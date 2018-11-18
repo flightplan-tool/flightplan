@@ -1,5 +1,6 @@
 const Segment = require('./Segment')
 const consts = require('./consts')
+const timetable = require('./timetable')
 const utils = require('./utils')
 
 class Flight {
@@ -28,14 +29,12 @@ class Flight {
     // Clone the segments (so we have our own copy)
     segments = segments.map(x => Segment._clone(x, x._cabin))
 
-    // Compute nextConnection for every segment
-    for (let i = 1; i < segments.length; i++) {
-      const prev = segments[i - 1]
-      const curr = segments[i]
-      prev._nextConnection = utils.duration(prev.arrivalObject(), curr.departureObject())
-      if (prev._nextConnection < 0) {
-        throw new Error(`Invalid segment nextConnection: ["${prev}", "${curr}"]`)
-      }
+    // For each segment, set the segment that follows it
+    for (let i = 0; i < segments.length; i++) {
+      const j = i + 1
+      const next = (j < segments.length) ? segments[j] : null
+      segments[i]._dynamic.nextSegment = next
+      delete segments[i]._dynamic.nextConnection // Remove cached value
     }
 
     // Set state
@@ -78,7 +77,6 @@ class Flight {
       'date',
       'departure',
       'arrival',
-      'duration',
       'stops',
       'lagDays'
     ]
@@ -125,11 +123,11 @@ class Flight {
   key () {
     const { _state, _segments: segments } = this
     if (!_state.hasOwnProperty('key')) {
-      const date = segments[0].dateObject()
+      const date = segments[0].date
       const arr = [ segments[0].key() ]
       for (let i = 1; i < segments.length; i++) {
         const curr = segments[i]
-        const days = utils.days(date, curr.dateObject())
+        const days = timetable.diff(date, curr.date)
         arr.push(`${days}:${curr.fromCity}:${curr.flight}`)
       }
       _state.key = arr.join(':')
@@ -137,28 +135,20 @@ class Flight {
     return _state.key
   }
 
-  dateObject () {
+  departureMoment () {
     const { _state, _segments: segments } = this
-    if (!_state.hasOwnProperty('dateObject')) {
-      _state.dateObject = segments[0].dateObject()
+    if (!_state.hasOwnProperty('departureMoment')) {
+      _state.departureMoment = segments[0].departureMoment()
     }
-    return _state.dateObject
+    return _state.departureMoment
   }
 
-  departureObject () {
+  arrivalMoment () {
     const { _state, _segments: segments } = this
-    if (!_state.hasOwnProperty('departureObject')) {
-      _state.departureObject = segments[0].departureObject()
+    if (!_state.hasOwnProperty('arrivalMoment')) {
+      _state.arrivalMoment = segments[segments.length - 1].arrivalMoment()
     }
-    return _state.departureObject
-  }
-
-  arrivalObject () {
-    const { _state, _segments: segments } = this
-    if (!_state.hasOwnProperty('arrivalObject')) {
-      _state.arrivalObject = segments[segments.length - 1].arrivalObject()
-    }
-    return _state.arrivalObject
+    return _state.arrivalMoment
   }
 
   airlineMatches (airline) {
@@ -238,7 +228,7 @@ class Flight {
   get duration () {
     const { _state, _segments: segments } = this
     if (!_state.hasOwnProperty('duration')) {
-      _state.duration = utils.duration(segments[0].departureObject(), segments[segments.length - 1].arrivalObject())
+      _state.duration = utils.duration(segments[0].departureMoment(), segments[segments.length - 1].arrivalMoment())
     }
     return _state.duration
   }
@@ -272,7 +262,9 @@ class Flight {
   get lagDays () {
     const { _state, _segments: segments } = this
     if (!_state.hasOwnProperty('lagDays')) {
-      _state.lagDays = utils.days(segments[0].departureObject(), segments[segments.length - 1].arrivalObject())
+      const first = segments[0]
+      const last = segments[segments.length - 1]
+      _state.lagDays = timetable.diff(first.date, last.date) + last.lagDays
     }
     return _state.lagDays
   }

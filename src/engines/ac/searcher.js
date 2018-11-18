@@ -33,9 +33,8 @@ module.exports = class extends Searcher {
 
   async search (page, query, results) {
     const { oneWay, fromCity, toCity, cabin, quantity } = query
-    const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
-    debugger
+    const departDate = query.departDateMoment()
+    const returnDate = query.returnDateMoment()
 
     // Wait a few seconds for the form to auto-fill itself
     await page.waitFor(3000)
@@ -52,8 +51,8 @@ module.exports = class extends Searcher {
         currentTripTab: 'oneway',
         city1FromOnewayCode: fromCity,
         city1ToOnewayCode: toCity,
-        l1Oneway: departDate.toFormat('MM/dd/yyyy'),
-        l1OnewayDate: departDate.toFormat('yyyy-MM-dd'),
+        l1Oneway: departDate.format('MM/DD/YYYY'),
+        l1OnewayDate: departDate.format('YYYY-MM-DD'),
         OnewayCabinTextfield: cabinVals[0],
         OnewayCabin: cabinVals[1],
         OnewayAdultsNb: quantity.toString(),
@@ -67,10 +66,10 @@ module.exports = class extends Searcher {
         currentTripTab: 'return',
         city1FromReturnCode: fromCity,
         city1ToReturnCode: toCity,
-        l1Return: departDate.toFormat('MM/dd/yyyy'),
-        l1ReturnDate: departDate.toFormat('yyyy-MM-dd'),
-        r1Return: returnDate.toFormat('MM/dd/yyyy'),
-        r1ReturnDate: returnDate.toFormat('yyyy-MM-dd'),
+        l1Return: departDate.format('MM/DD/YYYY'),
+        l1ReturnDate: departDate.format('YYYY-MM-DD'),
+        r1Return: returnDate.format('MM/DD/YYYY'),
+        r1ReturnDate: returnDate.format('YYYY-MM-DD'),
         ReturnCabinTextfield: cabinVals[0],
         ReturnCabin: cabinVals[1],
         ReturnAdultsNb: '1',

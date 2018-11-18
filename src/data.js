@@ -2207,6 +2207,7 @@ module.exports = {
     'DNZ': { name: 'Çardak Airport', city: 'Denizli', country: 'Turkey', timezone: 'Europe/Istanbul', offset: 3 },
     'DOD': { name: 'Dodoma Airport', city: 'Dodoma', country: 'Tanzania', timezone: 'Africa/Dar_es_Salaam', offset: 3 },
     'DOG': { name: 'Dongola Airport', city: 'Dongola', country: 'Sudan', timezone: 'Africa/Khartoum', offset: 3 },
+    'DOH': { name: 'Hamad International Airport', city: 'Doha', country: 'Qatar', timezone: 'Asia/Qatar', offset: 3 },
     'DOK': { name: 'Donetsk International Airport', city: 'Donetsk', country: 'Ukraine', timezone: 'Europe/Kiev', offset: 2 },
     'DOL': { name: 'Deauville-Saint-Gatien Airport', city: 'Deauville', country: 'France', timezone: 'Europe/Paris', offset: 1 },
     'DOM': { name: 'Melville Hall Airport', city: 'Dominica', country: 'Dominica', timezone: 'America/Dominica', offset: -4 },

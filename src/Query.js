@@ -1,4 +1,8 @@
+const moment = require('moment-timezone')
+require('frozen-moment') // Support freezing moment's
+
 const consts = require('./consts')
+const timetable = require('./timetable')
 const utils = require('./utils')
 
 const modifiable = Object.freeze([
@@ -26,12 +30,16 @@ class Query {
       quantity = 1,
       fromCity,
       toCity,
-      departDate,
-      returnDate = null,
+      departDate: origDepartDate,
+      returnDate: origReturnDate = null,
       json = {},
       html = {},
       screenshot = {}
     } = params
+
+    // Coerce params
+    const departDate = timetable.coerce(origDepartDate)
+    const returnDate = timetable.coerce(origReturnDate)
 
     // Validate params
     if (!(cabin in consts.cabins)) {
@@ -42,15 +50,12 @@ class Query {
       throw new Error(`Invalid query fromCity: ${fromCity}`)
     } else if (!utils.validAirportCode(toCity)) {
       throw new Error(`Invalid query toCity: ${toCity}`)
-    }
-
-    // Parse dates so we can determine their validity
-    const departDateObject = utils.parseDate(departDate)
-    const returnDateObject = returnDate ? utils.parseDate(returnDate) : null
-    if (!departDateObject.isValid) {
+    } else if (!utils.validDate(departDate)) {
       throw new Error(`Invalid query departDate: ${departDate}`)
-    } else if (returnDate && !returnDateObject.isValid) {
+    } else if (returnDate && !utils.validDate(returnDate)) {
       throw new Error(`Invalid query returnDate: ${returnDate}`)
+    } else if (returnDate && returnDate < departDate) {
+      throw new Error(`Invalid query date range: ${departDate} => ${returnDate}`)
     }
 
     // Set internal state
@@ -60,31 +65,37 @@ class Query {
       quantity,
       fromCity,
       toCity,
-      departDate: departDateObject.toSQLDate(),
-      departDateObject,
-      returnDate: returnDateObject ? returnDateObject.toSQLDate() : null,
-      returnDateObject,
-      oneWay: !returnDateObject,
+      departDate,
+      returnDate,
+      oneWay: !returnDate,
       json: Object.freeze({ ...json }),
       html: Object.freeze({ ...html }),
       screenshot: Object.freeze({ enabled: !!screenshot.path, ...screenshot })
     }
   }
 
-  departDateObject () {
-    return this._state.departDateObject
+  departDateMoment () {
+    const { _state } = this
+    if (!_state.hasOwnProperty('departDateMoment')) {
+      _state.departDateMoment = moment(this.departDate).freeze()
+    }
+    return _state.departDateMoment
   }
 
-  returnDateObject () {
-    return this._state.returnDateObject
+  returnDateMoment () {
+    const { _state } = this
+    if (!_state.hasOwnProperty('returnDateMoment')) {
+      _state.returnDateMoment = moment(this.returnDate).freeze()
+    }
+    return _state.returnDateMoment
   }
 
   closestDeparture (date) {
-    return utils.setNearestYear(this._state.departDateObject, date)
+    return utils.closestYear(date, this._state.departDate)
   }
 
   closestReturn (date) {
-    return utils.setNearestYear(this._state.returnDateObject, date)
+    return utils.closestYear(date, this._state.returnDate)
   }
 
   diff (other) {
@@ -103,8 +114,8 @@ class Query {
 
   toJSON () {
     const ret = { ...this._state }
-    delete ret.departDateObject
-    delete ret.returnDateObject
+    delete ret.departDateMoment
+    delete ret.returnDateMoment
     delete ret.oneWay
     delete ret.json
     delete ret.html

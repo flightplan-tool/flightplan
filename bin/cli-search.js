@@ -1,6 +1,5 @@
 const program = require('commander')
 const fs = require('fs')
-const { DateTime } = require('luxon')
 const prompt = require('syncprompt')
 
 const fp = require('../src')
@@ -10,6 +9,7 @@ const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
+const timetable = require('../src/timetable')
 
 program
   .option('-w, --website <airline>', 'IATA 2-letter code of the airline whose website to search')
@@ -18,8 +18,8 @@ program
   .option('-t, --to <city>', `IATA 3-letter code of the arrival airport`)
   .option('-o, --oneway', `Searches for one-way award inventory only (default: search both directions)`)
   .option('-c, --cabin <class>', `Cabin (${Object.keys(fp.cabins).join(', ')})`, (x) => (x in fp.cabins) ? x : false, undefined)
-  .option('-s, --start <date>', `Starting date of the search range (YYYY-MM-DD)`, (x) => parseDate(x), undefined)
-  .option('-e, --end <date>', `Ending date of the search range (YYYY-MM-DD)`, (x) => parseDate(x), undefined)
+  .option('-s, --start <date>', `Starting date of the search range (YYYY-MM-DD)`, undefined)
+  .option('-e, --end <date>', `Ending date of the search range (YYYY-MM-DD)`, undefined)
   .option('-q, --quantity <n>', `# of passengers traveling`, (x) => parseInt(x), 1)
   .option('-a, --account <n>', `Index of account to use`, (x) => parseInt(x), 0)
   .option('-h, --headless', `Run Chrome in headless mode`)
@@ -41,11 +41,6 @@ const strategies = {
   cx: { roundtripOptimized: false },
   ke: { oneWaySupported: false },
   nh: { roundtripOptimized: false }
-}
-
-function parseDate (strDate) {
-  const dt = DateTime.fromFormat(strDate, 'yyyy-MM-dd', { zone: 'utc' })
-  return dt.isValid ? dt : false
 }
 
 function fatal (engine, message, err) {
@@ -81,10 +76,10 @@ function populateArguments (args) {
     args.cabin = prompt(`Desired cabin class (${Object.keys(fp.cabins).join('/')})? `)
   }
   if (!args.start) {
-    args.start = parseDate(prompt('Start date of search range (YYYY-MM-DD)? '))
+    args.start = prompt('Start date of search range (YYYY-MM-DD)? ')
   }
   if (!args.end) {
-    args.end = parseDate(prompt('End date of search range (YYYY-MM-DD)? '))
+    args.end = prompt('End date of search range (YYYY-MM-DD)? ')
   }
   args.partners = !!args.partners
   args.oneway = !!args.oneway
@@ -102,14 +97,14 @@ function validateArguments (args) {
   if (!(args.cabin in fp.cabins)) {
     fatal(`Unrecognized cabin specified: ${args.cabin}`)
   }
-  if (!args.start) {
+  if (!timetable.valid(args.start)) {
     fatal(`Invalid start date: ${args.start}`)
   }
-  if (!args.end) {
+  if (!timetable.valid(args.end)) {
     fatal(`Invalid end date: ${args.end}`)
   }
   if (args.end < args.start) {
-    fatal(`Invalid date range: ${args.start.toSQLDate()} - ${args.end.toSQLDate()}`)
+    fatal(`Invalid date range: ${args.start} - ${args.end}`)
   }
   if (args.quantity < 0) {
     fatal(`Invalid quantity: ${args.quantity}`)
@@ -131,16 +126,16 @@ function validateArguments (args) {
 
   // Check if our search range is completely outside the valid range
   if (args.end < a || args.start > b) {
-    fatal(engine, `Can only search within the range: ${a.toSQLDate()} - ${b.toSQLDate()}`)
+    fatal(engine, `Can only search within the range: ${a} - ${b}`)
   }
 
   // If only start or end are outside the valid range, we can adjust them
   if (args.start < a) {
-    engine.warn(`Can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a.toSQLDate()}`)
+    engine.warn(`Can only search from ${minDays} day(s) from today, adjusting start of search range to: ${a}`)
     args.start = a
   }
   if (args.end > b) {
-    engine.warn(`Can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b.toSQLDate()}`)
+    engine.warn(`Can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b}`)
     args.end = b
   }
 }
@@ -164,23 +159,23 @@ function generateQueries (args, engine, days) {
 
   // Compute the one-way segments coming back at beginning of search range
   for (let i = 0; i < gap; i++) {
-    const date = startDate.plus({ days: i })
+    const date = timetable.plus(startDate, i)
     if (oneWaySupported) {
       queries.push({
         ...returnCities,
         departDate: date,
         returnDate: null
       })
-    } else if (date.plus({ days: tripMinDays }) < validEnd) {
+    } else if (timetable.plus(date, tripMinDays) <= validEnd) {
       queries.push({
         ...returnCities,
         departDate: date,
-        returnDate: date.plus({ days: tripMinDays })
+        returnDate: timetable.plus(date, tripMinDays)
       })
     } else {
       queries.push({
         ...departCities,
-        departDate: date.minus({ days: tripMinDays }),
+        departDate: timetable.minus(date, tripMinDays),
         returnDate: date
       })
     }
@@ -188,12 +183,12 @@ function generateQueries (args, engine, days) {
 
   // Compute segments in middle of search range
   for (let i = 0; i < days - gap; i++) {
-    const date = startDate.plus({ days: i })
+    const date = timetable.plus(startDate, i)
     if (roundtripOptimized) {
       queries.push({
         ...departCities,
         departDate: date,
-        returnDate: args.oneway ? null : date.plus({ days: gap })
+        returnDate: args.oneway ? null : timetable.plus(date, gap)
       })
     } else {
       queries.push({...departCities, departDate: date})
@@ -205,23 +200,23 @@ function generateQueries (args, engine, days) {
 
   // Compute the one-way segments going out at end of search range
   for (let i = gap - 1; i >= 0; i--) {
-    const date = endDate.minus({ days: i })
+    const date = timetable.minus(endDate, i)
     if (oneWaySupported) {
       queries.push({
         ...departCities,
         departDate: date,
         returnDate: null
       })
-    } else if (date.plus({ days: tripMinDays }) < validEnd) {
+    } else if (timetable.plus(date, tripMinDays) <= validEnd) {
       queries.push({
         ...departCities,
         departDate: date,
-        returnDate: date.plus({ days: tripMinDays })
+        returnDate: timetable.plus(date, tripMinDays)
       })
     } else {
       queries.push({
         ...returnCities,
-        departDate: date.minus({ days: tripMinDays }),
+        departDate: timetable.minus(date, tripMinDays),
         returnDate: date
       })
     }
@@ -298,14 +293,14 @@ const main = async (args) => {
     db.open()
 
     // Generate queries
-    const days = endDate.diff(startDate, 'days').days + 1
+    const days = timetable.diff(startDate, endDate) + 1
     const queries = generateQueries(args, engine, days)
 
     // Execute queries
     let skipped = 0
     let daysRemaining = terminate
     let lastDate = null
-    console.log(`Searching ${days} days of award inventory: ${startDate.toSQLDate()} - ${endDate.toSQLDate()}`)
+    console.log(`Searching ${days} days of award inventory: ${timetable.format(startDate)} - ${timetable.format(endDate)}`)
     for (const query of queries) {
       const { id, loginRequired } = engine
 

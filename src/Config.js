@@ -1,8 +1,7 @@
-const { DateTime } = require('luxon')
-
 const BookingClass = require('./BookingClass')
 const Query = require('./Query')
 const consts = require('./consts')
+const timetable = require('./timetable')
 const utils = require('./utils')
 
 class Config {
@@ -67,10 +66,10 @@ class Config {
 
   validDateRange () {
     const { minDays, maxDays } = this._state.validation
-    const now = DateTime.utc().startOf('day')
+    const now = timetable.today()
     return [
-      now.plus({ days: minDays }),
-      now.plus({ days: maxDays })
+      timetable.plus(now, minDays),
+      timetable.plus(now, maxDays)
     ]
   }
 

@@ -1,4 +1,4 @@
-const { DateTime } = require('luxon')
+const moment = require('moment-timezone')
 
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
@@ -41,8 +41,8 @@ module.exports = class extends Searcher {
 
   async search (page, query, results) {
     const { oneWay, fromCity, toCity, cabin, quantity } = query
-    const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
+    const departDate = query.departDateMoment()
+    const returnDate = query.returnDateMoment()
 
     // Make sure destination city is cleared
     await this.clearCity('#input-destination')
@@ -338,9 +338,9 @@ module.exports = class extends Searcher {
 
       // Should move left?
       let btnSel
-      if (date < m1) {
+      if (date.isBefore(m1)) {
         btnSel = '.ui-datepicker-group-first .ui-datepicker-prev'
-      } else if (date > m2.endOf('month')) {
+      } else if (date.isAfter(m2.endOf('month'))) {
         btnSel = '.ui-datepicker-group-last .ui-datepicker-next'
       }
       if (btnSel) {
@@ -362,18 +362,18 @@ module.exports = class extends Searcher {
     const str = await page.evaluate((sel) => {
       return document.querySelector(sel).textContent
     }, selector + ' .ui-datepicker-title')
-    const month = DateTime.fromFormat(str.replace(/\s+/, ' '), 'LLL yyyy', { zone: 'utc' })
+    const month = moment.utc(str.replace(/\s+/, ' '), 'MMM YYYY', true)
 
     // Does the date belong to this month?
-    if (date.month !== month.month) {
+    if (date.month() !== month.month()) {
       return { month, success: false }
     }
 
     // Find the right day, and click it
     for (const elem of await page.$$(selector + ' a')) {
       const text = await page.evaluate(x => x.textContent, elem)
-      const elemDate = DateTime.fromFormat(text.replace(/\s+/, ' '), 'cccc LLLL d, yyyy', { zone: 'utc' })
-      if (elemDate.isValid && elemDate.day === date.day) {
+      const elemDate = moment.utc(text.replace(/\s+/, ' '), 'dddd MMMM D, YYYY', true)
+      if (elemDate.isValid() && elemDate.date() === date.date()) {
         // Found the date, click it!
         await elem.click()
         await page.waitFor(500)

@@ -70,8 +70,8 @@ module.exports = class extends Searcher {
 
   async search (page, query, results) {
     const { partners, fromCity, toCity, oneWay, cabin, quantity } = query
-    const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
+    const departDate = query.departDateMoment()
+    const returnDate = query.returnDateMoment()
 
     // Make sure page is ready
     await this.prepare()
@@ -110,8 +110,8 @@ module.exports = class extends Searcher {
     await this.fillForm({
       'orbOrigin': fromCity,
       'orbDestination': toCity,
-      'departureMonth': departDate.toFormat('dd/MM/yyyy'),
-      'returnMonth': returnDate ? returnDate.toFormat('dd/MM/yyyy') : '',
+      'departureMonth': departDate.format('DD/MM/YYYY'),
+      'returnMonth': returnDate ? returnDate.format('DD/MM/YYYY') : '',
       'cabinClass': cabinCode[cabin],
       'numOfAdults': quantity.toString(),
       'numOfChildren': '0',

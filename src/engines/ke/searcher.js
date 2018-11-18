@@ -1,5 +1,6 @@
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
+const utils = require('../../utils')
 
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
@@ -54,8 +55,8 @@ module.exports = class extends Searcher {
 
   async search (page, query, results) {
     const { partners, oneWay, fromCity, toCity, cabin } = query
-    const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
+    const departDate = query.departDateMoment()
+    const returnDate = query.returnDateMoment()
 
     // Select "Award Booking"
     const awardSel = '#booking-type button[data-name="award"]'
@@ -77,7 +78,7 @@ module.exports = class extends Searcher {
     await page.click(dateInputSel)
     await this.clear(dateInputSel)
     const dates = oneWay ? [departDate] : [departDate, returnDate]
-    const strDates = dates.map(x => x.toFormat('yyyy-MM-dd')).join('/')
+    const strDates = dates.map(x => x.format('YYYY-MM-DD')).join('/')
     await page.keyboard.type(strDates, { delay: 10 })
     await page.keyboard.press('Tab')
 
@@ -109,10 +110,10 @@ module.exports = class extends Searcher {
 
   async modify (page, diff, query, lastQuery, results) {
     // Get old and new dates
-    const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
-    const oldDepartDate = lastQuery.departDateObject()
-    const oldReturnDate = lastQuery.returnDateObject()
+    const departDate = query.departDateMoment()
+    const returnDate = query.returnDateMoment()
+    const oldDepartDate = lastQuery.departDateMoment()
+    const oldReturnDate = lastQuery.returnDateMoment()
 
     return this.saveResponse(results, async () => {
       // Attempt to choose the dates directly
@@ -184,7 +185,7 @@ module.exports = class extends Searcher {
     const { page } = this
 
     // We only support +/- 3 days
-    const diff = newDate.diff(oldDate, 'days').days
+    const diff = utils.daysBetween(oldDate, newDate)
     if (Math.abs(diff) > 3 || diff === 0) {
       return false
     }
@@ -199,7 +200,7 @@ module.exports = class extends Searcher {
     let tabData = await tabs.$$eval('li.date-tab a', items => {
       return items.map(x => [ x.getAttribute('data-index'), x.getAttribute('data-name') ])
     })
-    newDate = newDate.toFormat('MM/dd')
+    newDate = newDate.format('MM/DD')
     const newSel = tabData.find(x => x[1] === newDate)
     if (!newSel) {
       return false

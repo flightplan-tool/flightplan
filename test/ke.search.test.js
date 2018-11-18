@@ -1,6 +1,7 @@
+const moment = require('moment-timezone')
+
 const accounts = require('../shared/accounts')
 const fp = require('../src/index')
-const { DateTime } = require('luxon')
 
 let results
 
@@ -13,9 +14,9 @@ beforeAll(async (done) => {
   await engine.initialize({ credentials, headless: true, verbose: false })
 
   // Get a start date nearly a year out, on a Wednesday
-  let date = DateTime.local().plus({ weeks: 46 })
-  while (date.weekday !== 3) {
-    date = date.minus({ days: 1 })
+  let date = moment().add(46, 'weeks')
+  while (date.weekday() !== 3) {
+    date.subtract(1, 'day')
   }
 
   // Run the search
@@ -23,7 +24,7 @@ beforeAll(async (done) => {
     fromCity: 'ICN',
     toCity: 'LAX',
     departDate: date,
-    returnDate: date.plus({ days: 7 }),
+    returnDate: date.clone().add(1, 'week'),
     cabin: 'first'
   })
 

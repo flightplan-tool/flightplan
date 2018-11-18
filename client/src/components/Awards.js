@@ -12,6 +12,8 @@ import theme from './theme.json'
 @inject('configStore', 'searchStore')
 class Awards extends Component {
   render () {
+    debugger
+
     // Check for empty data first
     const { data } = this.props
     if (!data) {
@@ -40,15 +42,15 @@ class Awards extends Component {
 
     // Sort groups by website name
     const groups = [...map.entries()].map(x => {
-      const { website } = engineInfo.get(x[0])
+      const { name } = engineInfo.get(x[0])
       const { departures, arrivals } = x[1]
-      return { engine: x[0], website, departures, arrivals }
-    }).sort((x, y) => utilities.strcmp(x.website, y.website))
+      return { engine: x[0], name, departures, arrivals }
+    }).sort((x, y) => utilities.strcmp(x.name, y.name))
 
     // Create array of tables (arrivals and departures)
     const tables = []
     for (const group of groups) {
-      const { engine, website, departures, arrivals } = group
+      const { engine, name, departures, arrivals } = group
 
       // Compute the set of fare codes for this group
       const codes = [...departures, ...arrivals].reduce((set, award) => {
@@ -66,8 +68,8 @@ class Awards extends Component {
       })
 
       // Add a table for each trip type
-      tables.push({ engine, website, fares, type: 'Departures', awards: departures })
-      tables.push({ engine, website, fares, type: 'Arrivals', awards: arrivals })
+      tables.push({ engine, name, fares, type: 'Departures', awards: departures })
+      tables.push({ engine, name, fares, type: 'Arrivals', awards: arrivals })
     }
 
     // Generate HTML markup
@@ -81,7 +83,7 @@ class Awards extends Component {
   }
 
   renderTable (table) {
-    const { engine, website, fares, type, awards } = table
+    const { engine, name, fares, type, awards } = table
 
     // Group awards by itinerary
     const map = awards.reduce((map, x) => {
@@ -140,7 +142,7 @@ class Awards extends Component {
                      src={`/images/airlines/${engine.toLowerCase()}_small.png`}
                      alt="Airline Logo" />
                 <div>
-                  <h2>{website}: {type}</h2>
+                  <h2>{name}: {type}</h2>
                   <p>{itineraries.length} Itineraries, {awards.length} Awards Found</p>
                 </div>
               </div>
@@ -197,7 +199,7 @@ class Awards extends Component {
     const { airline, flight, aircraft, mixed, departure, arrival, fromCity, toCity, duration, stops, lagDays } = segment
     const { airlines, engines } = this.props.configStore
     const logo = engines.find(x => x.id === airline) ? airline.toLowerCase() : 'zz'
-    const airlineInfo = airlines.find(x => x.id === airline)
+    const airlineInfo = airlines.find(x => x.iata === airline)
     const airlineName = airlineInfo ? airlineInfo.name : airline
 
     return (
@@ -226,10 +228,10 @@ class Awards extends Component {
         <div className="schedule">
           <div className="times">
             <div className="departure">
-              {moment(departure).format('h:ma')}
+              {moment.utc(departure, 'HH:mm', true).format('h:ma')}
             </div>
             <div className="arrival">
-              {moment(arrival).format('h:ma')}
+              {moment.utc(arrival, 'HH:mm', true).format('h:ma')}
               {lagDays > 0 && <div className="lag">+{lagDays}</div>}
             </div>
           </div>
@@ -254,7 +256,7 @@ class Awards extends Component {
           <div>
             <h1>{quantity}x</h1>
             <h2>
-              {mileage === null ? '???' : mileage.toLocaleString()}
+              {mileage === null ? '' : mileage.toLocaleString()}
               {mixed && <div className="warning"><span role="img" aria-label="warning">⚠️</span><br /><em>Mixed Cabin</em></div>}
             </h2>
           </div>

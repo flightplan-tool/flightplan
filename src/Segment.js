@@ -1,3 +1,5 @@
+require('frozen-moment') // Support freezing moment's
+const timetable = require('./timetable')
 const utils = require('./utils')
 
 class Segment {
@@ -9,13 +11,18 @@ class Segment {
       aircraft = null,
       fromCity,
       toCity,
-      date,
-      departure,
-      arrival,
+      date: origDate,
+      departure: origDeparture,
+      arrival: origArrival,
       cabin = null,
       stops = 0,
       lagDays = 0
     } = attributes
+
+    // Coerce attributes
+    const date = timetable.coerce(origDate)
+    const departure = timetable.coerceTime(origDeparture)
+    const arrival = timetable.coerceTime(origArrival)
 
     // Validate attributes
     if (!utils.validFlightDesignator(flight)) {
@@ -26,38 +33,13 @@ class Segment {
       throw new Error(`Invalid segment fromCity: ${fromCity}`)
     } else if (!utils.validAirportCode(toCity)) {
       throw new Error(`Invalid segment toCity: ${toCity}`)
+    } else if (!utils.validDate(date)) {
+      throw new Error(`Invalid segment date: ${date}`)
     } else if (!utils.validTime(departure)) {
       throw new Error(`Invalid segment departure: ${departure}`)
     } else if (!utils.validTime(arrival)) {
       throw new Error(`Invalid segment arrival: ${arrival}`)
     }
-
-    // Determine source and destination time zones
-    const fromCityTZ = utils.airportTimeZone(fromCity)
-    const toCityTZ = utils.airportTimeZone(toCity)
-
-    // Parse date, so we can determine it's validity
-    const departureDate = utils.parseDate(date, fromCityTZ)
-    const arrivalDate = utils.parseDate(date, toCityTZ).plus({ days: lagDays })
-
-    if (!departureDate.isValid) {
-      throw new Error(`Invalid segment date: ${date} (tz: ${fromCityTZ})`)
-    }
-    if (!arrivalDate.isValid) {
-      throw new Error(`Invalid segment lagDays: ${lagDays} (date: ${date}, tz: ${toCityTZ})`)
-    }
-
-    // Calculate departure and arrival times, so we can get segment duration
-    const departureObject = utils.joinDateTime(departureDate, utils.parseTime(departure))
-    const arrivalObject = utils.joinDateTime(arrivalDate, utils.parseTime(arrival))
-    const duration = utils.duration(departureObject, arrivalObject)
-    if (duration < 0) {
-      throw new Error(`Invalid segment duration: ["${departureObject}", "${arrivalObject}"]`)
-    }
-
-    // Calculate whether segment is overnight
-    const localArrival = departureObject.plus({ minutes: duration })
-    const overnight = localArrival.hour >= 1 && utils.days(departureDate, localArrival) > 0
 
     // Set internal state
     this._state = {
@@ -66,27 +48,20 @@ class Segment {
       aircraft,
       fromCity,
       toCity,
-      date: departureDate.toSQLDate(),
-      dateObject: departureDate,
+      date,
       departure,
-      departureObject,
       arrival,
-      arrivalObject,
-      duration,
       stops,
       lagDays,
-      overnight
+      key: `${date}:${fromCity}:${flight}`
     }
-    this._state.key = `${this.date}:${this.fromCity}:${this.flight}`
-    this._nextConnection = null
-    this._cabin = cabin
+    this._dynamic = { cabin }
   }
 
   static _clone (segment, cabin) {
     const instance = Object.create(this.prototype)
     instance._state = segment._state
-    instance._nextConnection = segment._nextConnection
-    instance._cabin = cabin
+    instance._dynamic = { ...segment._dynamic }
     return instance
   }
 
@@ -94,27 +69,43 @@ class Segment {
     return this._state.key
   }
 
-  dateObject () {
-    return this._state.dateObject
+  departureMoment () {
+    const { _state } = this
+    if (!_state.hasOwnProperty('departureMoment')) {
+      const { date, departure, fromCity } = this
+      const tz = utils.airportTimezone(fromCity)
+      const m = utils.dateTimeTz(date, departure, tz)
+      if (!m.isValid()) {
+        throw new Error(`Invalid departure date: ${date} ${departure} (airport: ${fromCity})`)
+      }
+      _state.departureMoment = m.freeze()
+    }
+    return _state.departureMoment
   }
 
-  departureObject () {
-    return this._state.departureObject
-  }
-
-  arrivalObject () {
-    return this._state.arrivalObject
+  arrivalMoment () {
+    const { _state } = this
+    if (!_state.hasOwnProperty('arrivalMoment')) {
+      const { date, lagDays, arrival, toCity } = this
+      const tz = utils.airportTimezone(toCity)
+      const m = utils.dateTimeTz(timetable.plus(date, lagDays), arrival, tz)
+      if (!m.isValid()) {
+        throw new Error(`Invalid arrival date: ${date}(${lagDays}) ${arrival} (airport: ${toCity})`)
+      }
+      _state.arrivalMoment = m.freeze()
+    }
+    return _state.arrivalMoment
   }
 
   toJSON () {
     const ret = { ...this._state }
-    if (this._cabin) {
-      ret.cabin = this._cabin
+    const { _dynamic } = this
+    if (_dynamic.cabin) {
+      ret.cabin = _dynamic.cabin
     }
     delete ret.key
-    delete ret.dateObject
-    delete ret.departureObject
-    delete ret.arrivalObject
+    delete ret.departureMoment
+    delete ret.arrivalMoment
     delete ret.duration
     delete ret.overnight
     return ret
@@ -157,15 +148,40 @@ class Segment {
   }
 
   get duration () {
-    return this._state.duration
+    const { _state } = this
+    if (!_state.hasOwnProperty('duration')) {
+      const departure = this.departureMoment()
+      const arrival = this.arrivalMoment()
+      const duration = utils.duration(departure, arrival)
+      if (duration < 0) {
+        throw new Error(`Invalid segment duration: ["${departure}", "${arrival}"]`)
+      }
+      _state.duration = duration
+    }
+    return _state.duration
   }
 
   get nextConnection () {
-    return this._nextConnection
+    const { _dynamic } = this
+    if (!_dynamic.hasOwnProperty('nextConnection')) {
+      const { nextSegment } = _dynamic
+      if (nextSegment) {
+        const arrival = this.arrivalMoment()
+        const departure = nextSegment.departureMoment()
+        const connection = utils.duration(arrival, departure)
+        if (connection < 0) {
+          throw new Error(`Invalid segment nextConnection: ["${arrival}", "${departure}"]`)
+        }
+        _dynamic.nextConnection = connection
+      } else {
+        _dynamic.nextConnection = null
+      }
+    }
+    return _dynamic.nextConnection
   }
 
   get cabin () {
-    return this._cabin
+    return this._dynamic.cabin
   }
 
   get stops () {
@@ -177,7 +193,14 @@ class Segment {
   }
 
   get overnight () {
-    return this._state.overnight
+    const { _state } = this
+    if (!_state.hasOwnProperty('overnight')) {
+      const { date, departureMoment, duration } = this
+      const localArrival = departureMoment.add(duration, 'minutes')
+      _state.overnight = localArrival.hour() >= 1 &&
+        timetable.diff(date, timetable.coerce(localArrival)) > 0
+    }
+    return _state.overnight
   }
 }
 

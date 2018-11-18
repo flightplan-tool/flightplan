@@ -1,5 +1,5 @@
 const jspath = require('jspath')
-const { DateTime } = require('luxon')
+const moment = require('moment-timezone')
 
 const Award = require('../../Award')
 const Flight = require('../../Flight')
@@ -29,17 +29,17 @@ module.exports = class extends Parser {
     // Transform flight data
     return [...departures, ...arrivals].map(f => {
       const segments = f.segment.map(x => {
-        const departure = DateTime.fromISO(x.departureDateTime, { zone: 'utc' })
-        const arrival = DateTime.fromISO(x.arrivalDateTime, { zone: 'utc' })
+        const departure = moment(x.departureDateTime, moment.ISO_8601, true)
+        const arrival = moment(x.arrivalDateTime, moment.ISO_8601, true)
         return new Segment({
           airline: x.airline,
           flight: x.flightNo,
           aircraft: this.getAircraft(x.product),
           fromCity: x.origin,
           toCity: x.destination,
-          date: departure.toSQLDate(),
-          departure: departure.toFormat('HH:mm'),
-          arrival: arrival.toFormat('HH:mm'),
+          date: departure,
+          departure: departure,
+          arrival: arrival,
           cabin: cabinCodes[x.cabin],
           stops: parseInt(x.stop),
           lagDays: parseInt(x.lagDays)

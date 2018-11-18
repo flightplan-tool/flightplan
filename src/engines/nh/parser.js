@@ -1,14 +1,15 @@
-const { DateTime } = require('luxon')
+const moment = require('moment-timezone')
 
 const Award = require('../../Award')
 const Flight = require('../../Flight')
 const Parser = require('../../Parser')
 const Segment = require('../../Segment')
 const { cabins } = require('../../consts')
+const timetable = require('../../timetable')
 const utils = require('../../utils')
 
 // Regex patterns
-const reDate = /^\w{3}\s\d+/
+const reDate = /^[A-Za-z]{3}\s\d+/
 const reTime = /\d{2}:\d{2}/
 const reAircraft = /^[A-Z0-9]{3,4}\b/
 
@@ -25,7 +26,7 @@ module.exports = class extends Parser {
   parseFlights ($, isOutbound) {
     const { query } = this
     const { engine } = this.results
-    const referenceDate = isOutbound ? query.departDateObject() : query.returnDateObject()
+    const referenceDate = isOutbound ? query.departDate : query.returnDate
 
     const flights = []
     if ($) {
@@ -59,7 +60,7 @@ module.exports = class extends Parser {
             ...flightInfo,
             fromCity: departure.city,
             toCity: arrival.city,
-            date: lastDate.toSQLDate(),
+            date: lastDate,
             departure: departure.time,
             arrival: arrival.time,
             lagDays: arrival.lagDays
@@ -189,10 +190,10 @@ module.exports = class extends Parser {
   parseDate (str, referenceDate) {
     const result = reDate.exec(str)
     if (result) {
-      const dt = DateTime.fromFormat(result[0], 'LLL d', { zone: 'utc' })
-      if (dt.isValid) {
+      const dt = moment.utc(result[0], 'MMM D', true)
+      if (dt.isValid()) {
         // Fill in year from query
-        return utils.setNearestYear(referenceDate, dt)
+        return timetable.coerce(utils.closestYear(dt, referenceDate))
       }
     }
     throw new Error(`Failed to parse date: ${str}`)

@@ -109,7 +109,9 @@ export default class SearchStore {
     const { aircraft } = this.configStore
     if (aircraft) {
       for (const plane of aircraft) {
-        map.set(plane.icao, plane.name)
+        if (plane.icao) {
+          map.set(plane.icao, plane.name)
+        }
       }
     }
     return map
@@ -120,7 +122,7 @@ export default class SearchStore {
     const { airlines } = this.configStore
     if (airlines) {
       for (const airline of airlines) {
-        map.set(airline.id, airline)
+        map.set(airline.iata, airline)
       }
     }
     return map
@@ -145,7 +147,7 @@ export default class SearchStore {
       let f = {
         airline: segment.airline,
         flight: segment.flight,
-        aircraft: aircraftInfo.get(segment.aircraft) || segment.aircraft
+        aircraft: aircraftInfo.get(segment.aircraft) || segment.aircraft || 'Unknown Aircraft'
       }
       map.set([f.airline, f.flight, f.aircraft].join('|'), f)
     }

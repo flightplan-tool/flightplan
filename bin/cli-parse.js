@@ -34,15 +34,14 @@ const main = async (args) => {
   const { verbose, yes, force } = args
   let numRequests = 0
   let numAwards = 0
-  const parsers = new Map()
 
   try {
     // Open the database
-    console.log('Opening database...')
+    logger.info('Opening database...')
     db.open()
 
     // Iterate over search requests
-    console.log('Parsing search requests...')
+    logger.info('Parsing search requests...')
     const failed = []
     for (const row of getRequests(args.website, force)) {
       // First delete all awards associated with this request
@@ -74,7 +73,7 @@ const main = async (args) => {
           const { flight, fare, mileageCost } = award
           const { fromCity, toCity, date } = flight
           const segments = flight.segments.map(x => x.flight).join('-')
-          console.log(`    [${fromCity} -> ${toCity}] - ${date} ${segments} (${mileageCost} Miles): ${fare.code}${award.waitlisted ? '@' : '+'}`)
+          logger.info(`    [${fromCity} -> ${toCity}] - ${date} ${segments} (${mileageCost} Miles): ${fare.code}${award.waitlisted ? '@' : '+'}`)
         }
       }
 
@@ -86,15 +85,15 @@ const main = async (args) => {
 
     if (failed.length > 0) {
       if (yes || prompts.askYesNo(`${failed.length} failed requests will be purged from the database. Do you want to continue?`)) {
-        console.log('Cleaning up stored files and database entries...')
+        logger.info('Cleaning up stored files and database entries...')
         for (const row of failed) {
           await helpers.cleanupRequest(row)
         }
       }
     }
 
-    console.log(`Search requests processed: ${numRequests}`)
-    console.log(`Total awards found: ${numAwards}`)
+    logger.success(`Search requests processed: ${numRequests}`)
+    logger.success(`Total awards found: ${numAwards}`)
   } catch (err) {
     logger.error(err.message)
     console.error(err)

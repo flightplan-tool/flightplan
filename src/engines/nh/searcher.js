@@ -55,8 +55,8 @@ module.exports = class extends Searcher {
 
   async search (page, query, results) {
     const { fromCity, toCity, quantity, oneWay } = query
-    const departDate = query.departDateObject()
-    const returnDate = oneWay ? departDate : query.returnDateObject()
+    const departDate = query.departDateMoment()
+    const returnDate = oneWay ? departDate : query.returnDateMoment()
 
     // Wait a little bit for the form to load
     await page.waitFor(1000)
@@ -64,9 +64,6 @@ module.exports = class extends Searcher {
     // Choose multiple cities / mixed classes
     await this.clickAndWait('li.lastChild.deselection')
     await page.waitFor(1000)
-
-    // Weekday strings
-    const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 
     await this.fillForm({
       'requestedSegment:0:departureAirportCode:field': fromCity,
@@ -77,10 +74,10 @@ module.exports = class extends Searcher {
       'requestedSegment:1:departureAirportCode:field': toCity,
       'requestedSegment:0:arrivalAirportCode:field_pctext': await this.airportName(toCity),
       'requestedSegment:1:departureAirportCode:field_pctext': await this.airportName(toCity),
-      'requestedSegment:0:departureDate:field': departDate.toFormat('yyyyMMdd'),
-      'requestedSegment:0:departureDate:field_pctext': departDate.toFormat('MM/dd/yyyy') + ` (${weekdays[departDate.weekday - 1]})`,
-      'requestedSegment:1:departureDate:field': returnDate.toFormat('yyyyMMdd'),
-      'requestedSegment:1:departureDate:field_pctext': returnDate.toFormat('MM/dd/yyyy') + ` (${weekdays[returnDate.weekday - 1]})`,
+      'requestedSegment:0:departureDate:field': departDate.format('YYYYMMDD'),
+      'requestedSegment:0:departureDate:field_pctext': departDate.format('MM/DD/YYYY (dd)').toUpperCase(),
+      'requestedSegment:1:departureDate:field': returnDate.format('YYYYMMDD'),
+      'requestedSegment:1:departureDate:field_pctext': returnDate.format('MM/DD/YYYY (dd)').toUpperCase(),
       'adult:count': quantity.toString(),
       'youngAdult:count': 0,
       'child:count': 0

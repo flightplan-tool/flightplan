@@ -1,6 +1,8 @@
+const moment = require('moment-timezone')
+
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
-const utils = require('../../utils')
+const timetable = require('../../timetable')
 
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
@@ -41,8 +43,8 @@ module.exports = class extends Searcher {
 
   async search (page, query, results) {
     const { oneWay, fromCity, toCity, cabin, quantity } = query
-    const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
+    const departDate = query.departDateMoment()
+    const returnDate = query.returnDateMoment()
 
     // Wait a few seconds for the form to auto-fill itself
     await page.waitFor(3000)
@@ -61,8 +63,8 @@ module.exports = class extends Searcher {
       redemption_type: 'STD_RED',
       departurePoint: fromCity,
       destinationPoint: toCity,
-      departInputDate: departDate.toFormat('MM/dd/yy'),
-      returnInputDate: returnDate ? returnDate.toFormat('MM/dd/yy') : '',
+      departInputDate: departDate.format('MM/DD/YY'),
+      returnInputDate: returnDate ? returnDate.format('MM/DD/YY') : '',
       oneWay: oneWay,
       CabinCode: cabinCode[cabin],
       NumberOfAdults: quantity.toString(),
@@ -131,12 +133,11 @@ module.exports = class extends Searcher {
   }
 
   async modify (page, diff, query, lastQuery, results) {
-    const departDate = query.departDateObject()
-    const returnDate = query.returnDateObject()
+    const { departDate, returnDate } = query
 
     // We only support +/- 3 days
-    const departDiff = utils.days(departDate, lastQuery.departDateObject())
-    const returnDiff = query.oneWay ? 0 : utils.days(returnDate, lastQuery.returnDateObject())
+    const departDiff = timetable.diff(lastQuery.departDate, departDate)
+    const returnDiff = query.oneWay ? 0 : timetable.diff(lastQuery.returnDate, returnDate)
     if (
       Math.abs(departDiff) > 3 ||
       Math.abs(returnDiff) > 3 ||
@@ -160,7 +161,7 @@ module.exports = class extends Searcher {
   }
 
   async chooseDateTab (date, sector) {
-    const ts = date.valueOf()
+    const ts = moment.utc(date).valueOf()
     const opts = { SectorNumber: sector }
     if (sector === 0) {
       // Departure tab

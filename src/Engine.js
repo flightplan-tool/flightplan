@@ -1,5 +1,4 @@
 const humanize = require('humanize-duration')
-const { DateTime } = require('luxon')
 const puppeteer = require('puppeteer')
 
 const Query = require('./Query')
@@ -300,17 +299,17 @@ class Engine {
 
     // Insert delay between requests
     if (delayBetweenRequests && lastRequest) {
-      const delay = utils.randomDuration(delayBetweenRequests)
-      const delayMillis = lastRequest.plus(delay).diffNow().valueOf()
-      if (delayMillis > 0) {
-        await page.waitFor(delayMillis)
+      const duration = utils.durationRange(delayBetweenRequests)
+      const delay = lastRequest.add(duration).diff(utils.now(), 'ms')
+      if (delay > 0) {
+        await page.waitFor(delay)
       }
     }
-    lastRequest = DateTime.utc()
+    lastRequest = utils.now()
 
     // Check if we are at a resting checkpoint
     if (checkpoint && checkpoint.remaining <= 0) {
-      const restMillis = checkpoint.until.diffNow().valueOf()
+      const restMillis = checkpoint.until.diff(utils.now(), 'ms')
       if (restMillis > 0 && verbose) {
         this.info(`Cool-down period, resuming in ${humanize(restMillis)}`)
         await page.waitFor(restMillis)
@@ -319,11 +318,12 @@ class Engine {
     }
 
     // If next resting checkpoint is unknown or past, compute new one
-    if (!checkpoint || DateTime.utc() >= checkpoint.until) {
-      const dur = utils.randomDuration(restPeriod)
+    const now = utils.now()
+    if (!checkpoint || checkpoint.until.isBefore(now)) {
+      const duration = utils.durationRange(restPeriod)
       checkpoint = {
-        until: DateTime.utc().plus(dur),
-        remaining: Math.max(1, Math.floor(requestsPerHour * dur.valueOf() / (3600 * 1000)))
+        until: now.add(duration),
+        remaining: Math.max(1, Math.floor(requestsPerHour * duration.valueOf() / (3600 * 1000)))
       }
     }
 

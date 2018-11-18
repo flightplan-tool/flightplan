@@ -1,5 +1,5 @@
 const jspath = require('jspath')
-const { DateTime } = require('luxon')
+const moment = require('moment-timezone')
 
 const Award = require('../../Award')
 const Flight = require('../../Flight')
@@ -55,10 +55,8 @@ module.exports = class extends Parser {
         const toCity = airports.get(x.destinationLocation)
 
         // Calculate departure / arrival times
-        const departureUTC = DateTime.fromMillis(flightId.originDate, { zone: 'utc' })
-        const arrivalUTC = DateTime.fromMillis(x.destinationDate, { zone: 'utc' })
-        const departure = departureUTC.setZone(utils.airportTimeZone(fromCity), {keepLocalTime: true})
-        const arrival = arrivalUTC.setZone(utils.airportTimeZone(toCity), {keepLocalTime: true})
+        const departure = moment.utc(flightId.originDate)
+        const arrival = moment.utc(x.destinationDate)
 
         // Return the segment
         return new Segment({
@@ -67,11 +65,11 @@ module.exports = class extends Parser {
           aircraft: this.findAircraft(x.equipment),
           fromCity,
           toCity,
-          date: departure.toSQLDate(),
-          departure: departure.toFormat('HH:mm'),
-          arrival: arrival.toFormat('HH:mm'),
+          date: departure,
+          departure: departure,
+          arrival: arrival,
           stops: parseInt(x.numberOfStops),
-          lagDays: utils.days(departure, arrival)
+          lagDays: utils.daysBetween(departure, arrival)
         })
       })
 
