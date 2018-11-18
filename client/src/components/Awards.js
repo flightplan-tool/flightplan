@@ -228,10 +228,10 @@ class Awards extends Component {
         <div className="schedule">
           <div className="times">
             <div className="departure">
-              {moment.utc(departure, 'HH:mm', true).format('h:ma')}
+              {moment.utc(departure, 'HH:mm', true).format('h:mma')}
             </div>
             <div className="arrival">
-              {moment.utc(arrival, 'HH:mm', true).format('h:ma')}
+              {moment.utc(arrival, 'HH:mm', true).format('h:mma')}
               {lagDays > 0 && <div className="lag">+{lagDays}</div>}
             </div>
           </div>
