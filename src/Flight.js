@@ -1,6 +1,7 @@
+const timetable = require('timetable-fns')
+
 const Segment = require('./Segment')
 const consts = require('./consts')
-const timetable = require('./timetable')
 const utils = require('./utils')
 
 class Flight {

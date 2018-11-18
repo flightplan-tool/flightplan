@@ -1,9 +1,9 @@
 const moment = require('moment-timezone')
 const path = require('path')
+const timetable = require('timetable-fns')
 const url = require('url')
 
 const data = require('./data')
-const timetable = require('./timetable')
 
 const reAirline = /^[A-Z0-9]{2}$/
 const reFlightNo = /^[A-Z0-9]{2}\d{1,4}$/

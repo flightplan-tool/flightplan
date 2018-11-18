@@ -1,6 +1,7 @@
 const program = require('commander')
 const fs = require('fs')
 const prompt = require('syncprompt')
+const timetable = require('timetable-fns')
 
 const fp = require('../src')
 const accounts = require('../shared/accounts')
@@ -9,7 +10,6 @@ const helpers = require('../shared/helpers')
 const logger = require('../shared/logger')
 const paths = require('../shared/paths')
 const routes = require('../shared/routes')
-const timetable = require('../src/timetable')
 
 program
   .option('-w, --website <airline>', 'IATA 2-letter code of the airline whose website to search')

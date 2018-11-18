@@ -1,8 +1,8 @@
 const moment = require('moment-timezone')
 require('frozen-moment') // Support freezing moment's
+const timetable = require('timetable-fns')
 
 const consts = require('./consts')
-const timetable = require('./timetable')
 const utils = require('./utils')
 
 const modifiable = Object.freeze([

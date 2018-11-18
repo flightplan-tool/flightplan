@@ -4468,6 +4468,13 @@ timed-out@^4.0.0:
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
   integrity sha1-8y6srFoXW+ol1/q1Zas+2HQe9W8=
 
+timetable-fns@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.0.tgz#4b3d1b720370afbb19af62376225fc97eb323c69"
+  integrity sha512-MvQhQjbPpZ9kya/KKINT1rBF1VC1J/7Zi1EKIn+gWH6Ms3kd8/Kmo+96RUpKxN/DzXCxtz5HXWQ7ihYkbHmHuA==
+  dependencies:
+    moment-timezone "^0.5.23"
+
 tmpl@1.0.x:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/tmpl/-/tmpl-1.0.4.tgz#23640dd7b42d00433911140820e5cf440e521dd1"

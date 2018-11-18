@@ -1,7 +1,8 @@
+const timetable = require('timetable-fns')
+
 const BookingClass = require('./BookingClass')
 const Query = require('./Query')
 const consts = require('./consts')
-const timetable = require('./timetable')
 const utils = require('./utils')
 
 class Config {

@@ -1,8 +1,8 @@
 const moment = require('moment-timezone')
+const timetable = require('timetable-fns')
 
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
-const timetable = require('../../timetable')
 
 module.exports = class extends Searcher {
   async isLoggedIn (page) {

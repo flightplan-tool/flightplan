@@ -1,11 +1,11 @@
 const moment = require('moment-timezone')
+const timetable = require('timetable-fns')
 
 const Award = require('../../Award')
 const Flight = require('../../Flight')
 const Parser = require('../../Parser')
 const Segment = require('../../Segment')
 const { cabins } = require('../../consts')
-const timetable = require('../../timetable')
 const utils = require('../../utils')
 
 // Regex patterns

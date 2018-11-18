@@ -1,5 +1,6 @@
 require('frozen-moment') // Support freezing moment's
-const timetable = require('./timetable')
+const timetable = require('timetable-fns')
+
 const utils = require('./utils')
 
 class Segment {
