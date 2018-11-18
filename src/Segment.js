@@ -196,8 +196,9 @@ class Segment {
   get overnight () {
     const { _state } = this
     if (!_state.hasOwnProperty('overnight')) {
-      const { date, departureMoment, duration } = this
-      const localArrival = departureMoment.add(duration, 'minutes')
+      const { date, duration } = this
+      const departure = this.departureMoment()
+      const localArrival = departure.add(duration, 'minutes')
       _state.overnight = localArrival.hour() >= 1 &&
         timetable.diff(date, timetable.coerce(localArrival)) > 0
     }
