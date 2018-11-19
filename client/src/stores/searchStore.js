@@ -109,6 +109,9 @@ export default class SearchStore {
     const { aircraft } = this.configStore
     if (aircraft) {
       for (const plane of aircraft) {
+        if (plane.iata) {
+          map.set(plane.iata, plane.name)
+        }
         if (plane.icao) {
           map.set(plane.icao, plane.name)
         }
