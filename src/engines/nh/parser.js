@@ -12,6 +12,7 @@ const utils = require('../../utils')
 const reDate = /^[A-Za-z]{3}\s\d+/
 const reTime = /\d{2}:\d{2}/
 const reAircraft = /^[A-Z0-9]{3,4}\b/
+const reLagDays = /[+-]\d+$/
 
 module.exports = class extends Parser {
   parse (results) {
@@ -208,8 +209,8 @@ module.exports = class extends Parser {
   }
 
   lagDays (str) {
-    const idx = str.indexOf('+')
-    return (idx >= 0) ? parseInt(str.slice(idx + 1)) : 0
+    const result = reLagDays.exec(str)
+    return result ? parseInt(result[0]) : 0
   }
 
   aircraft (str) {

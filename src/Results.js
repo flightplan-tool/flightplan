@@ -292,6 +292,18 @@ class Results {
     const uniqueFlights = Flight._dedupe(allFlights)
     const allAwards = [].concat(...uniqueFlights.map(x => x.awards))
 
+    // Validate segment data
+    for (const flight of uniqueFlights) {
+      for (let i = 0; i < flight.segments.length; i++) {
+        const segment = flight.segments[i]
+        if (segment.duration < 0) {
+          throw new Error(`Invalid segment duration: ${segment}`)
+        } else if (i < flight.segments.length - 1 && segment.nextConnection < 0) {
+          throw new Error(`Invalid segment nextConnection: ${segment}`)
+        }
+      }
+    }
+
     this._state.flights = Object.freeze(uniqueFlights)
     this._state.awards = Object.freeze(allAwards)
   }
