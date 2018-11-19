@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import ReactGA from 'react-ga'
 import Modal from 'react-responsive-modal'
 import { autorun } from 'mobx'
 import { inject } from 'mobx-react'
