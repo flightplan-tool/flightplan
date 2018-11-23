@@ -48,7 +48,7 @@ describe('SQ: ORD-PEK', () => {
     expect(b.arrival).toBe('14:20')
     expect(b.fromCity).toBe('SFO')
     expect(b.toCity).toBe('PEK')
-    expect(b.aircraft).toBe('B777')
+    expect(b.aircraft).toBe('Boeing 777')
     expect(b.date).toBe('2019-09-18')
     expect(b.lagDays).toBe(1)
   })

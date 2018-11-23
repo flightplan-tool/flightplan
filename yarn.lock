@@ -4469,9 +4469,9 @@ timed-out@^4.0.0:
   integrity sha1-8y6srFoXW+ol1/q1Zas+2HQe9W8=
 
 timetable-fns@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.0.tgz#4b3d1b720370afbb19af62376225fc97eb323c69"
-  integrity sha512-MvQhQjbPpZ9kya/KKINT1rBF1VC1J/7Zi1EKIn+gWH6Ms3kd8/Kmo+96RUpKxN/DzXCxtz5HXWQ7ihYkbHmHuA==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.1.tgz#aa313805fcdfa855bb557d2ea4eb47ee8cd4b764"
+  integrity sha512-Lpcttf77gddbOCF22xnqqUBSfotjM1sJ6TLDpjIMJqmTu8X7DXG2pWfRqyONZbYiD4GqBXWFb8YJ1S7/u3J1pQ==
   dependencies:
     moment-timezone "^0.5.23"
 
