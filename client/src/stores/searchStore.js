@@ -8,6 +8,19 @@ function flightKey(flight) {
   return JSON.stringify(flight, ['airline', 'flight', 'aircraft'])
 }
 
+function parseSettingToBoolean(val, defaultVal) {
+  if (typeof val === 'boolean') return val;
+  if (typeof val !== 'string') return defaultVal;
+  return val.toLowerCase() === 'true';
+}
+
+function parseSettingToInteger(val, defaultVal) {
+  if (typeof val === 'number') return val;
+  if (typeof val !== 'string') return defaultVal;
+  const num = parseInt(val, 10);
+  return (isNaN(num)) ? defaultVal : num;
+}
+
 export default class SearchStore {
   // Query parameters
   @observable fromCity
@@ -15,7 +28,7 @@ export default class SearchStore {
   @observable showPartner
   @observable showWaitlisted
   @observable showNonSaver
-  @observable maxStops = -1
+  @observable maxStops
   @observable quantity
   @observable direction
   @observable cabinClasses
@@ -363,6 +376,7 @@ export default class SearchStore {
       showWaitlisted: true,
       showNonSaver: true,
       quantity: 1,
+      maxStops: -1,
       direction: 'roundtrip',
       cabinClasses: ['first'],
       showMixedCabin: true,
@@ -381,10 +395,13 @@ export default class SearchStore {
           case 'showWaitlisted':
           case 'showNonSaver':
           case 'showMixedCabin':
-            val = (typeof val === 'boolean') ? val : defaultVal
+            val = (typeof val === 'boolean') ? val : (typeof val === 'string') ? (val.toLowerCase() == 'true') : defaultVal
             break
           case 'quantity':
-            val = (typeof val === 'number') ? val : defaultVal
+            val = parseSettingToInteger(val, defaultVal);
+            break
+          case 'maxStops':
+            val = parseSettingToInteger(val, defaultVal);
             break
           case 'direction':
             val = ['roundtrip', 'oneway'].includes(val) ? val : defaultVal
@@ -419,6 +436,7 @@ export default class SearchStore {
       'showWaitlisted',
       'showNonSaver',
       'quantity',
+      'maxStops',
       'direction',
       'cabinClasses',
       'showMixedCabin',
