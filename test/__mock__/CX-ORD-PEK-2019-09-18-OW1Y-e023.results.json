@@ -1,0 +1,694 @@
+{
+    "engine": "CX",
+    "query": {
+        "partners": false,
+        "cabin": "economy",
+        "quantity": 1,
+        "fromCity": "ORD",
+        "toCity": "PEK",
+        "departDate": "2019-09-18",
+        "returnDate": null
+    },
+    "json": [
+        {
+            "name": "results",
+            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023.json"
+        }
+    ],
+    "screenshot": [
+        {
+            "name": "results-0",
+            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023.jpg"
+        },
+        {
+            "name": "results-1",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-1.jpg"
+        },
+        {
+            "name": "results-2",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-2.jpg"
+        },
+        {
+            "name": "results-3",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-3.jpg"
+        },
+        {
+            "name": "results-4",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-4.jpg"
+        },
+        {
+            "name": "results-5",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-5.jpg"
+        },
+        {
+            "name": "results-6",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-6.jpg"
+        },
+        {
+            "name": "results-7",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-7.jpg"
+        },
+        {
+            "name": "results-8",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-8.jpg"
+        },
+        {
+            "name": "results-9",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-9.jpg"
+        },
+        {
+            "name": "results-10",
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-10.jpg"
+        }
+    ],
+    "flights": [
+        {
+            "awards": [
+                {
+                    "engine": "CX",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": 47000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "BA294",
+                    "airline": "BA",
+                    "aircraft": "B744",
+                    "fromCity": "ORD",
+                    "toCity": "LHR",
+                    "date": "2019-09-18",
+                    "departure": "17:05",
+                    "arrival": "06:50",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "BA039",
+                    "airline": "BA",
+                    "aircraft": "B777",
+                    "fromCity": "LHR",
+                    "toCity": "PEK",
+                    "date": "2019-09-19",
+                    "departure": "16:25",
+                    "arrival": "09:30",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "CX",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 4,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": 47000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "BA296",
+                    "airline": "BA",
+                    "aircraft": "A388",
+                    "fromCity": "ORD",
+                    "toCity": "LHR",
+                    "date": "2019-09-18",
+                    "departure": "20:55",
+                    "arrival": "10:40",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "BA039",
+                    "airline": "BA",
+                    "aircraft": "B777",
+                    "fromCity": "LHR",
+                    "toCity": "PEK",
+                    "date": "2019-09-19",
+                    "departure": "16:25",
+                    "arrival": "09:30",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 42000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 85000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "business"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "Y1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 63000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "C1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 127500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "business"
+                    ],
+                    "fare": "F1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 187500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "Y2",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 73000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "business"
+                    ],
+                    "fare": "F1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 187500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "C2",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 400000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CX807",
+                    "airline": "CX",
+                    "aircraft": "B77W",
+                    "fromCity": "ORD",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "15:30",
+                    "arrival": "20:20",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "KA996",
+                    "airline": "KA",
+                    "aircraft": "A320",
+                    "fromCity": "HKG",
+                    "toCity": "PEK",
+                    "date": "2019-09-19",
+                    "departure": "23:00",
+                    "arrival": "02:15",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 42000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "premium",
+                        "premium"
+                    ],
+                    "fare": "WS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 60000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 85000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "Y1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 63000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "premium",
+                        "premium"
+                    ],
+                    "fare": "W1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 91000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "C1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 127500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "F1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 187500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "Y2",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 73000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "F1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 187500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "C2",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 400000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CX807",
+                    "airline": "CX",
+                    "aircraft": "B77W",
+                    "fromCity": "ORD",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "15:30",
+                    "arrival": "20:20",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "CX390",
+                    "airline": "CX",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "09:00",
+                    "arrival": "12:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 42000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 85000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "Y1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 63000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "C1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 127500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "F1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 187500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "Y2",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 73000,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "F1",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 187500,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "C2",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 400000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CX807",
+                    "airline": "CX",
+                    "aircraft": "B77W",
+                    "fromCity": "ORD",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "15:30",
+                    "arrival": "20:20",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "KA900",
+                    "airline": "KA",
+                    "aircraft": "A333",
+                    "fromCity": "HKG",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "07:30",
+                    "arrival": "10:50",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "CX",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 9,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": 47000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "QR726",
+                    "airline": "QR",
+                    "aircraft": "B77W",
+                    "fromCity": "ORD",
+                    "toCity": "DOH",
+                    "date": "2019-09-18",
+                    "departure": "18:50",
+                    "arrival": "16:00",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "QR892",
+                    "airline": "QR",
+                    "aircraft": "B77W",
+                    "fromCity": "DOH",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "02:10",
+                    "arrival": "14:55",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        }
+    ]
+}

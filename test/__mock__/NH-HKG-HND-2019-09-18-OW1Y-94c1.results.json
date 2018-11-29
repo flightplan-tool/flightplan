@@ -1,0 +1,1306 @@
+{
+    "engine": "NH",
+    "query": {
+        "partners": false,
+        "cabin": "economy",
+        "quantity": 1,
+        "fromCity": "HKG",
+        "toCity": "HND",
+        "departDate": "2019-09-18",
+        "returnDate": null
+    },
+    "html": [
+        {
+            "name": "outbound",
+            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-94c1.html"
+        }
+    ],
+    "json": [
+        {
+            "name": "airports",
+            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-94c1.json"
+        }
+    ],
+    "screenshot": [
+        {
+            "name": "outbound",
+            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-94c1.jpg"
+        }
+    ],
+    "flights": [
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "BR858",
+                    "airline": "BR",
+                    "aircraft": "333",
+                    "fromCity": "HKG",
+                    "toCity": "TPE",
+                    "date": "2019-09-18",
+                    "departure": "20:55",
+                    "arrival": "22:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "BR192",
+                    "airline": "BR",
+                    "aircraft": "333",
+                    "fromCity": "TSA",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "07:30",
+                    "arrival": "11:45",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA116",
+                    "airline": "CA",
+                    "aircraft": "333",
+                    "fromCity": "HKG",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "20:15",
+                    "arrival": "23:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH964",
+                    "airline": "NH",
+                    "aircraft": "788",
+                    "fromCity": "PEK",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "08:25",
+                    "arrival": "12:50",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA118",
+                    "airline": "CA",
+                    "aircraft": "738",
+                    "fromCity": "HKG",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "08:30",
+                    "arrival": "11:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH962",
+                    "airline": "NH",
+                    "aircraft": "77W",
+                    "fromCity": "PEK",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "19:45",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA118",
+                    "airline": "CA",
+                    "aircraft": "738",
+                    "fromCity": "HKG",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "08:30",
+                    "arrival": "11:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH980",
+                    "airline": "NH",
+                    "aircraft": "320",
+                    "fromCity": "PEK",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "14:20",
+                    "arrival": "18:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH100",
+                    "airline": "NH",
+                    "aircraft": "738",
+                    "fromCity": "KIX",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "21:35",
+                    "arrival": "22:50",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA118",
+                    "airline": "CA",
+                    "aircraft": "738",
+                    "fromCity": "HKG",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "08:30",
+                    "arrival": "11:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH980",
+                    "airline": "NH",
+                    "aircraft": "320",
+                    "fromCity": "PEK",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "14:20",
+                    "arrival": "18:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH3820",
+                    "airline": "NH",
+                    "aircraft": "320",
+                    "fromCity": "KIX",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "06:30",
+                    "arrival": "07:45",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH822",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "01:05",
+                    "arrival": "06:10",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH860",
+                    "airline": "NH",
+                    "aircraft": "789",
+                    "fromCity": "HKG",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "14:45",
+                    "arrival": "20:00",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH100",
+                    "airline": "NH",
+                    "aircraft": "738",
+                    "fromCity": "KIX",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "21:35",
+                    "arrival": "22:50",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH030",
+                    "airline": "NH",
+                    "aircraft": "772",
+                    "fromCity": "ITM",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "15:00",
+                    "arrival": "16:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH3820",
+                    "airline": "NH",
+                    "aircraft": "320",
+                    "fromCity": "KIX",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "06:30",
+                    "arrival": "07:45",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH3824",
+                    "airline": "NH",
+                    "aircraft": "320",
+                    "fromCity": "KIX",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "14:00",
+                    "arrival": "15:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": false,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH990",
+                    "airline": "NH",
+                    "aircraft": "321",
+                    "fromCity": "KIX",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "15:20",
+                    "arrival": "16:30",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ111",
+                    "airline": "OZ",
+                    "aircraft": "359",
+                    "fromCity": "KIX",
+                    "toCity": "ICN",
+                    "date": "2019-09-19",
+                    "departure": "10:50",
+                    "arrival": "12:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ1045",
+                    "airline": "OZ",
+                    "aircraft": "333",
+                    "fromCity": "GMP",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "15:50",
+                    "arrival": "17:55",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ1135",
+                    "airline": "OZ",
+                    "aircraft": "321",
+                    "fromCity": "KIX",
+                    "toCity": "GMP",
+                    "date": "2019-09-19",
+                    "departure": "11:10",
+                    "arrival": "13:00",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ1045",
+                    "airline": "OZ",
+                    "aircraft": "333",
+                    "fromCity": "GMP",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "15:50",
+                    "arrival": "17:55",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH874",
+                    "airline": "NH",
+                    "aircraft": "763",
+                    "fromCity": "HKG",
+                    "toCity": "KIX",
+                    "date": "2019-09-18",
+                    "departure": "15:20",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ115",
+                    "airline": "OZ",
+                    "aircraft": "321",
+                    "fromCity": "KIX",
+                    "toCity": "ICN",
+                    "date": "2019-09-19",
+                    "departure": "09:10",
+                    "arrival": "11:00",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ1045",
+                    "airline": "OZ",
+                    "aircraft": "333",
+                    "fromCity": "GMP",
+                    "toCity": "HND",
+                    "date": "2019-09-19",
+                    "departure": "15:50",
+                    "arrival": "17:55",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "OZ722",
+                    "airline": "OZ",
+                    "aircraft": "333",
+                    "fromCity": "HKG",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "13:15",
+                    "arrival": "17:30",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ136",
+                    "airline": "OZ",
+                    "aircraft": "321",
+                    "fromCity": "ICN",
+                    "toCity": "FUK",
+                    "date": "2019-09-18",
+                    "departure": "18:15",
+                    "arrival": "19:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH274",
+                    "airline": "NH",
+                    "aircraft": "737",
+                    "fromCity": "FUK",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "21:20",
+                    "arrival": "23:00",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "OZ722",
+                    "airline": "OZ",
+                    "aircraft": "333",
+                    "fromCity": "HKG",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "13:15",
+                    "arrival": "17:30",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ178",
+                    "airline": "OZ",
+                    "aircraft": "321",
+                    "fromCity": "ICN",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "21:10",
+                    "arrival": "23:30",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "OZ746",
+                    "airline": "OZ",
+                    "aircraft": "333",
+                    "fromCity": "HKG",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "00:30",
+                    "arrival": "04:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "OZ1085",
+                    "airline": "OZ",
+                    "aircraft": "333",
+                    "fromCity": "GMP",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "08:40",
+                    "arrival": "10:45",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "TG603",
+                    "airline": "TG",
+                    "aircraft": "330",
+                    "fromCity": "HKG",
+                    "toCity": "BKK",
+                    "date": "2019-09-18",
+                    "departure": "07:45",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH878",
+                    "airline": "NH",
+                    "aircraft": "788",
+                    "fromCity": "BKK",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "13:55",
+                    "arrival": "22:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "TG603",
+                    "airline": "TG",
+                    "aircraft": "330",
+                    "fromCity": "HKG",
+                    "toCity": "BKK",
+                    "date": "2019-09-18",
+                    "departure": "07:45",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "TG660",
+                    "airline": "TG",
+                    "aircraft": "359",
+                    "fromCity": "BKK",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "13:00",
+                    "arrival": "21:10",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "TG629",
+                    "airline": "TG",
+                    "aircraft": "773",
+                    "fromCity": "HKG",
+                    "toCity": "BKK",
+                    "date": "2019-09-18",
+                    "departure": "15:30",
+                    "arrival": "17:10",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH850",
+                    "airline": "NH",
+                    "aircraft": "789",
+                    "fromCity": "BKK",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "21:45",
+                    "arrival": "05:55",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "NH",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "TG639",
+                    "airline": "TG",
+                    "aircraft": "330",
+                    "fromCity": "HKG",
+                    "toCity": "BKK",
+                    "date": "2019-09-18",
+                    "departure": "19:05",
+                    "arrival": "20:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "TG682",
+                    "airline": "TG",
+                    "aircraft": "359",
+                    "fromCity": "BKK",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "22:45",
+                    "arrival": "06:55",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        }
+    ]
+}

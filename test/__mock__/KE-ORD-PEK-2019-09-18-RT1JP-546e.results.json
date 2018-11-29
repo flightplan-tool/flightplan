@@ -1,0 +1,1632 @@
+{
+    "engine": "KE",
+    "query": {
+        "partners": true,
+        "cabin": "business",
+        "quantity": 1,
+        "fromCity": "ORD",
+        "toCity": "PEK",
+        "departDate": "2019-09-18",
+        "returnDate": "2019-09-25"
+    },
+    "json": [
+        {
+            "name": "results",
+            "path": "./test/__mock__/KE-ORD-PEK-2019-09-18-RT1JP-546e.json"
+        }
+    ],
+    "screenshot": [
+        {
+            "name": "default",
+            "path": "./test/__mock__/KE-ORD-PEK-2019-09-18-RT1JP-546e.jpg"
+        }
+    ],
+    "flights": [
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 6,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE038",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ORD",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "12:35",
+                    "arrival": "16:25",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "KE853",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "PEK",
+                    "date": "2019-09-19",
+                    "departure": "18:50",
+                    "arrival": "20:05",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE038",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ORD",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "12:35",
+                    "arrival": "16:25",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "KE859",
+                    "airline": "KE",
+                    "aircraft": "73J",
+                    "fromCity": "ICN",
+                    "toCity": "PEK",
+                    "date": "2019-09-19",
+                    "departure": "23:55",
+                    "arrival": "01:05",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 6,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE038",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ORD",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "12:35",
+                    "arrival": "16:25",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "KE851",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "GMP",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "09:20",
+                    "arrival": "10:30",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 5,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE038",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ORD",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "12:35",
+                    "arrival": "16:25",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "KE855",
+                    "airline": "KE",
+                    "aircraft": "773",
+                    "fromCity": "ICN",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "10:50",
+                    "arrival": "12:10",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CZ3907",
+                    "airline": "CZ",
+                    "aircraft": "330",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "08:20",
+                    "arrival": "10:30",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE852",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "PEK",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "11:50",
+                    "arrival": "15:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE854",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "PEK",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "21:25",
+                    "arrival": "00:30",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE856",
+                    "airline": "KE",
+                    "aircraft": "773",
+                    "fromCity": "PEK",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "13:20",
+                    "arrival": "16:30",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 4,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE860",
+                    "airline": "KE",
+                    "aircraft": "73J",
+                    "fromCity": "PEK",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "02:30",
+                    "arrival": "05:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5102",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "08:00",
+                    "arrival": "10:15",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5104",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "09:00",
+                    "arrival": "11:30",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5106",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "10:00",
+                    "arrival": "12:15",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5108",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "11:00",
+                    "arrival": "13:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5112",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "13:00",
+                    "arrival": "15:15",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5138",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "07:00",
+                    "arrival": "09:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE898",
+                    "airline": "KE",
+                    "aircraft": "333",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "13:35",
+                    "arrival": "16:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5138",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "07:00",
+                    "arrival": "09:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5152",
+                    "airline": "MU",
+                    "aircraft": "332",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "11:30",
+                    "arrival": "13:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5154",
+                    "airline": "MU",
+                    "aircraft": "320",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "13:30",
+                    "arrival": "15:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5156",
+                    "airline": "MU",
+                    "aircraft": "320",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "08:30",
+                    "arrival": "10:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5158",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:30",
+                    "arrival": "23:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE894",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-26",
+                    "departure": "11:10",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5158",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:30",
+                    "arrival": "23:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE896",
+                    "airline": "KE",
+                    "aircraft": "332",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-26",
+                    "departure": "08:50",
+                    "arrival": "11:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5158",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:30",
+                    "arrival": "23:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE898",
+                    "airline": "KE",
+                    "aircraft": "333",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-26",
+                    "departure": "13:35",
+                    "arrival": "16:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5158",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:30",
+                    "arrival": "23:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-26",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5160",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:50",
+                    "arrival": "23:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE894",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-26",
+                    "departure": "11:10",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5160",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:50",
+                    "arrival": "23:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE896",
+                    "airline": "KE",
+                    "aircraft": "332",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-26",
+                    "departure": "08:50",
+                    "arrival": "11:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5160",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:50",
+                    "arrival": "23:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE898",
+                    "airline": "KE",
+                    "aircraft": "333",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-26",
+                    "departure": "13:35",
+                    "arrival": "16:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 2,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5160",
+                    "airline": "MU",
+                    "aircraft": "333",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "21:50",
+                    "arrival": "23:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-26",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-27",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5183",
+                    "airline": "MU",
+                    "aircraft": "321",
+                    "fromCity": "PEK",
+                    "toCity": "PVG",
+                    "date": "2019-09-25",
+                    "departure": "07:25",
+                    "arrival": "09:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE898",
+                    "airline": "KE",
+                    "aircraft": "333",
+                    "fromCity": "PVG",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "13:35",
+                    "arrival": "16:45",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5183",
+                    "airline": "MU",
+                    "aircraft": "321",
+                    "fromCity": "PEK",
+                    "toCity": "PVG",
+                    "date": "2019-09-25",
+                    "departure": "07:25",
+                    "arrival": "09:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 3,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "MU5693",
+                    "airline": "MU",
+                    "aircraft": "321",
+                    "fromCity": "PEK",
+                    "toCity": "SHA",
+                    "date": "2019-09-25",
+                    "departure": "07:55",
+                    "arrival": "12:35",
+                    "stops": 1,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE816",
+                    "airline": "KE",
+                    "aircraft": "772",
+                    "fromCity": "SHA",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "18:35",
+                    "arrival": "21:35",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        }
+    ]
+}

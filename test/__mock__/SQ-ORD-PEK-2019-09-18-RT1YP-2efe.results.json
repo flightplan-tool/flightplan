@@ -1,0 +1,233 @@
+{
+    "engine": "SQ",
+    "query": {
+        "partners": true,
+        "cabin": "economy",
+        "quantity": 1,
+        "fromCity": "ORD",
+        "toCity": "PEK",
+        "departDate": "2019-09-18",
+        "returnDate": "2019-09-25"
+    },
+    "html": [
+        {
+            "name": "partners1",
+            "path": "./test/__mock__/SQ-ORD-PEK-2019-09-18-RT1YP-2efe.html"
+        }
+    ],
+    "screenshot": [
+        {
+            "name": "partners1",
+            "path": "./test/__mock__/SQ-ORD-PEK-2019-09-18-RT1YP-2efe.jpg"
+        }
+    ],
+    "flights": [
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 108000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA1195",
+                    "airline": "UA",
+                    "aircraft": "B738",
+                    "fromCity": "ORD",
+                    "toCity": "EWR",
+                    "date": "2019-09-18",
+                    "departure": "07:45",
+                    "arrival": "10:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "UA89",
+                    "airline": "UA",
+                    "aircraft": "Boeing 777",
+                    "fromCity": "EWR",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "11:45",
+                    "arrival": "13:35",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 108000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA2166",
+                    "airline": "UA",
+                    "aircraft": "B738",
+                    "fromCity": "ORD",
+                    "toCity": "SFO",
+                    "date": "2019-09-18",
+                    "departure": "07:00",
+                    "arrival": "09:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "UA888",
+                    "airline": "UA",
+                    "aircraft": "Boeing 777",
+                    "fromCity": "SFO",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "10:45",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 108000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA632",
+                    "airline": "UA",
+                    "aircraft": "A320",
+                    "fromCity": "ORD",
+                    "toCity": "IAD",
+                    "date": "2019-09-18",
+                    "departure": "09:00",
+                    "arrival": "11:49",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "UA807",
+                    "airline": "UA",
+                    "aircraft": null,
+                    "fromCity": "IAD",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "12:50",
+                    "arrival": "14:40",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 108000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA851",
+                    "airline": "UA",
+                    "aircraft": "Boeing 777",
+                    "fromCity": "ORD",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "12:45",
+                    "arrival": "15:15",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "YS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 108000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH956",
+                    "airline": "NH",
+                    "aircraft": "B763",
+                    "fromCity": "PEK",
+                    "toCity": "NRT",
+                    "date": "2019-09-25",
+                    "departure": "09:50",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "NH12",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "NRT",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "17:10",
+                    "arrival": "14:55",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        }
+    ]
+}

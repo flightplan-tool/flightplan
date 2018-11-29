@@ -1,0 +1,1112 @@
+{
+    "engine": "SQ",
+    "query": {
+        "partners": true,
+        "cabin": "business",
+        "quantity": 1,
+        "fromCity": "SFO",
+        "toCity": "SIN",
+        "departDate": "2019-09-18",
+        "returnDate": "2019-09-25"
+    },
+    "html": [
+        {
+            "name": "results",
+            "path": "./test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99.html"
+        },
+        {
+            "name": "partners1",
+            "path": "test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99-1.html"
+        }
+    ],
+    "screenshot": [
+        {
+            "name": "results",
+            "path": "./test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99.jpg"
+        },
+        {
+            "name": "partners1",
+            "path": "test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99-1.jpg"
+        }
+    ],
+    "flights": [
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 195000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "BR17",
+                    "airline": "BR",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "TPE",
+                    "date": "2019-09-18",
+                    "departure": "01:00",
+                    "arrival": "05:30",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "BR225",
+                    "airline": "BR",
+                    "aircraft": "B77W",
+                    "fromCity": "TPE",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "07:40",
+                    "arrival": "12:00",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 195000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "BR27",
+                    "airline": "BR",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "TPE",
+                    "date": "2019-09-18",
+                    "departure": "01:20",
+                    "arrival": "05:50",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "BR225",
+                    "airline": "BR",
+                    "aircraft": "B77W",
+                    "fromCity": "TPE",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "07:40",
+                    "arrival": "12:00",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ1",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "01:15",
+                    "arrival": "06:35",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "SQ1",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "08:00",
+                    "arrival": "11:50",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ1",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "01:15",
+                    "arrival": "06:35",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "SQ861",
+                    "airline": "SQ",
+                    "aircraft": "A359",
+                    "fromCity": "HKG",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "15:40",
+                    "arrival": "19:35",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ1",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "01:15",
+                    "arrival": "06:35",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "SQ863",
+                    "airline": "SQ",
+                    "aircraft": null,
+                    "fromCity": "HKG",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "14:25",
+                    "arrival": "18:20",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ1",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "01:15",
+                    "arrival": "06:35",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "SQ865",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "18:50",
+                    "arrival": "22:40",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ1",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "01:15",
+                    "arrival": "06:35",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "SQ871",
+                    "airline": "SQ",
+                    "aircraft": "A333",
+                    "fromCity": "HKG",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "19:55",
+                    "arrival": "23:55",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ1",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SFO",
+                    "toCity": "HKG",
+                    "date": "2019-09-18",
+                    "departure": "01:15",
+                    "arrival": "06:35",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "SQ891",
+                    "airline": "SQ",
+                    "aircraft": "Boeing 777-200",
+                    "fromCity": "HKG",
+                    "toCity": "SIN",
+                    "date": "2019-09-19",
+                    "departure": "12:25",
+                    "arrival": "16:20",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ31",
+                    "airline": "SQ",
+                    "aircraft": "A359",
+                    "fromCity": "SFO",
+                    "toCity": "SIN",
+                    "date": "2019-09-18",
+                    "departure": "11:30",
+                    "arrival": "19:10",
+                    "stops": 0,
+                    "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ33",
+                    "airline": "SQ",
+                    "aircraft": "A359",
+                    "fromCity": "SFO",
+                    "toCity": "SIN",
+                    "date": "2019-09-18",
+                    "departure": "22:05",
+                    "arrival": "05:45",
+                    "stops": 0,
+                    "lagDays": 2
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 195000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "BR216",
+                    "airline": "BR",
+                    "aircraft": "B77W",
+                    "fromCity": "SIN",
+                    "toCity": "TPE",
+                    "date": "2019-09-25",
+                    "departure": "15:10",
+                    "arrival": "20:00",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "BR28",
+                    "airline": "BR",
+                    "aircraft": "B77W",
+                    "fromCity": "TPE",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "23:30",
+                    "arrival": "19:50",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ2",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SIN",
+                    "toCity": "HKG",
+                    "date": "2019-09-25",
+                    "departure": "18:30",
+                    "arrival": "22:15",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "SQ2",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "23:30",
+                    "arrival": "21:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ32",
+                    "airline": "SQ",
+                    "aircraft": "A359",
+                    "fromCity": "SIN",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "09:25",
+                    "arrival": "09:40",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ34",
+                    "airline": "SQ",
+                    "aircraft": "A359",
+                    "fromCity": "SIN",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "15:05",
+                    "arrival": "15:20",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 195000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ802",
+                    "airline": "SQ",
+                    "aircraft": null,
+                    "fromCity": "SIN",
+                    "toCity": "PEK",
+                    "date": "2019-09-25",
+                    "departure": "08:30",
+                    "arrival": "14:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "CA985",
+                    "airline": "CA",
+                    "aircraft": null,
+                    "fromCity": "PEK",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "15:40",
+                    "arrival": "12:20",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ856",
+                    "airline": "SQ",
+                    "aircraft": "A359",
+                    "fromCity": "SIN",
+                    "toCity": "HKG",
+                    "date": "2019-09-25",
+                    "departure": "09:55",
+                    "arrival": "13:55",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "SQ2",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "23:30",
+                    "arrival": "21:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ860",
+                    "airline": "SQ",
+                    "aircraft": null,
+                    "fromCity": "SIN",
+                    "toCity": "HKG",
+                    "date": "2019-09-25",
+                    "departure": "08:40",
+                    "arrival": "12:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "SQ2",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "23:30",
+                    "arrival": "21:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ866",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "SIN",
+                    "toCity": "HKG",
+                    "date": "2019-09-25",
+                    "departure": "13:05",
+                    "arrival": "17:05",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "SQ2",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "23:30",
+                    "arrival": "21:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ868",
+                    "airline": "SQ",
+                    "aircraft": "Boeing 777-200",
+                    "fromCity": "SIN",
+                    "toCity": "HKG",
+                    "date": "2019-09-25",
+                    "departure": "19:55",
+                    "arrival": "23:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "SQ2",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SFO",
+                    "date": "2019-09-26",
+                    "departure": "23:30",
+                    "arrival": "21:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 176000,
+                    "fees": null
+                },
+                {
+                    "engine": "SQ",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CA",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 240000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ872",
+                    "airline": "SQ",
+                    "aircraft": "A333",
+                    "fromCity": "SIN",
+                    "toCity": "HKG",
+                    "date": "2019-09-25",
+                    "departure": "15:05",
+                    "arrival": "18:50",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "SQ2",
+                    "airline": "SQ",
+                    "aircraft": "B77W",
+                    "fromCity": "HKG",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "23:30",
+                    "arrival": "21:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "SQ",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 195000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "SQ878",
+                    "airline": "SQ",
+                    "aircraft": "A333",
+                    "fromCity": "SIN",
+                    "toCity": "TPE",
+                    "date": "2019-09-25",
+                    "departure": "11:55",
+                    "arrival": "16:40",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "BR18",
+                    "airline": "BR",
+                    "aircraft": "B77W",
+                    "fromCity": "TPE",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "19:40",
+                    "arrival": "16:00",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        }
+    ]
+}

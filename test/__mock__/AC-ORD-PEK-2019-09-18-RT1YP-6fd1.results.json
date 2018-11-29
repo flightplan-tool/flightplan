@@ -1,0 +1,2151 @@
+{
+    "engine": "AC",
+    "query": {
+        "partners": true,
+        "cabin": "economy",
+        "quantity": 1,
+        "fromCity": "ORD",
+        "toCity": "PEK",
+        "departDate": "2019-09-18",
+        "returnDate": "2019-09-25"
+    },
+    "json": [
+        {
+            "name": "results",
+            "path": "./test/__mock__/AC-ORD-PEK-2019-09-18-RT1YP-6fd1.json"
+        }
+    ],
+    "screenshot": [
+        {
+            "name": "results",
+            "path": "./test/__mock__/AC-ORD-PEK-2019-09-18-RT1YP-6fd1.jpg"
+        }
+    ],
+    "flights": [
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "economy"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC500",
+                    "airline": "AC",
+                    "aircraft": "E190",
+                    "fromCity": "ORD",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "06:10",
+                    "arrival": "08:46",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC31",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "YYZ",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:55",
+                    "arrival": "16:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "premium"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "economy"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 152200,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC502",
+                    "airline": "AC",
+                    "aircraft": "E190",
+                    "fromCity": "ORD",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "08:05",
+                    "arrival": "10:41",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC31",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "YYZ",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:55",
+                    "arrival": "16:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "premium"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "IS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "economy"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 152200,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 131650,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC504",
+                    "airline": "AC",
+                    "aircraft": "E190",
+                    "fromCity": "ORD",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "10:10",
+                    "arrival": "12:46",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "AC31",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "YYZ",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:55",
+                    "arrival": "16:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "business"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "economy"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC7598",
+                    "airline": "AC",
+                    "aircraft": "E75L",
+                    "fromCity": "ORD",
+                    "toCity": "YUL",
+                    "date": "2019-09-18",
+                    "departure": "06:15",
+                    "arrival": "09:21",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC409",
+                    "airline": "AC",
+                    "aircraft": "A320",
+                    "fromCity": "YUL",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "11:00",
+                    "arrival": "12:22",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC31",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "YYZ",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:55",
+                    "arrival": "16:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "premium"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "economy"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC7598",
+                    "airline": "AC",
+                    "aircraft": "E75L",
+                    "fromCity": "ORD",
+                    "toCity": "YUL",
+                    "date": "2019-09-18",
+                    "departure": "06:15",
+                    "arrival": "09:21",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC411",
+                    "airline": "AC",
+                    "aircraft": "A320",
+                    "fromCity": "YUL",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "12:00",
+                    "arrival": "13:22",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC31",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "YYZ",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:55",
+                    "arrival": "16:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "premium"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 125000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "economy"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 120750,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 120750,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC8039",
+                    "airline": "AC",
+                    "aircraft": "CRJ9",
+                    "fromCity": "ORD",
+                    "toCity": "YVR",
+                    "date": "2019-09-18",
+                    "departure": "07:30",
+                    "arrival": "10:00",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC29",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "YVR",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "12:20",
+                    "arrival": "14:10",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "premium"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "economy"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH111",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "ORD",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "17:25",
+                    "arrival": "20:30",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "first"
+                },
+                {
+                    "flight": "NH961",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "HND",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "09:10",
+                    "arrival": "12:05",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "business"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH111",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "ORD",
+                    "toCity": "HND",
+                    "date": "2019-09-18",
+                    "departure": "17:25",
+                    "arrival": "20:30",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "first"
+                },
+                {
+                    "flight": "NH963",
+                    "airline": "NH",
+                    "aircraft": "B788",
+                    "fromCity": "HND",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "17:20",
+                    "arrival": "20:10",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "IS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "OZ235",
+                    "airline": "OZ",
+                    "aircraft": "B77L",
+                    "fromCity": "ORD",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "23:55",
+                    "arrival": "04:00",
+                    "stops": 0,
+                    "lagDays": 2,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "OZ331",
+                    "airline": "OZ",
+                    "aircraft": "A321",
+                    "fromCity": "ICN",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "08:20",
+                    "arrival": "09:45",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA1195",
+                    "airline": "UA",
+                    "aircraft": "B738",
+                    "fromCity": "ORD",
+                    "toCity": "EWR",
+                    "date": "2019-09-18",
+                    "departure": "07:45",
+                    "arrival": "10:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA89",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "EWR",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "11:45",
+                    "arrival": "13:35",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA2166",
+                    "airline": "UA",
+                    "aircraft": "B738",
+                    "fromCity": "ORD",
+                    "toCity": "SFO",
+                    "date": "2019-09-18",
+                    "departure": "07:00",
+                    "arrival": "09:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "CA986",
+                    "airline": "CA",
+                    "aircraft": null,
+                    "fromCity": "SFO",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:50",
+                    "arrival": "17:55",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA2166",
+                    "airline": "UA",
+                    "aircraft": "B738",
+                    "fromCity": "ORD",
+                    "toCity": "SFO",
+                    "date": "2019-09-18",
+                    "departure": "07:00",
+                    "arrival": "09:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA888",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "SFO",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "10:45",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA2198",
+                    "airline": "UA",
+                    "aircraft": "A320",
+                    "fromCity": "ORD",
+                    "toCity": "IAD",
+                    "date": "2019-09-18",
+                    "departure": "06:55",
+                    "arrival": "09:39",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "CA818",
+                    "airline": "CA",
+                    "aircraft": "B773",
+                    "fromCity": "IAD",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "16:05",
+                    "arrival": "18:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA2376",
+                    "airline": "UA",
+                    "aircraft": "B738",
+                    "fromCity": "ORD",
+                    "toCity": "SFO",
+                    "date": "2019-09-18",
+                    "departure": "06:00",
+                    "arrival": "08:37",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "CA986",
+                    "airline": "CA",
+                    "aircraft": null,
+                    "fromCity": "SFO",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:50",
+                    "arrival": "17:55",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA2376",
+                    "airline": "UA",
+                    "aircraft": "B738",
+                    "fromCity": "ORD",
+                    "toCity": "SFO",
+                    "date": "2019-09-18",
+                    "departure": "06:00",
+                    "arrival": "08:37",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA888",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "SFO",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "10:45",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 125000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA476",
+                    "airline": "UA",
+                    "aircraft": "A319",
+                    "fromCity": "ORD",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "07:45",
+                    "arrival": "10:17",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC31",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "YYZ",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "14:55",
+                    "arrival": "16:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "premium"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA632",
+                    "airline": "UA",
+                    "aircraft": "A320",
+                    "fromCity": "ORD",
+                    "toCity": "IAD",
+                    "date": "2019-09-18",
+                    "departure": "09:00",
+                    "arrival": "11:49",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "CA818",
+                    "airline": "CA",
+                    "aircraft": "B773",
+                    "fromCity": "IAD",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "16:05",
+                    "arrival": "18:05",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA632",
+                    "airline": "UA",
+                    "aircraft": "A320",
+                    "fromCity": "ORD",
+                    "toCity": "IAD",
+                    "date": "2019-09-18",
+                    "departure": "09:00",
+                    "arrival": "11:49",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA807",
+                    "airline": "UA",
+                    "aircraft": "B788",
+                    "fromCity": "IAD",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "12:50",
+                    "arrival": "14:40",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "business"
+                    ],
+                    "fare": "IS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA851",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "ORD",
+                    "toCity": "PEK",
+                    "date": "2019-09-18",
+                    "departure": "12:45",
+                    "arrival": "15:15",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "business"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "IS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC30",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "PEK",
+                    "toCity": "YVR",
+                    "date": "2019-09-25",
+                    "departure": "16:05",
+                    "arrival": "11:30",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "AC8040",
+                    "airline": "AC",
+                    "aircraft": "CRJ9",
+                    "fromCity": "YVR",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "13:20",
+                    "arrival": "19:29",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "business"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC32",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "PEK",
+                    "toCity": "YYZ",
+                    "date": "2019-09-25",
+                    "departure": "18:05",
+                    "arrival": "18:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC515",
+                    "airline": "AC",
+                    "aircraft": "E190",
+                    "fromCity": "YYZ",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "20:50",
+                    "arrival": "21:38",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC32",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "PEK",
+                    "toCity": "YYZ",
+                    "date": "2019-09-25",
+                    "departure": "18:05",
+                    "arrival": "18:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC501",
+                    "airline": "AC",
+                    "aircraft": "E190",
+                    "fromCity": "YYZ",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "06:40",
+                    "arrival": "07:28",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 100000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC32",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "PEK",
+                    "toCity": "YYZ",
+                    "date": "2019-09-25",
+                    "departure": "18:05",
+                    "arrival": "18:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC503",
+                    "airline": "AC",
+                    "aircraft": "E190",
+                    "fromCity": "YYZ",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "08:45",
+                    "arrival": "09:33",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "economy"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA817",
+                    "airline": "CA",
+                    "aircraft": "B773",
+                    "fromCity": "PEK",
+                    "toCity": "IAD",
+                    "date": "2019-09-25",
+                    "departure": "12:45",
+                    "arrival": "14:05",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "first"
+                },
+                {
+                    "flight": "UA552",
+                    "airline": "UA",
+                    "aircraft": "A320",
+                    "fromCity": "IAD",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "22:07",
+                    "arrival": "23:12",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA925",
+                    "airline": "CA",
+                    "aircraft": "A333",
+                    "fromCity": "PEK",
+                    "toCity": "NRT",
+                    "date": "2019-09-25",
+                    "departure": "09:25",
+                    "arrival": "13:55",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "NH12",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "NRT",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "17:10",
+                    "arrival": "14:55",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "IS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA925",
+                    "airline": "CA",
+                    "aircraft": "A333",
+                    "fromCity": "PEK",
+                    "toCity": "NRT",
+                    "date": "2019-09-25",
+                    "departure": "09:25",
+                    "arrival": "13:55",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "UA882",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "NRT",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "17:45",
+                    "arrival": "15:45",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA965",
+                    "airline": "CA",
+                    "aircraft": "B773",
+                    "fromCity": "PEK",
+                    "toCity": "FRA",
+                    "date": "2019-09-25",
+                    "departure": "02:30",
+                    "arrival": "06:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA945",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "FRA",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "08:10",
+                    "arrival": "10:30",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA987",
+                    "airline": "CA",
+                    "aircraft": "B773",
+                    "fromCity": "PEK",
+                    "toCity": "LAX",
+                    "date": "2019-09-25",
+                    "departure": "15:00",
+                    "arrival": "12:00",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA528",
+                    "airline": "UA",
+                    "aircraft": "B739",
+                    "fromCity": "LAX",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "15:15",
+                    "arrival": "21:29",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA991",
+                    "airline": "CA",
+                    "aircraft": "B77W",
+                    "fromCity": "PEK",
+                    "toCity": "YVR",
+                    "date": "2019-09-25",
+                    "departure": "15:25",
+                    "arrival": "10:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC8040",
+                    "airline": "AC",
+                    "aircraft": "CRJ9",
+                    "fromCity": "YVR",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "13:20",
+                    "arrival": "19:29",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "first",
+                        "economy"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CA995",
+                    "airline": "CA",
+                    "aircraft": "B773",
+                    "fromCity": "PEK",
+                    "toCity": "IAH",
+                    "date": "2019-09-25",
+                    "departure": "15:00",
+                    "arrival": "15:40",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "first"
+                },
+                {
+                    "flight": "UA1854",
+                    "airline": "UA",
+                    "aircraft": "B739",
+                    "fromCity": "IAH",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "21:40",
+                    "arrival": "00:10",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH956",
+                    "airline": "NH",
+                    "aircraft": "B763",
+                    "fromCity": "PEK",
+                    "toCity": "NRT",
+                    "date": "2019-09-25",
+                    "departure": "09:50",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "NH12",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "NRT",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "17:10",
+                    "arrival": "14:55",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH956",
+                    "airline": "NH",
+                    "aircraft": "B763",
+                    "fromCity": "PEK",
+                    "toCity": "NRT",
+                    "date": "2019-09-25",
+                    "departure": "09:50",
+                    "arrival": "14:20",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA882",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "NRT",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "17:45",
+                    "arrival": "15:45",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH962",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "PEK",
+                    "toCity": "HND",
+                    "date": "2019-09-25",
+                    "departure": "15:20",
+                    "arrival": "19:45",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "NH112",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "HND",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:50",
+                    "arrival": "08:40",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "first"
+                    ],
+                    "fare": "OS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 210000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "NH964",
+                    "airline": "NH",
+                    "aircraft": "B788",
+                    "fromCity": "PEK",
+                    "toCity": "HND",
+                    "date": "2019-09-25",
+                    "departure": "08:25",
+                    "arrival": "12:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "NH112",
+                    "airline": "NH",
+                    "aircraft": "B77W",
+                    "fromCity": "HND",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:50",
+                    "arrival": "08:40",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "first"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "premium",
+                        "economy"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 125000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "OZ332",
+                    "airline": "OZ",
+                    "aircraft": "A321",
+                    "fromCity": "PEK",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "10:50",
+                    "arrival": "13:45",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC64",
+                    "airline": "AC",
+                    "aircraft": "B789",
+                    "fromCity": "ICN",
+                    "toCity": "YVR",
+                    "date": "2019-09-25",
+                    "departure": "15:25",
+                    "arrival": "09:15",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "premium"
+                },
+                {
+                    "flight": "AC8040",
+                    "airline": "AC",
+                    "aircraft": "CRJ9",
+                    "fromCity": "YVR",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "13:20",
+                    "arrival": "19:29",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "IS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 150000,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "OZ332",
+                    "airline": "OZ",
+                    "aircraft": "A321",
+                    "fromCity": "PEK",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "10:50",
+                    "arrival": "13:45",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "OZ236",
+                    "airline": "OZ",
+                    "aircraft": "B77L",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "19:10",
+                    "arrival": "18:25",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 75000,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA889",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "PEK",
+                    "toCity": "SFO",
+                    "date": "2019-09-25",
+                    "departure": "16:10",
+                    "arrival": "13:00",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "UA995",
+                    "airline": "UA",
+                    "aircraft": "B777",
+                    "fromCity": "SFO",
+                    "toCity": "ORD",
+                    "date": "2019-09-25",
+                    "departure": "23:19",
+                    "arrival": "05:20",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "economy"
+                }
+            ]
+        }
+    ]
+}
