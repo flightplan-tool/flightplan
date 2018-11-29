@@ -91,7 +91,7 @@ function populateArguments (args) {
 
 function validateArguments (args) {
   // Validate arguments
-  if (!fp.supported(args.website)) {
+  if (!fp.supported(args.website || '')) {
     fatal(`Unsupported airline website to search: ${args.website}`)
   }
   if (!(args.cabin in fp.cabins)) {
@@ -106,7 +106,7 @@ function validateArguments (args) {
   if (args.end < args.start) {
     fatal(`Invalid date range: ${args.start} - ${args.end}`)
   }
-  if (args.quantity < 0) {
+  if (args.quantity < 1) {
     fatal(`Invalid quantity: ${args.quantity}`)
   }
   if (args.account < 0) {

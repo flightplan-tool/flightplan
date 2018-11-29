@@ -29,7 +29,7 @@ module.exports = {
 
   supported: (airline) => {
     const set = Object.keys(engines).sort().map(x => x.toUpperCase())
-    return airline ? set.includes(airline) : set
+    return (typeof airline === 'string') ? set.includes(airline) : set
   },
 
   ...require('./data'),
