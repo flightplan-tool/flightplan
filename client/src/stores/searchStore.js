@@ -2,23 +2,21 @@ import { observable, computed, action, autorun } from 'mobx'
 import moment from 'moment'
 import URLSearchParams from 'url-search-params'
 
-import { strcmp } from '../lib/utilities'
+import { strcmp, truthy } from '../lib/utilities'
 
 function flightKey(flight) {
   return JSON.stringify(flight, ['airline', 'flight', 'aircraft'])
 }
 
-function parseSettingToBoolean(val, defaultVal) {
-  if (typeof val === 'boolean') return val;
-  if (typeof val !== 'string') return defaultVal;
-  return val.toLowerCase() === 'true';
+function coerceBoolean (val, defaultVal) {
+  return (typeof val === 'boolean')
+    ? val
+    : ((typeof val === 'string') ? truthy(val) : defaultVal)
 }
 
-function parseSettingToInteger(val, defaultVal) {
-  if (typeof val === 'number') return val;
-  if (typeof val !== 'string') return defaultVal;
-  const num = parseInt(val, 10);
-  return (isNaN(num)) ? defaultVal : num;
+function coerceNumber (val, defaultVal) {
+  val = parseInt(val, 10)
+  return isNaN(val) ? defaultVal : val
 }
 
 export default class SearchStore {
@@ -395,13 +393,13 @@ export default class SearchStore {
           case 'showWaitlisted':
           case 'showNonSaver':
           case 'showMixedCabin':
-            val = (typeof val === 'boolean') ? val : (typeof val === 'string') ? (val.toLowerCase() == 'true') : defaultVal
+            val = coerceBoolean(val, defaultVal)
             break
           case 'quantity':
-            val = parseSettingToInteger(val, defaultVal);
+            val = coerceNumber(val, defaultVal);
             break
           case 'maxStops':
-            val = parseSettingToInteger(val, defaultVal);
+            val = coerceNumber(val, defaultVal);
             break
           case 'direction':
             val = ['roundtrip', 'oneway'].includes(val) ? val : defaultVal
@@ -429,7 +427,7 @@ export default class SearchStore {
   }
 
   saveSettings (query) {
-    const values = [
+    [
       'fromCity',
       'toCity',
       'showPartner',
@@ -442,11 +440,8 @@ export default class SearchStore {
       'showMixedCabin',
       'startDate',
       'endDate'
-    ].reduce((v, key) => {
-      v[key] = this[key]
-      return v
-    }, {})
-    for (let [key, val] of Object.entries(values)) {
+    ].forEach((key) => {
+      let val = this[key]
       switch (key) {
         case 'cabinClasses':
           val = JSON.stringify(val)
@@ -455,9 +450,8 @@ export default class SearchStore {
         case 'endDate':
           val = val.format('YYYY-MM-DD')
           break
-        default:
       }
       localStorage.setItem(key, val)
-    }
+    })
   }
 }

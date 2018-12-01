@@ -46,9 +46,15 @@ function getMonthIndex (month) {
   return index
 }
 
+function truthy (val) {
+  const truthyValues = { 'true': 1, '1': 1, 'yes': 1, 'y': 1 }
+  return val && val.toString().toLowerCase() in truthyValues
+}
+
 export {
   strcmp,
   shadeColor,
   getDateISO,
-  getMonthIndex
+  getMonthIndex,
+  truthy
 }
