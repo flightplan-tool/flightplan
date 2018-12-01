@@ -1,3 +1,14 @@
+function coerceBoolean (val, defaultVal) {
+  return (typeof val === 'boolean')
+    ? val
+    : ((typeof val === 'string') ? truthy(val) : defaultVal)
+}
+
+function coerceNumber (val, defaultVal) {
+  val = parseInt(val, 10)
+  return isNaN(val) ? defaultVal : val
+}
+
 function strcmp () {
   for (let i = 0; i < arguments.length - 1; i += 2) {
     const a = arguments[i]
@@ -52,6 +63,8 @@ function truthy (val) {
 }
 
 export {
+  coerceBoolean,
+  coerceNumber,
   strcmp,
   shadeColor,
   getDateISO,
