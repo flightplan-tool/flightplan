@@ -18,6 +18,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "address": "^1.0.3",
     "await-sleep": "^0.0.1",
     "better-sqlite3": "^4.1.4",
     "chalk": "^2.4.1",
@@ -25,6 +26,7 @@
     "commander": "github:jd20/commander.js#master",
     "csv-parse": "^2.5.0",
     "express": "^4.16.3",
+    "external-ip": "^2.1.1",
     "frozen-moment": "^0.4.0",
     "humanize-duration": "^3.15.3",
     "jspath": "^0.4.0",

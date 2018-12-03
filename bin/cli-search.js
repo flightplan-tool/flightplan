@@ -23,6 +23,7 @@ program
   .option('-q, --quantity <n>', `# of passengers traveling`, (x) => parseInt(x), 1)
   .option('-a, --account <n>', `Index of account to use`, (x) => parseInt(x), 0)
   .option('-h, --headless', `Run Chrome in headless mode`)
+  .option('-p, --proxy <server>', `Provide a proxy to use with Chome (server:port:user:pass)`)
   .option('-d, --docker', `Enable flags to make allow execution in docker environment`)
   .option('-P, --no-parser', `Do not parse search results`)
   .option('-r, --reverse', `Run queries in reverse chronological order`)
@@ -137,6 +138,20 @@ function validateArguments (args) {
   if (args.end > b) {
     engine.warn(`Can only search up to ${maxDays} day(s) from today, adjusting end of search range to: ${b}`)
     args.end = b
+  }
+
+  // Parse proxy
+  if (args.proxy) {
+    const arr = args.proxy.split(':')
+    if (arr.length === 0 || arr.length > 4) {
+      fatal(`Unrecognized proxy format: ${args.proxy}`)
+    }
+    if (arr.length <= 2) {
+      args.proxy = { server: arr.join(':') }
+    } else {
+      const [ username, password ] = arr.splice(-2)
+      args.proxy = { server: arr.join(':'), username, password }
+    }
   }
 }
 
@@ -276,7 +291,7 @@ function redundantSegment (routeMap, query) {
 }
 
 const main = async (args) => {
-  const { start: startDate, end: endDate, headless, docker, parser: parse, terminate } = args
+  const { start: startDate, end: endDate, headless, proxy, docker, parser: parse, terminate } = args
 
   // Create engine
   const engine = fp.new(args.website)
@@ -323,7 +338,7 @@ const main = async (args) => {
       if (!initialized) {
         const credentials = loginRequired
           ? accounts.getCredentials(id, args.account) : null
-        await engine.initialize({ credentials, headless, docker })
+        await engine.initialize({ credentials, headless, proxy, docker })
         initialized = true
       }
 

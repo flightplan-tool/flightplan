@@ -1,3 +1,5 @@
+const address = require('address')
+const externalIPLib = require('external-ip')
 const moment = require('moment-timezone')
 const path = require('path')
 const timetable = require('timetable-fns')
@@ -177,6 +179,16 @@ function validURL (str) {
   return !failed && result
 }
 
+function localIP () {
+  return address.ip()
+}
+
+function externalIP () {
+  return new Promise((resolve, reject) => {
+    externalIPLib()((err, ip) => (err ? reject(err) : resolve(ip)))
+  })
+}
+
 module.exports = {
   airportTimezone,
   appendPath,
@@ -197,5 +209,7 @@ module.exports = {
   validDate,
   validFlightDesignator,
   validTime,
-  validURL
+  validURL,
+  localIP,
+  externalIP
 }

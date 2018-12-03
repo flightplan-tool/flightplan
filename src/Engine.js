@@ -51,12 +51,11 @@ class Engine {
       throttle = true,
       timeout = 90000,
       verbose = true,
-      cookies
+      cookies,
+      evasions = {}
     } = options
 
     // Save options
-    options = {
-    }
     this._state = {
       ...this._state,
       throttling: throttle ? {} : undefined,
@@ -69,12 +68,14 @@ class Engine {
       docker,
       timeout,
       verbose,
-      cookies
+      cookies,
+      evasions
     }
 
     // Setup browser and new page
     this._state.browser = await this._newBrowser()
-    this._state.page = await this._newPage()
+    const page = (await this._state.browser.pages())[0]
+    this._state.page = await this._newPage(page)
   }
 
   async search (query) {
@@ -175,19 +176,24 @@ class Engine {
     return puppeteer.launch({ headless, args, defaultViewport })
   }
 
-  async _newPage () {
-    const { browser, config, timeout, proxy, cookies } = this._state
+  async _newPage (page) {
+    const { browser, config, timeout, proxy, cookies, evasions } = this._state
 
     // Create and setup the new page
-    const page = await browser.newPage()
+    if (!page) {
+      page = await browser.newPage()
+    }
     page.setDefaultNavigationTimeout(timeout)
-    await applyEvasions(page)
+    await page._client.send('Emulation.clearDeviceMetricsOverride')
 
     // Authenticate proxy, if needed
     const { username, password } = (proxy || {})
     if (username || password) {
       await page.authenticate({ username, password })
     }
+
+    // Apply evasions
+    await applyEvasions(page, evasions)
 
     // Set cookies if provided
     if (cookies) {

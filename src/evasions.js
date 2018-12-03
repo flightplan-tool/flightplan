@@ -1,12 +1,93 @@
+const utils = require('./utils')
+
 // initial evasions from @sangaline
 //   https://intoli.com/blog/not-possible-to-block-chrome-headless/
 //   https://intoli.com/blog/not-possible-to-block-chrome-headless/test-headless-final.js
 
-module.exports = async function (page) {
+module.exports = async function (page, options) {
+  const {
+    maskWebRTC = false,
+    maskLocalIP = '192.168.1.100'
+  } = options
+
   // Initialize variables to store temporary data
   await page.evaluateOnNewDocument(() => {
     window.__customFn = new Set()
   })
+
+  if (maskWebRTC) {
+    // Discover proxy's external IP, using Chrome
+    await page.goto('https://www.icanhazip.com')
+    const maskPublicIP = await page.evaluate(() => document.querySelector('html').textContent.trim())
+
+    // Find the local / external IP addresses that we want to mask
+    const publicIP = await utils.externalIP()
+    const localIP = utils.localIP()
+    const mapping = {
+      [publicIP]: maskPublicIP,
+      [localIP]: maskLocalIP
+    }
+
+    // Mask IP addresses leaked by WebRTC
+    await page.evaluateOnNewDocument((mapping) => {
+      const replaceIP = (str) => {
+        if (str) {
+          for (const [ orig, replacement ] of Object.entries(mapping)) {
+            if (str.indexOf(orig) >= 0) {
+              str = str.split(orig).join(replacement)
+            }
+          }
+        }
+        return str
+      }
+
+      const updateSDP = (session) => {
+        if (session && session.sdp) {
+          const json = session.toJSON()
+          json.sdp = replaceIP(json.sdp)
+          return new RTCSessionDescription(json)
+        }
+        return session
+      }
+
+      const OrigRTCPeerConnection = window.RTCPeerConnection
+      window.RTCPeerConnection = class RTCPeerConnection extends OrigRTCPeerConnection {
+        set onicecandidate (handler) {
+          super.onicecandidate = (event) => {
+            if (event.candidate) {
+              event.candidate.candidate = replaceIP(event.candidate.candidate)
+            }
+            handler(event)
+          }
+        }
+
+        get currentLocalDescription () {
+          return updateSDP(super.currentLocalDescription)
+        }
+
+        get currentRemoteDescription () {
+          return updateSDP(super.currentRemoteDescription)
+        }
+
+        get localDescription () {
+          return updateSDP(super.localDescription)
+        }
+
+        get pendingLocalDescription () {
+          return updateSDP(super.pendingLocalDescription)
+        }
+
+        get pendingRemoteDescription () {
+          return updateSDP(super.pendingRemoteDescription)
+        }
+
+        get remoteDescription () {
+          return updateSDP(super.remoteDescription)
+        }
+      }
+      window.__customFn.add(window.RTCPeerConnection)
+    }, mapping)
+  }
 
   // Pass the User-Agent test
   const userAgent =
