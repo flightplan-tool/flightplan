@@ -12,8 +12,6 @@ import theme from './theme.json'
 @inject('configStore', 'searchStore')
 class Awards extends Component {
   render () {
-    debugger
-
     // Check for empty data first
     const { data } = this.props
     if (!data) {

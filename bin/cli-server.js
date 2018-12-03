@@ -69,7 +69,7 @@ app.get('/api/search', async (req, res, next) => {
       params.push(...cities)
     } else if (direction === 'roundtrip') {
       query += '((fromCity = ? AND toCity = ?) OR (toCity = ? AND fromCity = ?))'
-      params.push(...cities, ...cities.reverse())
+      params.push(...cities, ...cities)
     } else {
       throw new Error('Unrecognized direction parameter:', direction)
     }

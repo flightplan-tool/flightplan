@@ -442,6 +442,7 @@ export default class SearchStore {
         case 'endDate':
           val = val.format('YYYY-MM-DD')
           break
+        default:
       }
       localStorage.setItem(key, val)
     })
