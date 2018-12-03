@@ -98,7 +98,7 @@ module.exports = class extends Parser {
   parseAvailability ($, row) {
     const map = new Map()
     const cols = $(row).find('td')
-    const arrCabins = [cabins.economy, cabins.business, cabins.first]
+    const arrCabins = [cabins.economy, cabins.premium, cabins.business, cabins.first]
 
     // Iterate over available cabins
     arrCabins.forEach((cabin, i) => {

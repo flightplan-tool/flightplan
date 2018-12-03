@@ -12,19 +12,19 @@
     "html": [
         {
             "name": "outbound",
-            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-94c1.html"
+            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-3507.html"
         }
     ],
     "json": [
         {
             "name": "airports",
-            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-94c1.json"
+            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-3507.json"
         }
     ],
     "screenshot": [
         {
             "name": "outbound",
-            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-94c1.jpg"
+            "path": "./test/__mock__/NH-HKG-HND-2019-09-18-OW1Y-3507.jpg"
         }
     ],
     "flights": [
@@ -92,10 +92,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -150,10 +150,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -321,9 +321,9 @@
                     "engine": "NH",
                     "partner": false,
                     "cabins": [
-                        "first"
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -365,9 +365,9 @@
                     "engine": "NH",
                     "partner": false,
                     "cabins": [
-                        "first"
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -410,10 +410,10 @@
                     "engine": "NH",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -468,10 +468,10 @@
                     "engine": "NH",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -526,10 +526,10 @@
                     "engine": "NH",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -584,10 +584,10 @@
                     "engine": "NH",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -642,10 +642,10 @@
                     "engine": "NH",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -701,11 +701,11 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first",
-                        "first"
+                        "business",
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -773,11 +773,11 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first",
-                        "first"
+                        "business",
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -845,11 +845,11 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first",
-                        "first"
+                        "business",
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -917,11 +917,11 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first",
-                        "first"
+                        "business",
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -988,10 +988,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -1032,10 +1032,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -1090,10 +1090,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -1148,10 +1148,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -1206,10 +1206,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
@@ -1264,10 +1264,10 @@
                     "engine": "NH",
                     "partner": true,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "CS",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
