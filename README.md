@@ -6,6 +6,12 @@ Flightplan is a Javascript library that makes it easy to scrape and parse airlin
 
 **Disclaimer:** Scraping is generally against an airline's website's terms of service. As mentioned above, Flightplan typically doesn't place more load on a website than a normal human would, but unlike the human, it can run 24/7. So please use responsibly! Use of any scraping tool (or even excessive non-automated usage) can cause an airline to temporarily (or permanently) ban your IP or member account.
 
+### Website
+
+Don't feel comfortable with a command line? Wish there was a way to use Flightplan without installing anything or waiting hours to collect data? Now you can! Just visit:
+
+[https://www.flightplantool.com]
+
 ### Supported Airlines
 
 Airline                 | Website               | Search             | Parse              | Notes
