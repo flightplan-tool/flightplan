@@ -10,7 +10,7 @@ Flightplan is a Javascript library that makes it easy to scrape and parse airlin
 
 Don't feel comfortable with a command line? Wish there was a way to use Flightplan without installing anything or waiting hours to collect data? Now you can! Just visit:
 
-[https://www.flightplantool.com]
+<https://www.flightplantool.com>
 
 ### Supported Airlines
 
