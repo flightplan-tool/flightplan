@@ -39,7 +39,10 @@ module.exports = class extends Searcher {
 
     // Submit the form
     await page.click('#modalLoginButton')
-    await page.waitFor('#login-skypass', { hidden: true })
+    await Promise.race([
+      page.waitFor('#invalidLogin', { visible: true }).catch(e => {}),
+      page.waitFor('#login-skypass', { hidden: true }).catch(e => {})
+    ])
     await page.waitFor(500)
   }
 
