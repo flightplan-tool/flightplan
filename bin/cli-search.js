@@ -149,8 +149,8 @@ function validateArguments (args) {
     if (arr.length <= 2) {
       args.proxy = { server: arr.join(':') }
     } else {
-      const [ username, password ] = arr.splice(-2)
-      args.proxy = { server: arr.join(':'), username, password }
+      const [ user, pass ] = arr.splice(-2)
+      args.proxy = { server: arr.join(':'), user, pass }
     }
   }
 }

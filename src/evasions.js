@@ -7,7 +7,8 @@ const utils = require('./utils')
 module.exports = async function (page, options) {
   const {
     maskWebRTC = false,
-    maskLocalIP = '192.168.1.100'
+    maskLocalIP = '192.168.1.100',
+    maskPublicIP
   } = options
 
   // Initialize variables to store temporary data
@@ -16,15 +17,18 @@ module.exports = async function (page, options) {
   })
 
   if (maskWebRTC) {
-    // Discover proxy's external IP, using Chrome
-    await page.goto('https://www.icanhazip.com')
-    const maskPublicIP = await page.evaluate(() => document.querySelector('html').textContent.trim())
+    // Discover proxy's external IP, using Chrome, if necessary
+    let detectedIP
+    if (!maskPublicIP) {
+      await page.goto('https://www.icanhazip.com')
+      detectedIP = await page.evaluate(() => document.querySelector('html').textContent.trim())
+    }
 
     // Find the local / external IP addresses that we want to mask
     const publicIP = await utils.externalIP()
     const localIP = utils.localIP()
     const mapping = {
-      [publicIP]: maskPublicIP,
+      [publicIP]: maskPublicIP || detectedIP,
       [localIP]: maskLocalIP
     }
 

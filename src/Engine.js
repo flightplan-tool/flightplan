@@ -187,9 +187,9 @@ class Engine {
     await page._client.send('Emulation.clearDeviceMetricsOverride')
 
     // Authenticate proxy, if needed
-    const { username, password } = (proxy || {})
-    if (username || password) {
-      await page.authenticate({ username, password })
+    const { user, username, pass, password } = (proxy || {})
+    if (user || username || pass || password) {
+      await page.authenticate({ username: user || username, password: pass || password })
     }
 
     // Apply evasions
