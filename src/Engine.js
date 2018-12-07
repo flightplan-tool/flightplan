@@ -184,7 +184,6 @@ class Engine {
       page = await browser.newPage()
     }
     page.setDefaultNavigationTimeout(timeout)
-    await page._client.send('Emulation.clearDeviceMetricsOverride')
 
     // Authenticate proxy, if needed
     const { user, username, pass, password } = (proxy || {})

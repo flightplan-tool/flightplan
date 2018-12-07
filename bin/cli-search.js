@@ -29,6 +29,7 @@ program
   .option('-r, --reverse', `Run queries in reverse chronological order`)
   .option('--terminate <n>', `Terminate search if no results are found for n successive days`, (x) => parseInt(x), 0)
   .option('--force', 'Re-run queries, even if already in the database')
+  .option('--debug [port]', 'Enable remote debugging port for headless Chrome (default: port 9222)', (x) => parseInt(x))
   .on('--help', () => {
     console.log('')
     console.log('  Supported Websites:')
@@ -88,6 +89,7 @@ function populateArguments (args) {
   args.docker = !!args.docker
   args.parser = !!args.parser
   args.force = !!args.force
+  args.debug = (args.debug === true) ? 9222 : args.debug
 }
 
 function validateArguments (args) {
@@ -291,7 +293,16 @@ function redundantSegment (routeMap, query) {
 }
 
 const main = async (args) => {
-  const { start: startDate, end: endDate, headless, proxy, docker, parser: parse, terminate } = args
+  const {
+    start: startDate,
+    end: endDate,
+    headless,
+    proxy,
+    docker,
+    parser: parse,
+    terminate,
+    debug: debugPort
+  } = args
 
   // Create engine
   const engine = fp.new(args.website)
@@ -306,6 +317,12 @@ const main = async (args) => {
     // Create database if necessary, and then open
     db.migrate()
     db.open()
+
+    // Setup engine options
+    const options = { headless, proxy, docker }
+    if (debugPort) {
+      options.args = [ `--remote-debugging-port=${debugPort}` ]
+    }
 
     // Generate queries
     const days = timetable.diff(startDate, endDate) + 1
@@ -338,7 +355,7 @@ const main = async (args) => {
       if (!initialized) {
         const credentials = loginRequired
           ? accounts.getCredentials(id, args.account) : null
-        await engine.initialize({ credentials, headless, proxy, docker })
+        await engine.initialize({ ...options, credentials })
         initialized = true
       }
 
