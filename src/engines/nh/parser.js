@@ -14,6 +14,13 @@ const reTime = /\d{2}:\d{2}/
 const reAircraft = /^[A-Z0-9]{3,4}\b/
 const reLagDays = /[+-]\d+$/
 
+const cabinNames = {
+  'economy class': cabins.economy,
+  'premium economy': cabins.premium,
+  'business class': cabins.business,
+  'first class': cabins.first
+}
+
 module.exports = class extends Parser {
   parse (results) {
     this.loadAirports(results)
@@ -31,9 +38,21 @@ module.exports = class extends Parser {
 
     const flights = []
     if ($) {
+      // Determine which columns map to what cabins
+      const columns = []
+      const cols = $('tr.fareGroup').find('th')
+      for (let i = 0; i < cols.length; i++) {
+        const text = $(cols.get(i)).text().trim().toLowerCase()
+        const cabin = cabinNames[text]
+        if (!cabin) {
+          throw new Error(`Unrecognized cabin name: ${text}`)
+        }
+        columns.push(cabin)
+      }
+
       $('tr.oneWayDisplayPlan').each((_, row) => {
         // Check which cabins have availability
-        const availability = this.parseAvailability($, row)
+        const availability = this.parseAvailability($, row, columns)
         if (availability.size === 0) {
           return // No availability for this flight
         }
@@ -95,10 +114,9 @@ module.exports = class extends Parser {
     return flights
   }
 
-  parseAvailability ($, row) {
+  parseAvailability ($, row, arrCabins) {
     const map = new Map()
     const cols = $(row).find('td')
-    const arrCabins = [cabins.economy, cabins.premium, cabins.business, cabins.first]
 
     // Iterate over available cabins
     arrCabins.forEach((cabin, i) => {
