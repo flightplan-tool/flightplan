@@ -166,6 +166,7 @@ class Engine {
   }
 
   async _newBrowser () {
+    // Create the browser
     const { headless, args, proxy, docker, defaultViewport } = this._state
     if (proxy) {
       args.push(`--proxy-server=${proxy.server}`)
@@ -173,7 +174,16 @@ class Engine {
     if (docker) {
       args.push('--no-sandbox', '--headless', '--disable-dev-shm-usage')
     }
-    return puppeteer.launch({ headless, args, defaultViewport })
+    const browser = await puppeteer.launch({ headless, args, defaultViewport })
+
+    // Ensure that new tabs cannot be opened
+    await browser.on('targetcreated', (target) => {
+      if (target.type() === 'page') {
+        target.page().then(page => page.close())
+      }
+    })
+
+    return browser
   }
 
   async _newPage (page) {
