@@ -180,7 +180,11 @@ class Searcher {
     try {
       // Create initial array of promises that need to resolve
       const promises = [
-        page.evaluate((name) => { document.forms[name].submit() }, name)
+        page.evaluate((name) => {
+          const form = document.forms[name]
+          form.target = '_self' // Ensure form doesn't open up new tab
+          form.submit()
+        }, name)
       ]
       if (waitUntil !== 'none') {
         promises.push(page.waitForNavigation({ waitUntil }))
