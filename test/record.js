@@ -79,7 +79,7 @@ const main = async (args) => {
 
   // Create path to store assets and parsed results
   const params = [ returnDate ? 'RT' : 'OW', quantity, fp.cabinCodes[cabin], partners ? 'P' : '' ].join('')
-  const hash = (Date.now() & 0xFFFF).toString(16)
+  const hash = (Date.now() & 0xFFFF).toString(16).padStart(4, '0')
   const path = './test/__mock__/' + [ engine.id, fromCity, toCity, departDate, params, hash ].join('-')
 
   // Create the search query

@@ -12,16 +12,60 @@
     "json": [
         {
             "name": "results",
-            "path": "./test/__mock__/KE-ORD-PEK-2019-09-18-RT1JP-546e.json"
+            "path": "./test/__mock__/KE-ORD-PEK-2019-09-18-RT1JP-e91b.json"
         }
     ],
     "screenshot": [
         {
             "name": "default",
-            "path": "./test/__mock__/KE-ORD-PEK-2019-09-18-RT1JP-546e.jpg"
+            "path": "./test/__mock__/KE-ORD-PEK-2019-09-18-RT1JP-e91b.jpg"
         }
     ],
     "flights": [
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 1,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE038",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ORD",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "12:35",
+                    "arrival": "16:25",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "CZ316",
+                    "airline": "CZ",
+                    "aircraft": "321",
+                    "fromCity": "ICN",
+                    "toCity": "PEK",
+                    "date": "2019-09-19",
+                    "departure": "22:10",
+                    "arrival": "23:15",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
         {
             "awards": [
                 {
@@ -107,6 +151,50 @@
                     "arrival": "01:05",
                     "stops": 0,
                     "lagDays": 1
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 1,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "KE038",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ORD",
+                    "toCity": "ICN",
+                    "date": "2019-09-18",
+                    "departure": "12:35",
+                    "arrival": "16:25",
+                    "stops": 0,
+                    "lagDays": 1
+                },
+                {
+                    "flight": "CZ318",
+                    "airline": "CZ",
+                    "aircraft": "321",
+                    "fromCity": "GMP",
+                    "toCity": "PEK",
+                    "date": "2019-09-20",
+                    "departure": "12:30",
+                    "arrival": "13:35",
+                    "stops": 0,
+                    "lagDays": 0
                 }
             ]
         },
@@ -205,11 +293,99 @@
                     "partner": true,
                     "cabins": [
                         "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 5,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CZ315",
+                    "airline": "CZ",
+                    "aircraft": "321",
+                    "fromCity": "PEK",
+                    "toCity": "ICN",
+                    "date": "2019-09-25",
+                    "departure": "18:10",
+                    "arrival": "21:10",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
                         "business",
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
+                    "exact": true,
+                    "waitlisted": false,
+                    "mileageCost": null,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "CZ317",
+                    "airline": "CZ",
+                    "aircraft": "321",
+                    "fromCity": "PEK",
+                    "toCity": "GMP",
+                    "date": "2019-09-25",
+                    "departure": "08:10",
+                    "arrival": "11:30",
+                    "stops": 0,
+                    "lagDays": 0
+                },
+                {
+                    "flight": "KE037",
+                    "airline": "KE",
+                    "aircraft": "77W",
+                    "fromCity": "ICN",
+                    "toCity": "ORD",
+                    "date": "2019-09-26",
+                    "departure": "10:40",
+                    "arrival": "09:25",
+                    "stops": 0,
+                    "lagDays": 0
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "KE",
+                    "partner": true,
+                    "cabins": [
+                        "business",
+                        "business",
+                        "business"
+                    ],
+                    "fare": "O",
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -265,7 +441,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -309,7 +485,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -353,7 +529,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -397,7 +573,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 4,
+                    "quantity": 6,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -442,7 +618,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -499,7 +675,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -556,7 +732,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -613,7 +789,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -670,7 +846,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -727,7 +903,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -784,7 +960,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -841,7 +1017,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -898,7 +1074,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -955,7 +1131,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -1468,7 +1644,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -1525,7 +1701,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,
@@ -1582,7 +1758,7 @@
                         "business"
                     ],
                     "fare": "O",
-                    "quantity": 3,
+                    "quantity": 5,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": null,

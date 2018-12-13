@@ -12,21 +12,21 @@
     "html": [
         {
             "name": "results",
-            "path": "./test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99.html"
+            "path": "./test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-5ebd.html"
         },
         {
             "name": "partners1",
-            "path": "test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99-1.html"
+            "path": "test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-5ebd-1.html"
         }
     ],
     "screenshot": [
         {
             "name": "results",
-            "path": "./test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99.jpg"
+            "path": "./test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-5ebd.jpg"
         },
         {
             "name": "partners1",
-            "path": "test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-2b99-1.jpg"
+            "path": "test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-5ebd-1.jpg"
         }
     ],
     "flights": [
@@ -223,7 +223,7 @@
                 {
                     "flight": "SQ861",
                     "airline": "SQ",
-                    "aircraft": "A359",
+                    "aircraft": "A388",
                     "fromCity": "HKG",
                     "toCity": "SIN",
                     "date": "2019-09-19",
@@ -281,7 +281,7 @@
                 {
                     "flight": "SQ863",
                     "airline": "SQ",
-                    "aircraft": null,
+                    "aircraft": "A359",
                     "fromCity": "HKG",
                     "toCity": "SIN",
                     "date": "2019-09-19",
@@ -765,7 +765,7 @@
                 {
                     "flight": "SQ802",
                     "airline": "SQ",
-                    "aircraft": null,
+                    "aircraft": "A388",
                     "fromCity": "SIN",
                     "toCity": "PEK",
                     "date": "2019-09-25",
@@ -777,7 +777,7 @@
                 {
                     "flight": "CA985",
                     "airline": "CA",
-                    "aircraft": null,
+                    "aircraft": "B744",
                     "fromCity": "PEK",
                     "toCity": "SFO",
                     "date": "2019-09-25",
@@ -823,7 +823,7 @@
                 {
                     "flight": "SQ856",
                     "airline": "SQ",
-                    "aircraft": "A359",
+                    "aircraft": "A388",
                     "fromCity": "SIN",
                     "toCity": "HKG",
                     "date": "2019-09-25",
@@ -881,7 +881,7 @@
                 {
                     "flight": "SQ860",
                     "airline": "SQ",
-                    "aircraft": null,
+                    "aircraft": "A359",
                     "fromCity": "SIN",
                     "toCity": "HKG",
                     "date": "2019-09-25",
@@ -1045,7 +1045,7 @@
                     "fromCity": "SIN",
                     "toCity": "HKG",
                     "date": "2019-09-25",
-                    "departure": "15:05",
+                    "departure": "14:35",
                     "arrival": "18:50",
                     "stops": 0,
                     "lagDays": 0
@@ -1059,50 +1059,6 @@
                     "date": "2019-09-25",
                     "departure": "23:30",
                     "arrival": "21:15",
-                    "stops": 0,
-                    "lagDays": 0
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "SQ",
-                    "partner": true,
-                    "cabins": [
-                        "business",
-                        "business"
-                    ],
-                    "fare": "CS",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 195000,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "SQ878",
-                    "airline": "SQ",
-                    "aircraft": "A333",
-                    "fromCity": "SIN",
-                    "toCity": "TPE",
-                    "date": "2019-09-25",
-                    "departure": "11:55",
-                    "arrival": "16:40",
-                    "stops": 0,
-                    "lagDays": 0
-                },
-                {
-                    "flight": "BR18",
-                    "airline": "BR",
-                    "aircraft": "B77W",
-                    "fromCity": "TPE",
-                    "toCity": "SFO",
-                    "date": "2019-09-25",
-                    "departure": "19:40",
-                    "arrival": "16:00",
                     "stops": 0,
                     "lagDays": 0
                 }

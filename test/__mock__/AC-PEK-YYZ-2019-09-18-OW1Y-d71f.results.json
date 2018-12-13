@@ -12,13 +12,13 @@
     "json": [
         {
             "name": "results",
-            "path": "./test/__mock__/AC-PEK-YYZ-2019-09-18-OW1Y-b8b2.json"
+            "path": "./test/__mock__/AC-PEK-YYZ-2019-09-18-OW1Y-d71f.json"
         }
     ],
     "screenshot": [
         {
             "name": "results",
-            "path": "./test/__mock__/AC-PEK-YYZ-2019-09-18-OW1Y-b8b2.jpg"
+            "path": "./test/__mock__/AC-PEK-YYZ-2019-09-18-OW1Y-d71f.jpg"
         }
     ],
     "flights": [
@@ -35,7 +35,21 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 163750,
+                    "mileageCost": 187600,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "premium",
+                        "economy"
+                    ],
+                    "fare": "NP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 190600,
                     "fees": null
                 },
                 {
@@ -49,7 +63,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -62,7 +76,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -95,21 +109,21 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 179300,
+                    "mileageCost": 203200,
                     "fees": null
                 },
                 {
                     "engine": "AC",
                     "partner": false,
                     "cabins": [
-                        "economy",
+                        "premium",
                         "premium"
                     ],
                     "fare": "NP",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 119250,
+                    "mileageCost": 190600,
                     "fees": null
                 },
                 {
@@ -123,7 +137,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -136,7 +150,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -162,6 +176,20 @@
                     "engine": "AC",
                     "partner": false,
                     "cabins": [
+                        "premium",
+                        "economy"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 62500,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
                         "economy",
                         "economy"
                     ],
@@ -183,7 +211,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 145550,
+                    "mileageCost": 169350,
                     "fees": null
                 },
                 {
@@ -197,7 +225,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -210,10 +238,10 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
-                    "cabin": "economy"
+                    "cabin": "premium"
                 },
                 {
                     "flight": "AC120",
@@ -236,6 +264,20 @@
                     "engine": "AC",
                     "partner": false,
                     "cabins": [
+                        "premium",
+                        "economy"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 62500,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
                         "economy",
                         "business"
                     ],
@@ -243,7 +285,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 145550,
+                    "mileageCost": 169350,
                     "fees": null
                 },
                 {
@@ -257,7 +299,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -270,10 +312,10 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
-                    "cabin": "economy"
+                    "cabin": "premium"
                 },
                 {
                     "flight": "AC122",
@@ -286,12 +328,26 @@
                     "arrival": "01:00",
                     "stops": 0,
                     "lagDays": 1,
-                    "cabin": "business"
+                    "cabin": "economy"
                 }
             ]
         },
         {
             "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "premium",
+                        "economy"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 62500,
+                    "fees": null
+                },
                 {
                     "engine": "AC",
                     "partner": false,
@@ -303,7 +359,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 145550,
+                    "mileageCost": 169350,
                     "fees": null
                 },
                 {
@@ -317,7 +373,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -330,10 +386,10 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
-                    "cabin": "economy"
+                    "cabin": "premium"
                 },
                 {
                     "flight": "AC124",
@@ -346,7 +402,7 @@
                     "arrival": "01:45",
                     "stops": 0,
                     "lagDays": 1,
-                    "cabin": "business"
+                    "cabin": "economy"
                 }
             ]
         },
@@ -356,14 +412,42 @@
                     "engine": "AC",
                     "partner": false,
                     "cabins": [
+                        "premium",
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 62500,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
                         "economy",
+                        "business"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 203200,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "premium",
                         "premium"
                     ],
                     "fare": "NP",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 119250,
+                    "mileageCost": 190600,
                     "fees": null
                 },
                 {
@@ -377,7 +461,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -390,10 +474,10 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
-                    "cabin": "economy"
+                    "cabin": "premium"
                 },
                 {
                     "flight": "AC126",
@@ -423,7 +507,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -436,7 +520,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -469,7 +553,21 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 145550,
+                    "mileageCost": 169350,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "premium",
+                        "economy"
+                    ],
+                    "fare": "NP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 190600,
                     "fees": null
                 },
                 {
@@ -483,7 +581,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -496,7 +594,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -530,7 +628,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 126150,
+                    "mileageCost": 145050,
                     "fees": null
                 },
                 {
@@ -545,7 +643,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 83650,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -558,7 +656,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -566,12 +664,12 @@
                 {
                     "flight": "AC214",
                     "airline": "AC",
-                    "aircraft": "A319",
+                    "aircraft": "A320",
                     "fromCity": "YVR",
                     "toCity": "YYC",
                     "date": "2019-09-18",
-                    "departure": "13:00",
-                    "arrival": "15:26",
+                    "departure": "13:30",
+                    "arrival": "15:56",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
@@ -605,7 +703,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 126150,
+                    "mileageCost": 145050,
                     "fees": null
                 },
                 {
@@ -620,7 +718,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 83650,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -633,7 +731,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -641,12 +739,12 @@
                 {
                     "flight": "AC214",
                     "airline": "AC",
-                    "aircraft": "A319",
+                    "aircraft": "A320",
                     "fromCity": "YVR",
                     "toCity": "YYC",
                     "date": "2019-09-18",
-                    "departure": "13:00",
-                    "arrival": "15:26",
+                    "departure": "13:30",
+                    "arrival": "15:56",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
@@ -680,7 +778,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 126150,
+                    "mileageCost": 145050,
                     "fees": null
                 },
                 {
@@ -695,7 +793,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 83650,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -708,7 +806,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -716,12 +814,87 @@
                 {
                     "flight": "AC220",
                     "airline": "AC",
+                    "aircraft": "A320",
+                    "fromCity": "YVR",
+                    "toCity": "YYC",
+                    "date": "2019-09-18",
+                    "departure": "14:30",
+                    "arrival": "16:56",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "business"
+                },
+                {
+                    "flight": "AC154",
+                    "airline": "AC",
+                    "aircraft": "A320",
+                    "fromCity": "YYC",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "19:10",
+                    "arrival": "00:54",
+                    "stops": 0,
+                    "lagDays": 1,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "business",
+                        "economy"
+                    ],
+                    "fare": "IP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 145050,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "economy",
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 88250,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "AC30",
+                    "airline": "AC",
+                    "aircraft": "B77W",
+                    "fromCity": "PEK",
+                    "toCity": "YVR",
+                    "date": "2019-09-18",
+                    "departure": "16:05",
+                    "arrival": "11:40",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
+                    "flight": "AC222",
+                    "airline": "AC",
                     "aircraft": "A319",
                     "fromCity": "YVR",
                     "toCity": "YYC",
                     "date": "2019-09-18",
-                    "departure": "15:05",
-                    "arrival": "17:30",
+                    "departure": "16:05",
+                    "arrival": "18:31",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
@@ -755,7 +928,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 83650,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -768,7 +941,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -780,8 +953,8 @@
                     "fromCity": "YVR",
                     "toCity": "YYC",
                     "date": "2019-09-18",
-                    "departure": "18:05",
-                    "arrival": "20:30",
+                    "departure": "17:00",
+                    "arrival": "19:26",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -815,7 +988,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 83650,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -828,7 +1001,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -840,8 +1013,8 @@
                     "fromCity": "YVR",
                     "toCity": "YYC",
                     "date": "2019-09-18",
-                    "departure": "19:05",
-                    "arrival": "21:31",
+                    "departure": "19:00",
+                    "arrival": "21:26",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -875,7 +1048,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 83650,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -888,7 +1061,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -896,12 +1069,12 @@
                 {
                     "flight": "AC228",
                     "airline": "AC",
-                    "aircraft": "A320",
+                    "aircraft": "A319",
                     "fromCity": "YVR",
                     "toCity": "YYC",
                     "date": "2019-09-18",
-                    "departure": "20:30",
-                    "arrival": "22:56",
+                    "departure": "20:15",
+                    "arrival": "22:41",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -928,134 +1101,14 @@
                     "partner": false,
                     "cabins": [
                         "economy",
-                        "economy",
+                        "business",
                         "economy"
-                    ],
-                    "fare": "XP",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 83650,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "AC30",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "PEK",
-                    "toCity": "YVR",
-                    "date": "2019-09-18",
-                    "departure": "16:05",
-                    "arrival": "11:30",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC246",
-                    "airline": "AC",
-                    "aircraft": "A320",
-                    "fromCity": "YVR",
-                    "toCity": "YEG",
-                    "date": "2019-09-18",
-                    "departure": "17:55",
-                    "arrival": "20:26",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC176",
-                    "airline": "AC",
-                    "aircraft": "A320",
-                    "fromCity": "YEG",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "23:55",
-                    "arrival": "05:35",
-                    "stops": 0,
-                    "lagDays": 1,
-                    "cabin": "economy"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": false,
-                    "cabins": [
-                        "economy",
-                        "economy",
-                        "economy"
-                    ],
-                    "fare": "XP",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 83650,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "AC30",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "PEK",
-                    "toCity": "YVR",
-                    "date": "2019-09-18",
-                    "departure": "16:05",
-                    "arrival": "11:30",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC250",
-                    "airline": "AC",
-                    "aircraft": "A320",
-                    "fromCity": "YVR",
-                    "toCity": "YEG",
-                    "date": "2019-09-18",
-                    "departure": "20:15",
-                    "arrival": "22:46",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC176",
-                    "airline": "AC",
-                    "aircraft": "A320",
-                    "fromCity": "YEG",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "23:55",
-                    "arrival": "05:35",
-                    "stops": 0,
-                    "lagDays": 1,
-                    "cabin": "economy"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": false,
-                    "cabins": [
-                        "economy",
-                        "economy",
-                        "business"
                     ],
                     "fare": "IP",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 118700,
+                    "mileageCost": 147050,
                     "fees": null
                 },
                 {
@@ -1070,7 +1123,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 83800,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -1083,186 +1136,36 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
                 },
                 {
-                    "flight": "AC292",
+                    "flight": "AC242",
                     "airline": "AC",
                     "aircraft": "A319",
                     "fromCity": "YVR",
-                    "toCity": "YWG",
+                    "toCity": "YEG",
                     "date": "2019-09-18",
-                    "departure": "13:25",
-                    "arrival": "18:06",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC272",
-                    "airline": "AC",
-                    "aircraft": "A320",
-                    "fromCity": "YWG",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "18:45",
-                    "arrival": "22:09",
+                    "departure": "14:10",
+                    "arrival": "16:41",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": false,
-                    "cabins": [
-                        "economy",
-                        "economy",
-                        "business"
-                    ],
-                    "fare": "IP",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 118700,
-                    "fees": null
                 },
                 {
-                    "engine": "AC",
-                    "partner": false,
-                    "cabins": [
-                        "economy",
-                        "economy",
-                        "economy"
-                    ],
-                    "fare": "XP",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 83800,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "AC30",
+                    "flight": "AC174",
                     "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "PEK",
-                    "toCity": "YVR",
-                    "date": "2019-09-18",
-                    "departure": "16:05",
-                    "arrival": "11:30",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC292",
-                    "airline": "AC",
-                    "aircraft": "A319",
-                    "fromCity": "YVR",
-                    "toCity": "YWG",
-                    "date": "2019-09-18",
-                    "departure": "13:25",
-                    "arrival": "18:06",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC274",
-                    "airline": "AC",
-                    "aircraft": "A320",
-                    "fromCity": "YWG",
+                    "aircraft": "B38M",
+                    "fromCity": "YEG",
                     "toCity": "YYZ",
                     "date": "2019-09-18",
-                    "departure": "21:05",
-                    "arrival": "00:30",
-                    "stops": 0,
-                    "lagDays": 1,
-                    "cabin": "business"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": false,
-                    "cabins": [
-                        "economy",
-                        "economy",
-                        "business"
-                    ],
-                    "fare": "IP",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 123300,
-                    "fees": null
-                },
-                {
-                    "engine": "AC",
-                    "partner": false,
-                    "cabins": [
-                        "economy",
-                        "economy",
-                        "economy"
-                    ],
-                    "fare": "XP",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 86550,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "AC30",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "PEK",
-                    "toCity": "YVR",
-                    "date": "2019-09-18",
-                    "departure": "16:05",
-                    "arrival": "11:30",
+                    "departure": "17:40",
+                    "arrival": "23:25",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
-                },
-                {
-                    "flight": "AC8572",
-                    "airline": "AC",
-                    "aircraft": "CRJ9",
-                    "fromCity": "YVR",
-                    "toCity": "YQR",
-                    "date": "2019-09-18",
-                    "departure": "14:05",
-                    "arrival": "17:07",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC1118",
-                    "airline": "AC",
-                    "aircraft": "E190",
-                    "fromCity": "YQR",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "19:30",
-                    "arrival": "00:29",
-                    "stops": 0,
-                    "lagDays": 1,
-                    "cabin": "business"
                 }
             ]
         },
@@ -1279,7 +1182,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -1292,7 +1195,7 @@
                     "toCity": "YVR",
                     "date": "2019-09-18",
                     "departure": "16:05",
-                    "arrival": "11:30",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -1331,6 +1234,19 @@
                     "engine": "AC",
                     "partner": false,
                     "cabins": [
+                        "premium"
+                    ],
+                    "fare": "NS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 62500,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
                         "economy"
                     ],
                     "fare": "XS",
@@ -1350,7 +1266,20 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 437500,
+                    "mileageCost": 590550,
+                    "fees": null
+                },
+                {
+                    "engine": "AC",
+                    "partner": false,
+                    "cabins": [
+                        "premium"
+                    ],
+                    "fare": "NP",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 190600,
                     "fees": null
                 },
                 {
@@ -1363,7 +1292,7 @@
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": false,
-                    "mileageCost": 87200,
+                    "mileageCost": 88250,
                     "fees": null
                 }
             ],
@@ -1376,194 +1305,10 @@
                     "toCity": "YYZ",
                     "date": "2019-09-18",
                     "departure": "18:05",
-                    "arrival": "18:50",
+                    "arrival": "19:00",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": true,
-                    "cabins": [
-                        "economy",
-                        "premium"
-                    ],
-                    "fare": "NS",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 62500,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "CA123",
-                    "airline": "CA",
-                    "aircraft": "A333",
-                    "fromCity": "PEK",
-                    "toCity": "ICN",
-                    "date": "2019-09-18",
-                    "departure": "08:30",
-                    "arrival": "11:35",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC62",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "ICN",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "18:00",
-                    "arrival": "18:10",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "premium"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": true,
-                    "cabins": [
-                        "economy",
-                        "premium"
-                    ],
-                    "fare": "NS",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 62500,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "CA125",
-                    "airline": "CA",
-                    "aircraft": "A333",
-                    "fromCity": "PEK",
-                    "toCity": "ICN",
-                    "date": "2019-09-18",
-                    "departure": "13:25",
-                    "arrival": "16:35",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC62",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "ICN",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "18:00",
-                    "arrival": "18:10",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "premium"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": true,
-                    "cabins": [
-                        "economy",
-                        "premium"
-                    ],
-                    "fare": "NS",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 62500,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "CA131",
-                    "airline": "CA",
-                    "aircraft": "A321",
-                    "fromCity": "PEK",
-                    "toCity": "ICN",
-                    "date": "2019-09-18",
-                    "departure": "10:55",
-                    "arrival": "14:05",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC62",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "ICN",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "18:00",
-                    "arrival": "18:10",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "premium"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": true,
-                    "cabins": [
-                        "economy",
-                        "premium"
-                    ],
-                    "fare": "NS",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 62500,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "CA135",
-                    "airline": "CA",
-                    "aircraft": "B738",
-                    "fromCity": "PEK",
-                    "toCity": "ICN",
-                    "date": "2019-09-18",
-                    "departure": "10:25",
-                    "arrival": "13:40",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "economy"
-                },
-                {
-                    "flight": "AC62",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "ICN",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "18:00",
-                    "arrival": "18:10",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "premium"
                 }
             ]
         },
@@ -1586,27 +1331,27 @@
             ],
             "segments": [
                 {
-                    "flight": "CA181",
+                    "flight": "CA877",
                     "airline": "CA",
                     "aircraft": "A333",
                     "fromCity": "PEK",
-                    "toCity": "HND",
+                    "toCity": "CPH",
                     "date": "2019-09-18",
-                    "departure": "08:20",
-                    "arrival": "12:30",
+                    "departure": "02:55",
+                    "arrival": "06:45",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
                 },
                 {
-                    "flight": "AC2",
+                    "flight": "AC883",
                     "airline": "AC",
                     "aircraft": "B77W",
-                    "fromCity": "HND",
+                    "fromCity": "CPH",
                     "toCity": "YYZ",
                     "date": "2019-09-18",
-                    "departure": "17:40",
-                    "arrival": "16:45",
+                    "departure": "10:40",
+                    "arrival": "12:45",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
@@ -1652,7 +1397,7 @@
                     "toCity": "YYZ",
                     "date": "2019-09-18",
                     "departure": "09:20",
-                    "arrival": "11:35",
+                    "arrival": "11:40",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
@@ -1698,7 +1443,7 @@
                     "toCity": "YYZ",
                     "date": "2019-09-18",
                     "departure": "22:15",
-                    "arrival": "05:49",
+                    "arrival": "05:52",
                     "stops": 0,
                     "lagDays": 1,
                     "cabin": "business"
@@ -1726,7 +1471,7 @@
                 {
                     "flight": "CA985",
                     "airline": "CA",
-                    "aircraft": null,
+                    "aircraft": "B744",
                     "fromCity": "PEK",
                     "toCity": "SFO",
                     "date": "2019-09-18",
@@ -1739,58 +1484,12 @@
                 {
                     "flight": "AC750",
                     "airline": "AC",
-                    "aircraft": "B38M",
+                    "aircraft": "A321",
                     "fromCity": "SFO",
                     "toCity": "YYZ",
                     "date": "2019-09-18",
-                    "departure": "16:55",
-                    "arrival": "00:58",
-                    "stops": 0,
-                    "lagDays": 1,
-                    "cabin": "economy"
-                }
-            ]
-        },
-        {
-            "awards": [
-                {
-                    "engine": "AC",
-                    "partner": true,
-                    "cabins": [
-                        "first",
-                        "economy"
-                    ],
-                    "fare": "OS",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 105000,
-                    "fees": null
-                }
-            ],
-            "segments": [
-                {
-                    "flight": "CA987",
-                    "airline": "CA",
-                    "aircraft": "B773",
-                    "fromCity": "PEK",
-                    "toCity": "LAX",
-                    "date": "2019-09-18",
-                    "departure": "15:00",
-                    "arrival": "12:00",
-                    "stops": 0,
-                    "lagDays": 0,
-                    "cabin": "first"
-                },
-                {
-                    "flight": "AC786",
-                    "airline": "AC",
-                    "aircraft": "B38M",
-                    "fromCity": "LAX",
-                    "toCity": "YYZ",
-                    "date": "2019-09-18",
-                    "departure": "18:10",
-                    "arrival": "01:57",
+                    "departure": "16:15",
+                    "arrival": "00:08",
                     "stops": 0,
                     "lagDays": 1,
                     "cabin": "economy"
@@ -1812,45 +1511,31 @@
                     "waitlisted": false,
                     "mileageCost": 75000,
                     "fees": null
-                },
-                {
-                    "engine": "AC",
-                    "partner": true,
-                    "cabins": [
-                        "economy",
-                        "premium"
-                    ],
-                    "fare": "NS",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": false,
-                    "mileageCost": 62500,
-                    "fees": null
                 }
             ],
             "segments": [
                 {
-                    "flight": "NH964",
-                    "airline": "NH",
+                    "flight": "LO92",
+                    "airline": "LO",
                     "aircraft": "B788",
                     "fromCity": "PEK",
-                    "toCity": "HND",
+                    "toCity": "WAW",
                     "date": "2019-09-18",
-                    "departure": "08:25",
-                    "arrival": "12:50",
+                    "departure": "08:45",
+                    "arrival": "12:25",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
                 },
                 {
-                    "flight": "AC2",
-                    "airline": "AC",
-                    "aircraft": "B77W",
-                    "fromCity": "HND",
+                    "flight": "LO45",
+                    "airline": "LO",
+                    "aircraft": "B789",
+                    "fromCity": "WAW",
                     "toCity": "YYZ",
                     "date": "2019-09-18",
-                    "departure": "17:40",
-                    "arrival": "16:45",
+                    "departure": "17:05",
+                    "arrival": "20:10",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "business"
@@ -1895,8 +1580,8 @@
                     "fromCity": "ICN",
                     "toCity": "YYZ",
                     "date": "2019-09-18",
-                    "departure": "18:00",
-                    "arrival": "18:10",
+                    "departure": "18:20",
+                    "arrival": "18:35",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "premium"
@@ -1935,9 +1620,55 @@
                     "cabin": "economy"
                 },
                 {
+                    "flight": "UA6085",
+                    "airline": "UA",
+                    "aircraft": "CRJ7",
+                    "fromCity": "IAD",
+                    "toCity": "YYZ",
+                    "date": "2019-09-18",
+                    "departure": "22:00",
+                    "arrival": "23:18",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                }
+            ]
+        },
+        {
+            "awards": [
+                {
+                    "engine": "AC",
+                    "partner": true,
+                    "cabins": [
+                        "economy",
+                        "economy"
+                    ],
+                    "fare": "XS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": false,
+                    "mileageCost": 37500,
+                    "fees": null
+                }
+            ],
+            "segments": [
+                {
+                    "flight": "UA808",
+                    "airline": "UA",
+                    "aircraft": "B788",
+                    "fromCity": "PEK",
+                    "toCity": "IAD",
+                    "date": "2019-09-18",
+                    "departure": "18:25",
+                    "arrival": "19:50",
+                    "stops": 0,
+                    "lagDays": 0,
+                    "cabin": "economy"
+                },
+                {
                     "flight": "AC7375",
                     "airline": "AC",
-                    "aircraft": null,
+                    "aircraft": "CRJX",
                     "fromCity": "IAD",
                     "toCity": "YYZ",
                     "date": "2019-09-19",
@@ -1975,7 +1706,7 @@
                     "toCity": "ORD",
                     "date": "2019-09-18",
                     "departure": "12:00",
-                    "arrival": "12:10",
+                    "arrival": "12:00",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -2021,7 +1752,7 @@
                     "toCity": "ORD",
                     "date": "2019-09-18",
                     "departure": "12:00",
-                    "arrival": "12:10",
+                    "arrival": "12:00",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -2066,7 +1797,7 @@
                     "fromCity": "PEK",
                     "toCity": "SFO",
                     "date": "2019-09-18",
-                    "departure": "16:10",
+                    "departure": "16:25",
                     "arrival": "13:00",
                     "stops": 0,
                     "lagDays": 0,
@@ -2075,12 +1806,12 @@
                 {
                     "flight": "AC750",
                     "airline": "AC",
-                    "aircraft": "B38M",
+                    "aircraft": "A321",
                     "fromCity": "SFO",
                     "toCity": "YYZ",
                     "date": "2019-09-18",
-                    "departure": "16:55",
-                    "arrival": "00:58",
+                    "departure": "16:15",
+                    "arrival": "00:08",
                     "stops": 0,
                     "lagDays": 1,
                     "cabin": "economy"
@@ -2113,7 +1844,7 @@
                     "toCity": "EWR",
                     "date": "2019-09-18",
                     "departure": "15:35",
-                    "arrival": "17:25",
+                    "arrival": "17:05",
                     "stops": 0,
                     "lagDays": 0,
                     "cabin": "economy"
@@ -2121,7 +1852,7 @@
                 {
                     "flight": "UA4276",
                     "airline": "UA",
-                    "aircraft": null,
+                    "aircraft": "E145",
                     "fromCity": "EWR",
                     "toCity": "YYZ",
                     "date": "2019-09-18",

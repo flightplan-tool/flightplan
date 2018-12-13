@@ -12,53 +12,53 @@
     "json": [
         {
             "name": "results",
-            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023.json"
+            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e.json"
         }
     ],
     "screenshot": [
         {
             "name": "results-0",
-            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023.jpg"
+            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e.jpg"
         },
         {
             "name": "results-1",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-1.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-1.jpg"
         },
         {
             "name": "results-2",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-2.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-2.jpg"
         },
         {
             "name": "results-3",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-3.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-3.jpg"
         },
         {
             "name": "results-4",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-4.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-4.jpg"
         },
         {
             "name": "results-5",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-5.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-5.jpg"
         },
         {
             "name": "results-6",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-6.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-6.jpg"
         },
         {
             "name": "results-7",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-7.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-7.jpg"
         },
         {
             "name": "results-8",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-8.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-8.jpg"
         },
         {
             "name": "results-9",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-9.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-9.jpg"
         },
         {
             "name": "results-10",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-e023-10.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-10.jpg"
         }
     ],
     "flights": [
@@ -116,7 +116,7 @@
                         "economy"
                     ],
                     "fare": "YS",
-                    "quantity": 4,
+                    "quantity": 7,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": 47000,
@@ -132,7 +132,7 @@
                     "toCity": "LHR",
                     "date": "2019-09-18",
                     "departure": "20:55",
-                    "arrival": "10:40",
+                    "arrival": "10:45",
                     "stops": 0,
                     "lagDays": 1
                 },
@@ -248,20 +248,6 @@
                     "exact": false,
                     "waitlisted": true,
                     "mileageCost": 73000,
-                    "fees": null
-                },
-                {
-                    "engine": "CX",
-                    "partner": false,
-                    "cabins": [
-                        "first",
-                        "business"
-                    ],
-                    "fare": "F1",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": true,
-                    "mileageCost": 187500,
                     "fees": null
                 },
                 {
@@ -438,14 +424,14 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "premium",
+                        "premium"
                     ],
-                    "fare": "F1",
+                    "fare": "W2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 187500,
+                    "mileageCost": 130000,
                     "fees": null
                 },
                 {
@@ -588,20 +574,6 @@
                     "exact": false,
                     "waitlisted": true,
                     "mileageCost": 73000,
-                    "fees": null
-                },
-                {
-                    "engine": "CX",
-                    "partner": false,
-                    "cabins": [
-                        "first",
-                        "first"
-                    ],
-                    "fare": "F1",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": true,
-                    "mileageCost": 187500,
                     "fees": null
                 },
                 {
