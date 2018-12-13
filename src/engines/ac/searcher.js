@@ -85,13 +85,6 @@ module.exports = class extends Searcher {
       : 'travelFlightsRoundTripTab',
       { waitUntil: 'none' })
 
-    // Check if a new tab opened
-    await page.waitFor(2000)
-    const pages = await this.browser.pages()
-    const oldPage = page
-    page = pages[pages.length - 1]
-    this.page = page
-
     // Wait for results to load
     await this.monitor('.waiting-spinner-inner')
 
@@ -110,11 +103,5 @@ module.exports = class extends Searcher {
     // Obtain the JSON from the browser itself, which will have calculated prices
     await results.saveJSON('results', json)
     await results.screenshot('results')
-
-    // If a new tab was opened, we can close it now and restore the old page
-    if (page !== oldPage) {
-      this.page = oldPage
-      await page.close()
-    }
   }
 }
