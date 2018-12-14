@@ -46,13 +46,6 @@ module.exports = class extends Searcher {
     await this.settle()
   }
 
-  validate (query) {
-    // Prem. economy is not a supported cabin
-    if (query.cabin === cabins.premium) {
-      throw new Searcher.Error(`Unsupported cabin class: ${query.cabin}`)
-    }
-  }
-
   async search (page, query, results) {
     const { fromCity, toCity, quantity, oneWay } = query
     const departDate = query.departDateMoment()

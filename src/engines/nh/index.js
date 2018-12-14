@@ -16,6 +16,7 @@ module.exports = {
     fares: [
       {code: 'FS', cabin: cabins.first, saver: true, name: 'First'},
       {code: 'CS', cabin: cabins.business, saver: true, name: 'Business'},
+      {code: 'WS', cabin: cabins.premium, saver: true, name: 'Premium'},
       {code: 'YS', cabin: cabins.economy, saver: true, name: 'Economy'}
     ]
   }
