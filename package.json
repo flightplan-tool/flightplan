@@ -40,6 +40,7 @@
   "devDependencies": {
     "concurrently": "^3.5.1",
     "jest": "^23.6.0",
+    "jest-cli": "^23.6.0",
     "nodemon": "^1.17.3"
   }
 }
