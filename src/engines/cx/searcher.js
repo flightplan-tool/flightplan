@@ -394,6 +394,7 @@ module.exports = class extends Searcher {
 
     // Check if the desired link is not present
     try {
+      await page.waitFor(1000)
       await page.waitFor(selector, { visible: true, timeout: 5000 })
     } catch (err) {
       throw new Searcher.Error(`Failed to navigate calendar to date: ${date}`)
