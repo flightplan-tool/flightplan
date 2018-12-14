@@ -37,6 +37,11 @@ module.exports = class extends Searcher {
 
     // Submit form
     await this.clickAndWait('#account-login div.form-login-wrapper button.btn-primary')
+
+    // Check for CAPTCHA test
+    if (await page.$('#captcha-container')) {
+      throw new Searcher.Error(`CAPTCHA detected during login`)
+    }
   }
 
   async search (page, query, results) {

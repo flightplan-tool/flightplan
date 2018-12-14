@@ -39,6 +39,12 @@ module.exports = class extends Searcher {
       await page.waitFor(250)
     }
     await this.clickAndWait('#ecuserlogbutton')
+
+    // Check if we're blocked
+    const msg = await this.textContent('#main-content h1')
+    if (msg.includes('page is not available')) {
+      throw new Searcher.Error(`Website blocked access during login`)
+    }
   }
 
   async search (page, query, results) {
@@ -105,7 +111,7 @@ module.exports = class extends Searcher {
 
       // Check for catpcha
       if (await page.$('#captcha_form')) {
-        this.warn(`Captcha detected, please submit solution to continue...`)
+        this.warn(`CAPTCHA detected, please submit solution to continue...`)
         await page.waitForNavigation(this.config.waitUntil)
         continue
       }

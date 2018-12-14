@@ -166,7 +166,7 @@ class Engine {
   }
 
   async _newBrowser () {
-    // Create the browser
+    // Create a new browser
     const { headless, args, proxy, docker, defaultViewport } = this._state
     if (proxy) {
       args.push(`--proxy-server=${proxy.server}`)
