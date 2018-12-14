@@ -384,6 +384,7 @@ const main = async (args) => {
             engine.error(`Could not parse awards: ${results.error}`)
             continue
           }
+          engine.success(`Found: ${awards.length} awards, ${results.flights.length} flights`)
         } catch (err) {
           engine.error('Unexpected error occurred while parsing!')
           console.error(err)
