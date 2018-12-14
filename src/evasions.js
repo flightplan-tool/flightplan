@@ -13,7 +13,7 @@ module.exports = async function (page, options) {
 
   // Initialize variables to store temporary data
   await page.evaluateOnNewDocument(() => {
-    window.__customFn = new Set()
+    window.__customFn = new Map()
   })
 
   if (maskWebRTC) {
@@ -89,14 +89,14 @@ module.exports = async function (page, options) {
           return updateSDP(super.remoteDescription)
         }
       }
-      window.__customFn.add(window.RTCPeerConnection)
+      window.__customFn.set(window.RTCPeerConnection, 'function RTCPeerConnection() { [native code] }')
     }, mapping)
   }
 
   // Pass the User-Agent test
   const userAgent =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) ' +
-    'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) ' +
+    'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
   await page.setUserAgent(userAgent)
 
   // Pass the Webdriver test
@@ -104,26 +104,127 @@ module.exports = async function (page, options) {
     delete Navigator.prototype.webdriver
   })
 
-  // // Pass the screen dimensions test
-  // await page.evaluateOnNewDocument(() => {
-  //   window.outerWidth = window.innerWidth
-  //   const obj = {
-  //     availLeft: 0,
-  //     availTop: 22,
-  //     availWidth: 2560,
-  //     availHeight: 1354,
-  //     width: 2560,
-  //     height: 1440,
-  //     colorDepth: 24,
-  //     pixelDepth: 24
-  //   }
-  //   const defs = Object.entries(obj).reduce((newObj, [key, value]) => {
-  //     newObj[key] = { get: () => value, enumerable: true, configurable: true }
-  //     return newObj
-  //   }, {})
-  //   Object.defineProperties(Object.getPrototypeOf(window.screen), defs)
-  //   Object.values(defs).forEach(x => { window.__customFn.add(x.get) })
-  // })
+  // Pass WebGL test
+  await page.evaluateOnNewDocument(() => {
+    WebGLRenderingContext.prototype.getSupportedExtensions = () => {
+      return [
+        'ANGLE_instanced_arrays',
+        'EXT_blend_minmax',
+        'EXT_color_buffer_half_float',
+        'EXT_disjoint_timer_query',
+        'EXT_frag_depth',
+        'EXT_shader_texture_lod',
+        'EXT_texture_filter_anisotropic',
+        'WEBKIT_EXT_texture_filter_anisotropic',
+        'EXT_sRGB',
+        'OES_element_index_uint',
+        'OES_standard_derivatives',
+        'OES_texture_float',
+        'OES_texture_float_linear',
+        'OES_texture_half_float',
+        'OES_texture_half_float_linear',
+        'OES_vertex_array_object',
+        'WEBGL_color_buffer_float',
+        'WEBGL_compressed_texture_s3tc',
+        'WEBKIT_WEBGL_compressed_texture_s3tc',
+        'WEBGL_compressed_texture_s3tc_srgb',
+        'WEBGL_debug_renderer_info',
+        'WEBGL_debug_shaders',
+        'WEBGL_depth_texture',
+        'WEBKIT_WEBGL_depth_texture',
+        'WEBGL_draw_buffers',
+        'WEBGL_lose_context',
+        'WEBKIT_WEBGL_lose_context'
+      ]
+    }
+
+    // Get a WebGL context
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('webgl')
+
+    // Customize parameters
+    const originalGetParam = WebGLRenderingContext.prototype.getParameter
+    WebGLRenderingContext.prototype.getParameter = (param) => {
+      switch (param) {
+        case WebGLRenderingContext.prototype.ALIASED_POINT_SIZE_RANGE:
+          return [1, 8191]
+        case WebGLRenderingContext.prototype.MAX_COMBINED_TEXTURE_IMAGE_UNITS:
+          return 80
+        case WebGLRenderingContext.prototype.MAX_CUBE_MAP_TEXTURE_SIZE:
+          return 16384
+        case WebGLRenderingContext.prototype.MAX_FRAGMENT_UNIFORM_VECTORS:
+          return 1024
+        case WebGLRenderingContext.prototype.MAX_RENDERBUFFER_SIZE:
+          return 16384
+        case WebGLRenderingContext.prototype.MAX_TEXTURE_SIZE:
+          return 16384
+        case WebGLRenderingContext.prototype.MAX_VERTEX_ATTRIBS:
+          return 16
+        case WebGLRenderingContext.prototype.MAX_VERTEX_UNIFORM_VECTORS:
+          return 1024
+        case WebGLRenderingContext.prototype.MAX_VIEWPORT_DIMS:
+          return [16384, 16384]
+        case 34047:
+          return 16
+      }
+      return originalGetParam.call(ctx, param)
+    }
+
+    // Customize extensions
+    const originalGetExt = WebGLRenderingContext.prototype.getExtension
+    WebGLRenderingContext.prototype.getExtension = (param) => {
+      if (param === 'EXT_texture_filter_anisotropic') {
+        return { MAX_TEXTURE_MAX_ANISOTROPY_EXT: 34047 }
+      }
+      return originalGetExt.call(ctx, param)
+    }
+  })
+
+  // Pass the screen dimensions test
+  await page.evaluateOnNewDocument(() => {
+    const getOuterWidth = () => { return window.innerWidth }
+    const setOuterWidth = (val) => { window.outerWidth = val }
+    const getOuterHeight = () => { return window.innerHeight + 110 }
+    const setOuterHeight = (val) => { window.outerHeight = val }
+
+    Object.defineProperties(window, {
+      'outerWidth': {
+        get: getOuterWidth, set: setOuterWidth, enumerable: true, configurable: true
+      },
+      'outerHeight': {
+        get: getOuterHeight, set: setOuterHeight, enumerable: true, configurable: true
+      }
+    })
+
+    window.__customFn.set(getOuterWidth, 'function get outerWidth() { [native code] }')
+    window.__customFn.set(setOuterWidth, 'function set outerWidth() { [native code] }')
+    window.__customFn.set(getOuterHeight, 'function get outerHeight() { [native code] }')
+    window.__customFn.set(setOuterHeight, 'function set outerHeight() { [native code] }')
+  })
+
+  // Pass the touch support test
+  await page.evaluateOnNewDocument(() => {
+    const getMaxTouchPoints = () => 0
+    Object.defineProperty(
+      Object.getPrototypeOf(navigator),
+      'maxTouchPoints',
+      { get: getMaxTouchPoints, enumerable: true, configurable: true }
+    )
+    window.__customFn.set(getMaxTouchPoints, 'function get maxTouchPoints() { [native code] }')
+
+    const originalCreateEvent = document.createEvent
+
+    document.__proto__.createEvent = (type) => {
+      if (type === 'TouchEvent') {
+        throw new DOMException(`Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid.`, 'NotSupportedError')
+      } else {
+        return originalCreateEvent.call(document, type)
+      }
+    }
+    window.__customFn.set(document.createEvent, 'function createEvent() { [native code] }')
+
+    delete window.ontouchstart
+  })
 
   // Pass history length test
   await page.evaluateOnNewDocument(() => {
@@ -185,11 +286,13 @@ module.exports = async function (page, options) {
         ? Promise.resolve({state: Notification.permission})
         : originalQuery(parameters)
     }
-    window.__customFn.add(window.navigator.permissions.query)
+    window.__customFn.set(window.navigator.permissions.query, 'function query() { [native code] }')
   })
 
   // Pass the Plugins Length test
   await page.evaluateOnNewDocument(() => {
+    const mimeTypes = []
+
     const addPlugin = (idx, obj) => {
       // Create the Plugin object
       const plugin = Object.create(Plugin.prototype, {
@@ -214,6 +317,7 @@ module.exports = async function (page, options) {
           [idx]: { value: mt, writable: false, enumerable: true, configurable: true },
           [mt.type]: { value: mt, writable: false, enumerable: false, configurable: true }
         })
+        mimeTypes.push(mt)
       })
 
       // Add the plugin to the PluginArray
@@ -259,7 +363,7 @@ module.exports = async function (page, options) {
       'plugins',
       { get: getPlugins, enumerable: true, configurable: true }
     )
-    window.__customFn.add(getPlugins)
+    window.__customFn.set(getPlugins, 'function get plugins() { [native code] }')
 
     // Set plugins on the PluginArray
     plugins.forEach((x, idx) => addPlugin(idx, x))
@@ -271,7 +375,37 @@ module.exports = async function (page, options) {
       'length',
       { get: getPluginsLength, enumerable: true, configurable: true }
     )
-    window.__customFn.add(getPluginsLength)
+    window.__customFn.set(getPluginsLength, 'function get length() { [native code] }')
+
+    // Create a new MimeTypeArray
+    const mimeTypeArr = Object.create(navigator.mimeTypes)
+    const getMimeTypes = () => mimeTypeArr
+    Object.defineProperty(
+      Object.getPrototypeOf(navigator),
+      'mimeTypes',
+      { get: getMimeTypes, enumerable: true, configurable: true }
+    )
+    window.__customFn.set(getMimeTypes, 'function get mimeTypes() { [native code] }')
+
+    // Set mime types on the MimeTypeArray
+    mimeTypes.sort((a, b) => {
+      return (a.type < b.type) ? -1 : ((a.type > b.type) ? 1 : 0)
+    }).forEach((mt, idx) => {
+      // Each MimeType is accessible via index and type value
+      Object.defineProperties(navigator.mimeTypes, {
+        [idx]: { value: mt, writable: false, enumerable: true, configurable: true },
+        [mt.type]: { value: mt, writable: false, enumerable: false, configurable: true }
+      })
+    })
+
+    // Set MimeTypeArray length
+    const getMimeTypesLength = () => mimeTypes.length
+    Object.defineProperty(
+      Object.getPrototypeOf(navigator.mimeTypes),
+      'length',
+      { get: getMimeTypesLength, enumerable: true, configurable: true }
+    )
+    window.__customFn.set(getMimeTypesLength, 'function get length() { [native code] }')
   })
 
   // Pass the Languages test
@@ -301,7 +435,6 @@ module.exports = async function (page, options) {
 
   // Pass Function.toString() test
   await page.evaluateOnNewDocument(() => {
-    const reFunction = /function\s+(.*?)\s*\((.*?)\)\s*{([^]*)}/
     const oldToString = Function.prototype.toString
     const customFn = window.__customFn
 
@@ -318,14 +451,7 @@ module.exports = async function (page, options) {
         // toString() was called on itself
         return 'function toString() { [native code] }'
       } else if (customFn.has(this)) {
-        // Make this function look like it's native code
-        const match = reFunction.exec(fnStr)
-        if (match) {
-          return `function ${match[1]}() { [native code] }`
-        }
-
-        // Couldn't match up function components properly, just return standard-looking anonymous function
-        return 'function () { [native code] }'
+        return customFn.get(this)
       }
 
       // All other functions are treated normally
