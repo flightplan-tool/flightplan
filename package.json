@@ -1,6 +1,6 @@
 {
   "name": "flightplan-tool",
-  "version": "0.3.35",
+  "version": "0.3.36",
   "description": "Search for award inventory using Node.js and Headless Chrome!",
   "main": "src/index.js",
   "bin": {
@@ -27,7 +27,6 @@
     "csv-parse": "^2.5.0",
     "express": "^4.16.3",
     "external-ip": "^2.1.1",
-    "frozen-moment": "^0.4.0",
     "humanize-duration": "^3.15.3",
     "jspath": "^0.4.0",
     "moment-timezone": "^0.5.23",

@@ -1574,13 +1574,6 @@ from@~0:
   resolved "https://registry.yarnpkg.com/from/-/from-0.1.7.tgz#83c60afc58b9c56997007ed1a768b3ab303a44fe"
   integrity sha1-g8YK/Fi5xWmXAH7Rp2izqzA6RP4=
 
-frozen-moment@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/frozen-moment/-/frozen-moment-0.4.0.tgz#9635599758d6e20c0a8033c779086cd5369a1d32"
-  integrity sha1-ljVZl1jW4gwKgDPHeQhs1TaaHTI=
-  dependencies:
-    moment ">=2.11.2 <3"
-
 fs-minipass@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/fs-minipass/-/fs-minipass-1.2.5.tgz#06c277218454ec288df77ada54a03b8702aacb9d"
@@ -3115,7 +3108,7 @@ moment-timezone@^0.5.23:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0", "moment@>=2.11.2 <3":
+"moment@>= 2.9.0":
   version "2.22.2"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
   integrity sha1-PCV/mDn8DpP/UxSWMiOeuQeD/2Y=

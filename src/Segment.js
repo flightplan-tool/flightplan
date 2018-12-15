@@ -1,4 +1,3 @@
-require('frozen-moment') // Support freezing moment's
 const timetable = require('timetable-fns')
 
 const utils = require('./utils')
@@ -79,9 +78,9 @@ class Segment {
       if (!m.isValid()) {
         throw new Error(`Invalid departure date: ${date} ${departure} (airport: ${fromCity})`)
       }
-      _state.departureMoment = m.freeze()
+      _state.departureMoment = m
     }
-    return _state.departureMoment
+    return _state.departureMoment.clone()
   }
 
   arrivalMoment () {
@@ -93,9 +92,9 @@ class Segment {
       if (!m.isValid()) {
         throw new Error(`Invalid arrival date: ${date}(${lagDays}) ${arrival} (airport: ${toCity})`)
       }
-      _state.arrivalMoment = m.freeze()
+      _state.arrivalMoment = m
     }
-    return _state.arrivalMoment
+    return _state.arrivalMoment.clone()
   }
 
   toJSON () {

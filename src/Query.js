@@ -1,5 +1,4 @@
 const moment = require('moment-timezone')
-require('frozen-moment') // Support freezing moment's
 const timetable = require('timetable-fns')
 
 const consts = require('./consts')
@@ -77,17 +76,17 @@ class Query {
   departDateMoment () {
     const { _state } = this
     if (!_state.hasOwnProperty('departDateMoment')) {
-      _state.departDateMoment = moment(this.departDate).freeze()
+      _state.departDateMoment = moment(this.departDate)
     }
-    return _state.departDateMoment
+    return _state.departDateMoment.clone()
   }
 
   returnDateMoment () {
     const { _state } = this
     if (!_state.hasOwnProperty('returnDateMoment')) {
-      _state.returnDateMoment = moment(this.returnDate).freeze()
+      _state.returnDateMoment = moment(this.returnDate)
     }
-    return _state.returnDateMoment
+    return _state.returnDateMoment.clone()
   }
 
   closestDeparture (date) {
