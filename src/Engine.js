@@ -33,6 +33,10 @@ class Engine {
     }
   }
 
+  _verbose () {
+    return (this._state || {}).verbose
+  }
+
   async initialize (options = {}) {
     const { searcher, id, config } = this._state
     if (!searcher) {

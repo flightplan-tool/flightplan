@@ -12,6 +12,10 @@ class Searcher {
     this._engine = engine
   }
 
+  _verbose () {
+    return this._engine._verbose()
+  }
+
   validate (query) {}
 
   async search (page, query, results) {

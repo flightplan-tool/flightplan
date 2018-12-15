@@ -18,6 +18,10 @@ class Parser {
     this._config = config
   }
 
+  _verbose () {
+    return this._engine._verbose()
+  }
+
   parse (results) {
     const msg = 'No `parse` method found on the defined Parser, did you forget to override it?'
     throw new Error(`${this.constructor.name}(...): ${msg}`)

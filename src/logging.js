@@ -2,8 +2,7 @@ const logger = require('../shared/logger')
 
 module.exports = (Base) => class extends Base {
   verbose () {
-    const { verbose = true } = this.options || {}
-    return verbose
+    return this._verbose()
   }
 
   success () {
