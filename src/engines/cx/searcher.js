@@ -133,7 +133,7 @@ module.exports = class extends Searcher {
         this.checkResponse(response)
       }
 
-      // Get results for every single tab
+      // Get results for each tier
       let idx = 0
       let tabs = null
       while (true) {
@@ -219,35 +219,25 @@ module.exports = class extends Searcher {
   async findTabs () {
     const { page } = this
 
-    const tabs = await page.evaluate(() => {
+    const tabs = await page.evaluate((queryCabin) => {
       const types = [ 'standard', 'choice', 'tailored' ]
-      const cabins = [ 'economy', 'premium economy', 'business', 'first' ]
-
-      return [...document.querySelectorAll('#flightlistDept div.owl-item')]
+      const all = [...document.querySelectorAll('#flightlistDept div.owl-item')]
         .map((item, idx) => {
-          // Skip the active tab
-          if (item.querySelector('div.cabin-ticket-card-wrapper-outer.active')) {
-            return null
-          }
+          // Is the tab active?
+          const active = !!item.querySelector('div.cabin-ticket-card-wrapper-outer.active')
 
-          // Get the cabin and award type
-          const cabin = item.querySelector('span.cabin-class').textContent.trim().toLowerCase()
+          // Get the award type
           const type = item.querySelector('span.ticket-type').textContent.trim().toLowerCase()
 
           // Add the tab
           const sel = `div.owl-item:nth-of-type(${idx + 1}) div.cabin-ticket-card`
-          return { sel, cabin, type }
+          return { sel, active, type }
         })
-        .filter(x => !!x)
-        // Sort by award type, since routes with only partner flights will error out when choosing
-        // the non-standard award types
-        .sort((a, b) => {
-          const aType = types.indexOf(a.type)
-          const bType = types.indexOf(b.type)
-          const aCabin = cabins.indexOf(a.cabin)
-          const bCabin = cabins.indexOf(b.cabin)
-          return (aType === bType) ? (aCabin - bCabin) : aType - bType
-        })
+
+      // We only need one tab of each award type
+      return types
+        .map(type => all.find(x => x.type === type))
+        .filter(x => !!x && !x.active)
         .map(x => x.sel)
     })
 

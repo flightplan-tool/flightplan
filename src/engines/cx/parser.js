@@ -20,7 +20,7 @@ const cabinCodes = {
 
 // Cabin and tier to fare code mapping
 const tierId = { STD: 'S', PT1: '1', PT2A: '2' }
-const cabinId = { ECO: 'Y', PEY: 'W', BUS: 'C', FIR: 'F' }
+const cabinId = { [cabins.economy]: 'ECO', [cabins.premium]: 'PEY', [cabins.business]: 'BUS', [cabins.first]: 'FIR' }
 
 // Order of cabins from best to worst
 const cabinOrder = [ cabins.first, cabins.business, cabins.premium, cabins.economy ]
@@ -76,30 +76,39 @@ module.exports = class extends Parser {
       // Determine partner status
       const partner = this.isPartner(segments, [ 'KA' ])
 
-      // Parse fare info from the flight ID string
-      const fare = this.parseFare(flightIdString)
-      const data = availability.get(fare.cabin)
-      if (!data) {
-        return
-      }
+      // Parse flight ID
+      const flightId = flightIdString.split('_')
+      const tier = tierId[flightId[flightId.length - 2]]
 
-      // Get mileage cost
-      if (milesInfo) {
-        const val = milesInfo[flightIdString]
-        if (val && val > 0) {
-          data.mileageCost = val
+      // Create an award for each cabin with availability
+      const awards = []
+      for (const [ cabin, data ] of availability) {
+        // Find fare
+        const fare = this.config.fares.find(x => x.cabin === cabin && x.code.endsWith(tier))
+        if (!fare) {
+          throw new Parser.Error(`Missing fare code: ${cabin} / ${tier}`)
         }
-      }
 
-      // Create the award, and return the flight
-      return new Flight(segments, [
-        new Award({
+        // Get mileage cost
+        if (milesInfo) {
+          flightId[flightId.length - 1] = cabinId[cabin]
+          const val = milesInfo[flightId.join('_')]
+          if (val && val > 0) {
+            data.mileageCost = val
+          }
+        }
+
+        // Add the award
+        awards.push(new Award({
           engine,
           partner,
           fare,
           ...data
-        })
-      ])
+        }))
+      }
+
+      // Create and return the flight
+      return new Flight(segments, awards)
     }).filter(x => !!x)
 
     // Return results
@@ -145,8 +154,9 @@ module.exports = class extends Parser {
   }
 
   cabinAvailability (availability, cabin) {
-    const ordering = [ cabins.premium, cabins.economy ].includes(cabin)
-      ? [ cabin ]
+    // CX does not allow mixed Premium/Economy awards
+    const ordering = (cabin === cabins.premium)
+      ? [ cabins.premium ]
       : cabinOrder.slice(cabinOrder.indexOf(cabin))
     const values = []
     const cabinList = []
@@ -174,16 +184,6 @@ module.exports = class extends Parser {
     // Compute numerical quantity
     const quantity = Math.min(...values.map(x => parseInt(x)))
     return { cabins: cabinList, quantity, exact: true, waitlisted: false }
-  }
-
-  parseFare (str) {
-    const [ tier, cabin ] = str.split('_').slice(-2)
-    const code = cabinId[cabin] + tierId[tier]
-    const fare = this.config.fares.find(x => x.code === code)
-    if (!fare) {
-      throw new Parser.Error(`Failed to parse fare from: ${str}`)
-    }
-    return fare
   }
 
   airportCodes (json) {

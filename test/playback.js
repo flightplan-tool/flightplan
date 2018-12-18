@@ -1,5 +1,4 @@
 const fs = require('fs')
-const moment = require('moment-timezone')
 const timetable = require('timetable-fns')
 
 const fp = require('../src/index')

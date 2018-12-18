@@ -12,53 +12,21 @@
     "json": [
         {
             "name": "results",
-            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e.json"
+            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-6c10.json"
         }
     ],
     "screenshot": [
         {
             "name": "results-0",
-            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e.jpg"
+            "path": "./test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-6c10.jpg"
         },
         {
             "name": "results-1",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-1.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-6c10-1.jpg"
         },
         {
             "name": "results-2",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-2.jpg"
-        },
-        {
-            "name": "results-3",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-3.jpg"
-        },
-        {
-            "name": "results-4",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-4.jpg"
-        },
-        {
-            "name": "results-5",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-5.jpg"
-        },
-        {
-            "name": "results-6",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-6.jpg"
-        },
-        {
-            "name": "results-7",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-7.jpg"
-        },
-        {
-            "name": "results-8",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-8.jpg"
-        },
-        {
-            "name": "results-9",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-9.jpg"
-        },
-        {
-            "name": "results-10",
-            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-020e-10.jpg"
+            "path": "test/__mock__/CX-ORD-PEK-2019-09-18-OW1Y-6c10-2.jpg"
         }
     ],
     "flights": [
@@ -116,7 +84,7 @@
                         "economy"
                     ],
                     "fare": "YS",
-                    "quantity": 7,
+                    "quantity": 8,
                     "exact": true,
                     "waitlisted": false,
                     "mileageCost": 47000,
@@ -156,6 +124,34 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
+                        "first",
+                        "business"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
                         "economy",
                         "economy"
                     ],
@@ -170,28 +166,28 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "business",
+                        "first",
                         "business"
                     ],
-                    "fare": "CS",
+                    "fare": "F1",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 85000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "first",
+                        "business",
                         "business"
                     ],
-                    "fare": "FS",
+                    "fare": "C1",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 125000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -212,28 +208,28 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "business",
+                        "first",
                         "business"
                     ],
-                    "fare": "C1",
+                    "fare": "F2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 127500,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "first",
+                        "business",
                         "business"
                     ],
-                    "fare": "F1",
+                    "fare": "C2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 187500,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -248,20 +244,6 @@
                     "exact": false,
                     "waitlisted": true,
                     "mileageCost": 73000,
-                    "fees": null
-                },
-                {
-                    "engine": "CX",
-                    "partner": false,
-                    "cabins": [
-                        "business",
-                        "business"
-                    ],
-                    "fare": "C2",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": true,
-                    "mileageCost": 400000,
                     "fees": null
                 }
             ],
@@ -298,6 +280,48 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "premium",
+                        "premium"
+                    ],
+                    "fare": "WS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
                         "economy",
                         "economy"
                     ],
@@ -312,14 +336,14 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "premium",
-                        "premium"
+                        "first",
+                        "first"
                     ],
-                    "fare": "WS",
+                    "fare": "F1",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 60000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -329,25 +353,25 @@
                         "business",
                         "business"
                     ],
-                    "fare": "CS",
+                    "fare": "C1",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 85000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "premium",
+                        "premium"
                     ],
-                    "fare": "FS",
+                    "fare": "W1",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 125000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -368,14 +392,14 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "premium",
-                        "premium"
+                        "first",
+                        "first"
                     ],
-                    "fare": "W1",
+                    "fare": "F2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 91000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -385,25 +409,25 @@
                         "business",
                         "business"
                     ],
-                    "fare": "C1",
+                    "fare": "C2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 127500,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "premium",
+                        "premium"
                     ],
-                    "fare": "F1",
+                    "fare": "W2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 187500,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -418,34 +442,6 @@
                     "exact": false,
                     "waitlisted": true,
                     "mileageCost": 73000,
-                    "fees": null
-                },
-                {
-                    "engine": "CX",
-                    "partner": false,
-                    "cabins": [
-                        "premium",
-                        "premium"
-                    ],
-                    "fare": "W2",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": true,
-                    "mileageCost": 130000,
-                    "fees": null
-                },
-                {
-                    "engine": "CX",
-                    "partner": false,
-                    "cabins": [
-                        "business",
-                        "business"
-                    ],
-                    "fare": "C2",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": true,
-                    "mileageCost": 400000,
                     "fees": null
                 }
             ],
@@ -482,6 +478,34 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
+                        "first",
+                        "first"
+                    ],
+                    "fare": "FS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
+                        "business",
+                        "business"
+                    ],
+                    "fare": "CS",
+                    "quantity": 1,
+                    "exact": false,
+                    "waitlisted": true,
+                    "mileageCost": null,
+                    "fees": null
+                },
+                {
+                    "engine": "CX",
+                    "partner": false,
+                    "cabins": [
                         "economy",
                         "economy"
                     ],
@@ -496,28 +520,28 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "business",
-                        "business"
+                        "first",
+                        "first"
                     ],
-                    "fare": "CS",
+                    "fare": "F1",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 85000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "FS",
+                    "fare": "C1",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 125000,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -538,28 +562,28 @@
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "business",
-                        "business"
+                        "first",
+                        "first"
                     ],
-                    "fare": "C1",
+                    "fare": "F2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 127500,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
                     "engine": "CX",
                     "partner": false,
                     "cabins": [
-                        "first",
-                        "first"
+                        "business",
+                        "business"
                     ],
-                    "fare": "F1",
+                    "fare": "C2",
                     "quantity": 1,
                     "exact": false,
                     "waitlisted": true,
-                    "mileageCost": 187500,
+                    "mileageCost": null,
                     "fees": null
                 },
                 {
@@ -574,20 +598,6 @@
                     "exact": false,
                     "waitlisted": true,
                     "mileageCost": 73000,
-                    "fees": null
-                },
-                {
-                    "engine": "CX",
-                    "partner": false,
-                    "cabins": [
-                        "business",
-                        "business"
-                    ],
-                    "fare": "C2",
-                    "quantity": 1,
-                    "exact": false,
-                    "waitlisted": true,
-                    "mileageCost": 400000,
                     "fees": null
                 }
             ],
