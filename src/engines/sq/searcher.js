@@ -1,8 +1,20 @@
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
 
+const { errors } = Searcher
+
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
+    // Wait for page to finish loading
+    await this.settle()
+
+    // Check for blocked access
+    const msgError = await this.textContent('div.pageHeading')
+    if (msgError.toLowerCase().includes('access blocked')) {
+      throw new errors.BlockedAccess()
+    }
+
+    // Check if we're logged in
     try {
       await page.waitFor(
         '#kfLoginPopup #membership-1, a.login, li.logged-in', {visible: true, timeout: 10000})
@@ -13,7 +25,7 @@ module.exports = class extends Searcher {
   async login (page, credentials) {
     const [ username, password ] = credentials
     if (!username || !password) {
-      throw new Searcher.Error(`Missing login credentials`)
+      throw new errors.MissingCredentials()
     }
 
     // Dismiss popups
@@ -65,6 +77,12 @@ module.exports = class extends Searcher {
       await page.waitFor(3000)
       await this.settle()
       await page.waitFor(5000)
+    }
+
+    // Check for errors
+    const msgError = await this.textContent('div.alert__message')
+    if (msgError.includes('more tries to log in')) {
+      throw new errors.InvalidCredentials()
     }
   }
 

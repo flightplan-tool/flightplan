@@ -1,6 +1,8 @@
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
 
+const { errors } = Searcher
+
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
     await page.waitFor(
@@ -11,7 +13,7 @@ module.exports = class extends Searcher {
   async login (page, credentials) {
     const [ username, password ] = credentials
     if (!username || !password) {
-      throw new Searcher.Error(`Missing login credentials`)
+      throw new errors.MissingCredentials()
     }
 
     // Enter username and password
@@ -29,6 +31,16 @@ module.exports = class extends Searcher {
       await page.waitFor(250)
     }
     await this.clickAndWait('button.btn-primary.form-login-submit')
+
+    // Check for errors
+    const msgError = await this.textContent('div.form-msg-box.has-error span.form-msg')
+    if (msgError.includes('does not match our records')) {
+      throw new errors.InvalidCredentials()
+    }
+    const msgError2 = await this.textContent('div.form-msg-box.error.form-main-msg span.form-msg')
+    if (msgError2.includes('your account has been blocked')) {
+      throw new errors.BlockedAccount()
+    }
   }
 
   async search (page, query, results) {
@@ -87,6 +99,12 @@ module.exports = class extends Searcher {
 
     // Wait for results to load
     await this.monitor('.waiting-spinner-inner')
+
+    // Check for errors
+    const msgError = await this.textContent('div.errorContainer')
+    if (msgError.includes('itinerary is not eligible') || msgError.includes('itinerary cannot be booked')) {
+      throw new errors.InvalidRoute()
+    }
 
     // Wait up to 15 seconds to get the JSON from the browser itself
     let json = null

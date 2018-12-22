@@ -4512,9 +4512,9 @@ timed-out@^4.0.0:
   integrity sha1-8y6srFoXW+ol1/q1Zas+2HQe9W8=
 
 timetable-fns@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.1.tgz#aa313805fcdfa855bb557d2ea4eb47ee8cd4b764"
-  integrity sha512-Lpcttf77gddbOCF22xnqqUBSfotjM1sJ6TLDpjIMJqmTu8X7DXG2pWfRqyONZbYiD4GqBXWFb8YJ1S7/u3J1pQ==
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.7.tgz#a9fa598f7b0a4f0a31dba877e59d00512015826d"
+  integrity sha512-3khk6iuawgecV+6BTMrNnDvTQpbqDwk+t1j5G2y+v4r4s3dnH2y+p0z6Zmn5UhjXs3YTF4KmK3jSiduXNP63HQ==
   dependencies:
     moment-timezone "^0.5.23"
 

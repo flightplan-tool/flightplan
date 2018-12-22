@@ -20,14 +20,13 @@ class Results {
       json: [],
       screenshot: [],
       $: new Map(),
-      error: null,
-      invalid: false
+      error: null
     }
     this._engine = engine
   }
 
   static parse (json) {
-    const { engine, query, error, invalid, flights } = json
+    const { engine, query, error, flights } = json
 
     // Validate query
     if (!query) {
@@ -46,8 +45,7 @@ class Results {
       json: [],
       screenshot: [],
       $: new Map(),
-      error: error ? new Error(error) : null,
-      invalid
+      error: error ? new Error(error) : null
     }
     assetTypes.forEach(type => instance._populateAssets(type, json))
 
@@ -161,11 +159,10 @@ class Results {
   }
 
   toJSON (includeAwards = false) {
-    const { engine, query, error, invalid } = this._state
+    const { engine, query, error } = this._state
     const ret = { engine, query: query.toJSON() }
     if (error) {
       ret.error = error.message
-      ret.invalid = invalid
     }
     assetTypes.forEach(type => {
       const assets = this._state[type]
@@ -200,10 +197,6 @@ class Results {
 
   get engine () {
     return this._state.engine
-  }
-
-  get invalid () {
-    return this._state.invalid
   }
 
   get query () {
@@ -255,10 +248,6 @@ class Results {
       // Handle Parser-specific errors differently
       if (err.constructor.name === 'ParserError') {
         this._setError(err)
-        return
-      } else if (err.constructor.name === 'ParserInvalidError') {
-        this._setError(err)
-        this._state.invalid = true
         return
       } else {
         throw err

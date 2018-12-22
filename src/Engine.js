@@ -80,6 +80,9 @@ class Engine {
     this._state.browser = await this._newBrowser()
     const page = (await this._state.browser.pages())[0]
     this._state.page = await this._newPage(page)
+
+    // Make sure we can access the website
+    await searcher.goto(config.searchURL, { referer: 'https://www.google.com/' })
   }
 
   async search (query) {
@@ -111,7 +114,7 @@ class Engine {
       this._state.lastError = err
 
       // Handle Searcher-specific errors differently
-      if (err.constructor.name !== 'SearcherError') {
+      if (err.name !== 'SearcherError') {
         throw err
       } else {
         results._setError(err)
@@ -191,7 +194,7 @@ class Engine {
   }
 
   async _newPage (page) {
-    const { browser, config, timeout, proxy, cookies, evasions } = this._state
+    const { browser, timeout, proxy, cookies, evasions } = this._state
 
     // Create and setup the new page
     if (!page) {
@@ -213,14 +216,11 @@ class Engine {
       await page.setCookie(...cookies)
     }
 
-    // Initialize document referrer by browsing to website's main page
-    await page.goto(config.homeURL)
-
     return page
   }
 
-  async _login (retries = 4) {
-    const { config, searcher, page, loginRequired, credentials, verbose } = this._state
+  async login (retries = 3) {
+    const { searcher, page, loginRequired, credentials, verbose } = this._state
 
     if (!loginRequired) {
       return true
@@ -245,17 +245,12 @@ class Engine {
         } else if (attempts === 2) {
           this.info('2nd login attempt...')
         } else if (attempts === 3) {
-          this.info('3rd login attempt...')
-        } else if (attempts === 4) {
-          this.warn('4th and final login attempt...')
+          this.info('3rd and final login attempt...')
         }
       }
 
       // Call Searcher.login()
       await searcher.login(page, credentials)
-
-      // Go to the search page (which will show us if we're logged in or not)
-      await searcher.goto(config.searchURL)
     }
   }
 
@@ -277,8 +272,8 @@ class Engine {
     await searcher.goto(config.searchURL)
 
     // Make sure we're logged in
-    if (!(await this._login())) {
-      throw new Searcher.Error('Login failure')
+    if (!(await this.login())) {
+      throw new errors.LoginFailed()
     }
 
     // Call the Searcher

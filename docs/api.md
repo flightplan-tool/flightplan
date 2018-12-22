@@ -200,6 +200,7 @@ An Engine is used to execute a flight award search. Each Engine instance is asso
 
 #### Methods
 - [engine.initialize(*options*)](#engine-initialize-options)
+- [engine.login(*retries*)](#engine-login-retries)
 - [engine.search(*query*)](#engine-search-query)
 - [engine.getCookies()](#engine-getcookies)
 - [engine.close()](#engine-close)
@@ -235,6 +236,13 @@ An Engine is used to execute a flight award search. Each Engine instance is asso
 - returns: <[Promise]>
 
 Initializes the Engine (this primarily involves launching the Chromium instance associated with this Engine). This method must be called, and the returned [Promise] must finish resolving, before the [`search()`](engine-search-query) method can be called.
+
+### engine.login(*retries*)
+
+- `retries` <[number]> Optional number of time to attempt to login before giving up, defaults to `3`
+- returns: <[Promise]<[boolean]>>
+
+Logs in to the airline website using the credentials provided to [`initialize()`](engine-initialize-options). It is not necessary to manually call this method, since it will be automatically called during searching if a user is ever detected to not be signed in. Return a [Promise] that resolves to `true` if login was successful.
 
 ### engine.search(*query*)
 
@@ -1064,7 +1072,6 @@ Results is used to contain the results of a search. It is created by [Engine], p
 - [results.ok](#results-ok)
 - [results.error](#results-error)
 - [results.engine](#results-engine)
-- [results.invalid](#results-invalid)
 - [results.query](#results-query)
 - [results.assets](#results-query)
 - [results.awards](#results-awards)
@@ -1189,12 +1196,6 @@ If the [Searcher] or [Parser] encounter an error, due to a fault beyond its own 
 - returns: <[string]>
 
 Returns the ID of the [Engine] which created this Results instance.
-
-### results.invalid
-
-- returns: <[boolean]> `true` if the [Query] was considered invalid, based on the search results.
-
-Most invalid queries are discovered before the [Searcher] ever runs, but in some scenarios this might not be possible. For exampe, the airline website may respond that the queried route is not supported. In these cases, `results.error` will be set, in addition to the `invalid` returning `true`, indicating that all similar queries are likely to fail.
 
 ### results.query
 

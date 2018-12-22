@@ -25,11 +25,11 @@ module.exports = class extends Parser {
         message.includes('unable to find departing flights')) {
         return []
       } else {
-        throw new Parser.Error(message)
+        throw new Parser.Error(`Website returned blocking error: ${message}`)
       }
     }
     if (severity === 'error') {
-      throw new Parser.Error(message)
+      throw new Parser.Error(`Website returned error: ${message}`)
     }
 
     // Get pricing info

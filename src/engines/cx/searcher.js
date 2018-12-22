@@ -3,6 +3,8 @@ const moment = require('moment-timezone')
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
 
+const { errors } = Searcher
+
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
     // Sometimes the page keeps reloading out from under us
@@ -17,7 +19,7 @@ module.exports = class extends Searcher {
   async login (page, credentials) {
     const [ username, password ] = credentials
     if (!username || !password) {
-      throw new Searcher.Error(`Missing login credentials`)
+      throw new errors.MissingCredentials()
     }
 
     // Enter username and password
@@ -38,9 +40,15 @@ module.exports = class extends Searcher {
     // Submit form
     await this.clickAndWait('#account-login div.form-login-wrapper button.btn-primary')
 
-    // Check for CAPTCHA test
+    // Check for errors
+    const msgError = await this.textContent('div.global-error-wrap li')
+    if (msgError.includes('incorrect membership number or username')) {
+      throw new errors.InvalidCredentials()
+    } else if (msgError.includes('reactivate your account')) {
+      throw new errors.BlockedAccount()
+    }
     if (await page.$('#captcha-container')) {
-      throw new Searcher.Error(`CAPTCHA detected during login`)
+      throw new errors.BotDetected()
     }
   }
 
@@ -152,7 +160,7 @@ module.exports = class extends Searcher {
             // If session becomes invalid, logout
             await this.logout()
           }
-          throw new Searcher.Error(msg)
+          throw new Searcher.Error(`Website returned error: ${msg}`)
         }
 
         // If there's a "No flights available" modal pop-up, dismiss it

@@ -34,7 +34,7 @@
     "puppeteer": "^1.6.0-next.1532381444032",
     "shelljs": "^0.8.2",
     "syncprompt": "^2.0.0",
-    "timetable-fns": "^0.1.0"
+    "timetable-fns": "^0.1.7"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",

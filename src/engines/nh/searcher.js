@@ -1,5 +1,6 @@
 const Searcher = require('../../Searcher')
-const { cabins } = require('../../consts')
+
+const { errors } = Searcher
 
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
@@ -25,7 +26,7 @@ module.exports = class extends Searcher {
   async login (page, credentials) {
     const [ username, password ] = credentials
     if (!username || !password) {
-      throw new Searcher.Error(`Missing login credentials`)
+      throw new errors.MissingCredentials()
     }
 
     // Enter username and password
@@ -44,6 +45,12 @@ module.exports = class extends Searcher {
       page.click('#amcMemberLogin')
     ])
     await this.settle()
+
+    // Check for errors
+    const msgError = await this.textContent('.modalError div.dialogMessage')
+    if (msgError.includes('verify your membership number')) {
+      throw new errors.InvalidCredentials()
+    }
   }
 
   async search (page, query, results) {
@@ -124,6 +131,12 @@ module.exports = class extends Searcher {
   }
 
   async settle () {
+    // CAPTCHA indicates we're being blocked based on IP address
+    const msg = await this.textContent('#reCaptchaDescription')
+    if (msg.includes('prevent fraudulent manipulation')) {
+      throw new errors.BlockedAccess()
+    }
+
     // Wait for spinner
     await this.monitor('div.loadingArea')
     await this.page.waitFor(1000)
@@ -142,14 +155,14 @@ module.exports = class extends Searcher {
     if (await this.visible('.modalError')) {
       const msg = await this.textContent('.modalError', '')
       if (msg.toLowerCase().includes('there are errors')) {
-        throw new Searcher.Error(`The website encountered an error processing the request: ${msg}`)
+        throw new Searcher.Error(`The website returned an error: ${msg}`)
       }
     }
 
     if (await page.$('#cmnContainer .messageArea')) {
       const msg = await this.textContent('#cmnContainer .messageArea', '')
       await page.click('#cmnContainer .buttonArea input')
-      throw new Searcher.Error(`The website encountered an error processing the request: ${msg}`)
+      throw new Searcher.Error(`The website returned an error: ${msg}`)
     }
   }
 }

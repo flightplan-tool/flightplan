@@ -43,10 +43,12 @@ module.exports = class extends Parser {
       return []
     }
     const msg = $('div.alert__message').text().trim()
-    if (msg.includes('no seats available') || msg.includes('no flights available')) {
+    if (
+      msg.includes('no seats available') ||
+      msg.includes('no flights available') ||
+      msg.includes('constitutes a backtrack routing')
+    ) {
       return []
-    } else if (msg.includes('constitutes a backtrack routing')) {
-      throw new Parser.InvalidError(`Backtrack routing`)
     }
 
     // Scan for flights

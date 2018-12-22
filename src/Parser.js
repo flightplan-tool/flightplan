@@ -1,16 +1,11 @@
 const logging = require('./logging')
 
-// Custom error types
+// Custom Searcher errors
 class ParserError extends Error {}
-class ParserInvalidError extends Error {}
 
 class Parser {
   static get Error () {
     return ParserError
-  }
-
-  static get InvalidError () {
-    return ParserInvalidError
   }
 
   constructor (engine, config) {

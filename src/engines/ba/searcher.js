@@ -4,6 +4,8 @@ const timetable = require('timetable-fns')
 const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
 
+const { errors } = Searcher
+
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
     // Sometimes the page keeps reloading out from under us
@@ -19,7 +21,7 @@ module.exports = class extends Searcher {
   async login (page, credentials) {
     const [ username, password ] = credentials
     if (!username || !password) {
-      throw new Searcher.Error(`Missing login credentials`)
+      throw new errors.MissingCredentials()
     }
 
     // Enter username and password
@@ -40,10 +42,18 @@ module.exports = class extends Searcher {
     }
     await this.clickAndWait('#ecuserlogbutton')
 
-    // Check if we're blocked
-    const msg = await this.textContent('#main-content h1')
-    if (msg.includes('page is not available')) {
-      throw new Searcher.Error(`Website blocked access during login`)
+    // Check for errors
+    const msgError = await this.textContent('#blsErrosContent li')
+    if (msgError.includes('not able to recognise the membership number')) {
+      throw new errors.InvalidCredentials()
+    }
+    const title = (await this.textContent('h1')).toLowerCase()
+    if (title.includes('web page blocked')) {
+      throw new errors.BlockedAccess()
+    }
+    const msgError2 = await this.textContent('#main-content h1')
+    if (msgError2.includes('page is not available')) {
+      throw new errors.BotDetected()
     }
   }
 
@@ -100,20 +110,14 @@ module.exports = class extends Searcher {
     while (true) {
       try {
         await Promise.race([
-          page.waitFor('#blsErrors li', { timeout: 120000 }),
-          page.waitFor('#captcha_form', { timeout: 120000 }),
+          page.waitFor('#flt_selection_form', { timeout: 120000 }),
           page.waitFor('#noStopovers', { timeout: 120000 }),
-          page.waitFor('#flt_selection_form', { timeout: 120000 })
+          page.waitFor('#captcha_form', { timeout: 120000 }),
+          page.waitFor('#blsErrors li', { timeout: 120000 }),
+          page.waitFor('div.outage-page', { timeout: 120000 })
         ])
       } catch (err) {
         throw new Searcher.Error(`Stuck waiting for results to appear`)
-      }
-
-      // Check for catpcha
-      if (await page.$('#captcha_form')) {
-        this.warn(`CAPTCHA detected, please submit solution to continue...`)
-        await page.waitForNavigation(this.config.waitUntil)
-        continue
       }
 
       // Check for stopover form
@@ -124,10 +128,24 @@ module.exports = class extends Searcher {
         continue
       }
 
+      // Check for catpcha
+      if (await page.$('#captcha_form')) {
+        this.warn(`CAPTCHA detected, please submit solution to continue...`)
+        await page.waitForNavigation(this.config.waitUntil)
+        continue
+      }
+
       // Check for errors
       const msgError = await this.textContent('#blsErrors li')
       if (msgError) {
-        throw new Searcher.Error(msgError)
+        if (msgError.includes('do not fly this route')) {
+          throw new errors.InvalidRoute()
+        } else {
+          throw new Searcher.Error(`Website returned error: ${msgError}`)
+        }
+      }
+      if (await page.$('div.outage-page')) {
+        throw new Searcher.Error(`Website experienced an unknown technical problem`)
       }
 
       // Ensure results exist

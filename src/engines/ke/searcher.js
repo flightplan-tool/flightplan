@@ -2,6 +2,8 @@ const Searcher = require('../../Searcher')
 const { cabins } = require('../../consts')
 const utils = require('../../utils')
 
+const { errors } = Searcher
+
 module.exports = class extends Searcher {
   async isLoggedIn (page) {
     await Promise.race([
@@ -14,7 +16,7 @@ module.exports = class extends Searcher {
   async login (page, credentials) {
     const [ username, password ] = credentials
     if (!username || !password) {
-      throw new Searcher.Error(`Missing login credentials`)
+      throw new errors.MissingCredentials()
     }
 
     // If login form not shown, click login link
@@ -44,6 +46,12 @@ module.exports = class extends Searcher {
       page.waitFor('#login-skypass', { hidden: true }).catch(e => {})
     ])
     await page.waitFor(500)
+
+    // Check for errors
+    const msgError = await this.textContent('#invalidLogin')
+    if (msgError.toLowerCase().includes('invalid login information')) {
+      throw new errors.InvalidCredentials()
+    }
   }
 
   validate (query) {
