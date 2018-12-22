@@ -4511,7 +4511,7 @@ timed-out@^4.0.0:
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
   integrity sha1-8y6srFoXW+ol1/q1Zas+2HQe9W8=
 
-timetable-fns@^0.1.0:
+timetable-fns@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.7.tgz#a9fa598f7b0a4f0a31dba877e59d00512015826d"
   integrity sha512-3khk6iuawgecV+6BTMrNnDvTQpbqDwk+t1j5G2y+v4r4s3dnH2y+p0z6Zmn5UhjXs3YTF4KmK3jSiduXNP63HQ==
