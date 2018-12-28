@@ -537,6 +537,10 @@ The only method you must define in your Searcher subclass is called `search()`. 
 
 > The Searcher class is used to allow developers to add support for a new airline website to Flightplan, otherwise it is not normally exposed to end-users of the API.
 
+#### Class Properties
+- [static Searcher.Error](#static-searcher-error)
+- [static Searcher.errors](#static-searcher-errors)
+
 #### Lifecycle Methods
 - [searcher.isLoggedIn(*page*)](#searcher-isloggedin-page)
 - [searcher.login(*page*, *credentials*)](#searcher-login-page-credentials)
@@ -569,6 +573,27 @@ The only method you must define in your Searcher subclass is called `search()`. 
 - [searcher.config](#searcher-config)
 - [searcher.browser](#searcher-browser)
 - [searcher.page](#searcher-page)
+
+### static Searcher.Error
+
+- extends: <[Error]>
+
+Returns the `SearcherError` custom error class, which is emitted whenever a search fails due to circumstances beyond the control of the Searcher. For example, the airline website may be down or unresponsive.
+
+### static Searcher.errors
+
+- returns: <[Object]>
+
+A helper method that returns custom errors which extend `SearcherError`. These are useful across Searcher's, to signal common failure scenarios. Possible custom errors include:
+
+- `BlockedAccessError` - Access to the web page blocked by website
+- `BlockedAccountError` - Account has been blocked by website
+- `BotDetectedError` - Suspicious activity detected by website
+- `LoginFailedError` - Failed to login to website
+- `MissingCredentialsError` - Missing login credentials
+- `InvalidCredentialsError` - Invalid login credentials
+- `InvalidRouteError` - Airline and its partners do not fly this route
+- `InvalidCabinError` - Selected cabin is not available for this route
 
 ### searcher.isLoggedIn(*page*)
 
