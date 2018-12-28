@@ -8,6 +8,8 @@ const applyEvasions = require('./evasions')
 const logging = require('./logging')
 const utils = require('./utils')
 
+const { errors } = Searcher
+
 class Engine {
   constructor (id, module) {
     const { searcher: Searcher, config } = module
@@ -34,7 +36,7 @@ class Engine {
   }
 
   _verbose () {
-    return (this._state || {}).verbose
+    return ('verbose' in this._state) ? this._state.verbose : true
   }
 
   async initialize (options = {}) {
