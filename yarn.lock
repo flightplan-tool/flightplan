@@ -4336,10 +4336,10 @@ timed-out@^4.0.0:
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
   integrity sha1-8y6srFoXW+ol1/q1Zas+2HQe9W8=
 
-timetable-fns@^0.1.7:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.8.tgz#ab744a69c367db998c689004754628720d696688"
-  integrity sha512-e9gBBBAqb7brpTMvWCeUGy8MjkjyASoiOFE+dyJhdlX17Ov/RmdJ8bqQUg5qdYpr8Hv4SNCmVzcyV3rOr8W9gQ==
+timetable-fns@^0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.10.tgz#962082bea790b48f37c1941df7c434b948efe0ce"
+  integrity sha512-2XsdL7znOcX8qjI/y6YyFqOwVmVw+oQYTl9sxW9s94ce+rPp4NdOYewGWki57jqzqe+2FVbaGQIejY6/iVvg+Q==
   dependencies:
     moment-timezone "^0.5.23"
 
