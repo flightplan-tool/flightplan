@@ -99,7 +99,7 @@ class Searcher {
           checkpoint.remaining = 0
         }
       }
-      throw errors.ACCESS_BLOCKED
+      throw new BlockedAccessError()
     }
     throw new SearcherError(`Received non-OK HTTP Status Code: ${response.status()} (${response.url()})`)
   }

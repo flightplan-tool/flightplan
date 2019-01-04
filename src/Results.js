@@ -224,6 +224,11 @@ class Results {
   }
 
   _parseAwards () {
+    // Can't parse if there was a searcher error
+    if (this._state.error) {
+      return
+    }
+
     // Get Parser subclass
     const id = this._state.engine.toUpperCase()
     const module = Results._findEngine(id)

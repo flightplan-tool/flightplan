@@ -85,10 +85,11 @@ class Engine {
 
     // Make sure we can access the website
     await searcher.goto(config.searchURL, { referer: 'https://www.google.com/' })
+    this._state.dirty = false
   }
 
   async search (query) {
-    const { page, closed, verbose } = this._state
+    const { page, closed } = this._state
 
     // Make sure Engine in usable state
     if (closed) {
@@ -120,9 +121,7 @@ class Engine {
         throw err
       } else {
         results._setError(err)
-        if (verbose) {
-          this.error(err)
-        }
+        this.error(err)
       }
     } finally {
       // Make sure at least one screenshot was saved
@@ -222,7 +221,7 @@ class Engine {
   }
 
   async login (retries = 3) {
-    const { searcher, page, loginRequired, credentials, verbose } = this._state
+    const { searcher, page, loginRequired, credentials } = this._state
 
     if (!loginRequired) {
       return true
@@ -230,10 +229,13 @@ class Engine {
 
     let attempts = 0
     while (true) {
+      // Reload search page
+      await this._reload()
+
       // Check whether we're logged in (or had too many attempts)
       const success = await searcher.isLoggedIn(page)
       if (success || attempts >= retries) {
-        if (attempts > 0 && verbose) {
+        if (attempts > 0) {
           success ? this.success('Login succeeded') : this.error('Login failed')
         }
         return success
@@ -241,23 +243,22 @@ class Engine {
 
       // Do another attempt
       attempts++
-      if (verbose) {
-        if (attempts === 1) {
-          this.info('Logging in...')
-        } else if (attempts === 2) {
-          this.info('2nd login attempt...')
-        } else if (attempts === 3) {
-          this.info('3rd and final login attempt...')
-        }
+      if (attempts === 1) {
+        this.info('Logging in...')
+      } else if (attempts === 2) {
+        this.info('2nd login attempt...')
+      } else if (attempts === 3) {
+        this.info('3rd and final login attempt...')
       }
 
       // Call Searcher.login()
+      this._state.dirty = true
       await searcher.login(page, credentials)
     }
   }
 
   async _search (query, results) {
-    const { config, page, searcher } = this._state
+    const { page, searcher } = this._state
 
     // Validate the query
     searcher.validate(query)
@@ -270,15 +271,16 @@ class Engine {
       return
     }
 
-    // Reload search page
-    await searcher.goto(config.searchURL)
-
     // Make sure we're logged in
     if (!(await this.login())) {
       throw new errors.LoginFailed()
     }
 
+    // Reload search page
+    await this._reload()
+
     // Call the Searcher
+    this._state.dirty = true
     await searcher.search(page, query, results)
   }
 
@@ -299,11 +301,12 @@ class Engine {
     }
 
     // Attempt to modify the search
+    this._state.dirty = true
     return searcher.modify(page, diff, query, lastQuery, results)
   }
 
   async _throttle () {
-    const { config, page, throttling, verbose } = this._state
+    const { config, page, throttling } = this._state
 
     // Check if throttling is enabled
     if (!throttling) {
@@ -326,7 +329,7 @@ class Engine {
     // Check if we are at a resting checkpoint
     if (checkpoint && checkpoint.remaining <= 0) {
       const restMillis = checkpoint.until.diff(utils.now(), 'ms')
-      if (restMillis > 0 && verbose) {
+      if (restMillis > 0) {
         this.info(`Cool-down period, resuming in ${humanize(restMillis)}`)
         await page.waitFor(restMillis)
       }
@@ -346,6 +349,14 @@ class Engine {
     // Update throttling state
     checkpoint.remaining--
     this._state.throttling = { lastRequest, checkpoint }
+  }
+
+  async _reload () {
+    const { searcher, config } = this._state
+    if (this._state.dirty) {
+      await searcher.goto(config.searchURL)
+      this._state.dirty = false
+    }
   }
 }
 
