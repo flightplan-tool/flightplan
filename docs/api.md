@@ -586,14 +586,14 @@ Returns the `SearcherError` custom error class, which is emitted whenever a sear
 
 A helper method that returns custom errors which extend `SearcherError`. These are useful across Searcher's, to signal common failure scenarios. Possible custom errors include:
 
-- `BlockedAccessError` - Access to the web page blocked by website
-- `BlockedAccountError` - Account has been blocked by website
-- `BotDetectedError` - Suspicious activity detected by website
-- `LoginFailedError` - Failed to login to website
-- `MissingCredentialsError` - Missing login credentials
-- `InvalidCredentialsError` - Invalid login credentials
-- `InvalidRouteError` - Airline and its partners do not fly this route
-- `InvalidCabinError` - Selected cabin is not available for this route
+- `BlockedAccess` - Access to the web page blocked by website
+- `BlockedAccount` - Account has been blocked by website
+- `BotDetected` - Suspicious activity detected by website
+- `LoginFailed` - Failed to login to website
+- `MissingCredentials` - Missing login credentials
+- `InvalidCredentials` - Invalid login credentials
+- `InvalidRoute` - Airline and its partners do not fly this route
+- `InvalidCabin` - Selected cabin is not available for this route
 
 ### searcher.isLoggedIn(*page*)
 
