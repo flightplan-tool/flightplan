@@ -48,13 +48,8 @@ module.exports = class extends Searcher {
     }
 
     // Enter username and password
-    await page.click('#kfLoginPopup #membership-1')
-    await page.waitFor(1000)
-    await page.keyboard.type(username, { delay: 10 })
-    await page.click('#kfLoginPopup #membership-2')
-    await page.waitFor(1000)
-    await page.keyboard.type(password, { delay: 10 })
-    await page.waitFor(250)
+    await this.enterText('#kfLoginPopup #membership-1', username)
+    await this.enterText('#kfLoginPopup #membership-2', password)
 
     // Check remember box, and submit the form
     if (!await page.$('#kfLoginPopup #checkbox-1:checked')) {

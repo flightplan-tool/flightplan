@@ -134,6 +134,27 @@ class Searcher {
     }
   }
 
+  async enterText (selector, value) {
+    const { page } = this._engine
+
+    // Get current value
+    const origValue = await page.evaluate(
+      sel => document.querySelector(sel).value, selector)
+
+    // Update value
+    if (origValue !== value) {
+      if (origValue) {
+        // Clear the existing value
+        await this.clear(selector)
+      }
+
+      // Click, wait, and type
+      await page.click(selector)
+      await page.waitFor(1000)
+      await page.keyboard.type(value, { delay: 10 })
+    }
+  }
+
   fillForm (values) {
     const { page } = this._engine
     return page.evaluate((values) => {

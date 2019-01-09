@@ -17,12 +17,8 @@ module.exports = class extends Searcher {
     }
 
     // Enter username and password
-    await page.click('#cust')
-    await page.waitFor(1000)
-    await page.keyboard.type(username, { delay: 10 })
-    await page.click('#pin')
-    await page.waitFor(1000)
-    await page.keyboard.type(password, { delay: 10 })
+    await this.enterText('#cust', username)
+    await this.enterText('#pin', password)
     await page.waitFor(250)
 
     // Check remember box, and submit the form

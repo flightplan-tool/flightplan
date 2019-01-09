@@ -32,12 +32,8 @@ module.exports = class extends Searcher {
 
     // Enter username and password
     await page.waitFor('#usernameInput', { visible: true })
-    await page.click('#usernameInput')
-    await this.clear('#usernameInput')
-    await page.keyboard.type(username, { delay: 10 })
-    await page.click('#passwordInput')
-    await this.clear('#passwordInput')
-    await page.keyboard.type(password, { delay: 10 })
+    await this.enterText('#usernameInput', username)
+    await this.enterText('#passwordInput', password)
 
     // Submit the form
     await page.click('#modalLoginButton')

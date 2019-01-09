@@ -23,12 +23,8 @@ module.exports = class extends Searcher {
     }
 
     // Enter username and password
-    await page.click('#memID')
-    await this.clear('#memID')
-    await page.keyboard.type(username, { delay: 10 })
-    await page.click('#memPIN')
-    await this.clear('#memPIN')
-    await page.keyboard.type(password, { delay: 10 })
+    await this.enterText('#memID', username)
+    await this.enterText('#memPIN', password)
     await page.waitFor(250)
 
     // Check remember box

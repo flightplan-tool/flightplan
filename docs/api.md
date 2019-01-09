@@ -553,6 +553,7 @@ The only method you must define in your Searcher subclass is called `search()`. 
 - [searcher.clear(*selector*)](#searcher-clear-selector)
 - [searcher.clickAndWait(*selector*, [*waitUntil*])](#searcher-clickandwait-selector-waituntil)
 - [searcher.clickIfVisible(*selector*, [*timeout*])](#searcher-clickifvisible-selector-timeout)
+- [searcher.enterText(*selector*, *value*)](#searcher-entertext-selector-values)
 - [searcher.fillForm(*values*)](#searcher-fillform-values)
 - [searcher.goto(*url*)](#searcher-goto)
 - [searcher.monitor(*selector*, [*timeout1*], [*timeout2*])](#searcher-monitor-selector-timeout1-timeout2)
@@ -670,6 +671,14 @@ Clicks and element and waits for any triggered navigation to succeed.
 - returns: <[Promise]>
 
 Clicks the element matching the `selector`, but only if it is visible (waiting up to `timeout` milliseconds for it to appear).
+
+### searcher.enterText(*selector*, *value*)
+
+- `selector` <[string]> A [selector] to query page for
+- `value` <[string]> Value to enter into the text field
+- returns: <[Promise]>
+
+Checks the value of the element matching the `selector`, and if it does not match the desired `value`, will clear any existing value before clicking the element and typing in the new value.
 
 ### searcher.fillForm(*values*)
 
