@@ -29,6 +29,12 @@ module.exports = class extends Parser {
   parse (results) {
     const json = results.contents('json', 'results')
 
+    // Check for empty results
+    const { noFlights, pageBom } = json
+    if (noFlights && pageBom && pageBom.length === 0) {
+      return []
+    }
+
     // Get airport codes
     const airports = this.airportCodes(json)
 

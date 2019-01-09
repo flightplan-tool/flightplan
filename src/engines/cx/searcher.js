@@ -112,6 +112,7 @@ module.exports = class extends Searcher {
     const { page } = this
     const pageBom = []
     const milesInfo = []
+    const json = {}
 
     let fn = null
     try {
@@ -151,6 +152,7 @@ module.exports = class extends Searcher {
         const msg = await this.textContent('span.label-error')
         if (msg.length > 0) {
           if (msg.includes('no flights available')) {
+            json.noFlights = true
             break
           } else if (msg.includes('please login again')) {
             // If session becomes invalid, logout
@@ -195,10 +197,16 @@ module.exports = class extends Searcher {
     }
 
     // Obtain JSON data from browser
-    const json = await page.evaluate(() => {
+    const tiers = await page.evaluate(() => {
       const { tiersListInbound, tiersListOutbound } = window
       return { tiersListInbound, tiersListOutbound }
     })
+    if (tiers.tiersListInbound) {
+      json.tiersListInbound = tiers.tiersListInbound
+    }
+    if (tiers.tiersListOutbound) {
+      json.tiersListOutbound = tiers.tiersListOutbound
+    }
     json.pageBom = pageBom
     json.milesInfo = milesInfo.reduce((result, curr) => ({ ...result, ...curr.milesInfo }), {})
 
