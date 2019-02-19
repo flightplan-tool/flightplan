@@ -197,7 +197,7 @@ module.exports = class extends Parser {
       if (!mileageResult) {
         throw new Parser.Error('Could not parse award mileage:', mileageText)
       }
-      const mileageCost = parseInt(mileageResult[0].replace(',', '')) / quantity
+      const mileageCost = parseInt(mileageResult[0].replace(',', ''))
 
       // Calculate other award details
       const waitlisted = utils.truthy(radio.attr('data-waitlisted'))
