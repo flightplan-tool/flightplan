@@ -106,9 +106,10 @@ module.exports = async function (page, options) {
   ]
   const osVersion = osVersions[Math.floor(Math.random() * osVersions.length)]
   const browserVersion = browserVersions[Math.floor(Math.random() * browserVersions.length)]
-  const userAgent =
-    `Mozilla/5.0 (Macintosh; Intel Mac OS X ${osVersion}) ` +
-    `AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browserVersion} Safari/537.36`
+  // const userAgent =
+  //   `Mozilla/5.0 (Macintosh; Intel Mac OS X ${osVersion}) ` +
+  //   `AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browserVersion} Safari/537.36`
+  const userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36'
   await page.setUserAgent(userAgent)
 
   // Pass the Webdriver test
@@ -279,11 +280,6 @@ module.exports = async function (page, options) {
           wasFetchedViaSpdy: false,
           wasNpnNegotiated: false
         }
-      },
-      webstore: {
-        install: (url, onSuccess, onFailure) => {},
-        onDownloadProgress: {},
-        onInstallStageChanged: {}
       },
       get app () { return undefined },
       get runtime () { return undefined }
