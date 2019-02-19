@@ -255,7 +255,11 @@ class Flight {
   get stops () {
     const { _state, _segments: segments } = this
     if (!_state.hasOwnProperty('stops')) {
-      _state.stops = (segments.length - 1) + segments.map(x => x.stops).reduce((acc, val) => acc + val, 0)
+      let sum = segments.length - 1
+      for (const segment of segments) {
+        sum += segment.stops
+      }
+      _state.stops = sum
     }
     return _state.stops
   }
