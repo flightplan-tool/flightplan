@@ -23,18 +23,18 @@ module.exports = class extends Searcher {
     }
 
     // Enter username and password
-    await this.enterText('#memID', username)
-    await this.enterText('#memPIN', password)
+    await this.enterText('#account-login #username', username)
+    await this.enterText('#account-login #password', password)
     await page.waitFor(250)
 
     // Check remember box
-    if (!await page.$('#checkRememberMe:checked')) {
-      await page.click('label[for=checkRememberMe]')
+    if (!await page.$('#account-login #checkRememberMe:checked')) {
+      await page.click('#account-login label[for=checkRememberMe]')
       await page.waitFor(250)
     }
 
     // Submit form
-    await this.clickAndWait('#account-login div.form-login-wrapper button.btn-primary')
+    await this.clickAndWait('#account-login button.btn-primary')
 
     // Check for errors
     const msgError = await this.textContent('div.global-error-wrap li')
