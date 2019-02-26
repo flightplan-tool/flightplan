@@ -3007,6 +3007,11 @@ moment-timezone@^0.5.23:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.23.0.tgz#759ea491ac97d54bac5ad776996e2a58cc1bc225"
   integrity sha512-3IE39bHVqFbWWaPOMHZF98Q9c3LDKGTmypMiTM2QygGXXElkFWIH7GxfmlwmY2vwa+wmNsoYZmG2iusf1ZjJoA==
 
+moment@^2.9.0:
+  version "2.24.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
+  integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -4336,12 +4341,10 @@ timed-out@^4.0.0:
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
   integrity sha1-8y6srFoXW+ol1/q1Zas+2HQe9W8=
 
-timetable-fns@^0.1.10:
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.10.tgz#962082bea790b48f37c1941df7c434b948efe0ce"
-  integrity sha512-2XsdL7znOcX8qjI/y6YyFqOwVmVw+oQYTl9sxW9s94ce+rPp4NdOYewGWki57jqzqe+2FVbaGQIejY6/iVvg+Q==
-  dependencies:
-    moment-timezone "^0.5.23"
+timetable-fns@^0.1.16:
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/timetable-fns/-/timetable-fns-0.1.16.tgz#d290dd395225791b8c8c717bf5f5553e5ed1d94b"
+  integrity sha512-3EUZoe3Y5VWap9ZSc+SxqhZ5oRMhw7/dK3Hs5GF7nEeDR+5XuH6RgykfSlH9YkuoIa7mzEERYRKbiUi1pUQAYA==
 
 tmpl@1.0.x:
   version "1.0.4"
