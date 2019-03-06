@@ -53,7 +53,7 @@ class Segment {
       arrival,
       stops,
       lagDays,
-      key: `${date}:${fromCity}:${flight}`
+      key: `${date}:${fromCity}${toCity}:${flight}`
     }
     this._dynamic = { cabin }
   }
