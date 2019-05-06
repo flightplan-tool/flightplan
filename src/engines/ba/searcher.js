@@ -116,7 +116,10 @@ module.exports = class extends Searcher {
 
       // Check for stopover form
       if (await page.$('#noStopovers')) {
-        await page.click('#noStopovers')
+        await page.evaluate(() => {
+          var noStopovers = document.querySelector('#noStopovers')
+          noStopovers.click();
+        })
         await page.waitFor(500)
         await this.clickAndWait('#continueTopPod')
         continue
