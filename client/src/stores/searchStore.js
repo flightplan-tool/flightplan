@@ -83,6 +83,8 @@ export default class SearchStore {
             )
           }).join(' ')
         }
+
+        result.segments.forEach(x => x.aircraft = x.aircraft || 'Unknown Aircraft')
         return { ...result, fares }
       })
   }
@@ -95,13 +97,17 @@ export default class SearchStore {
       return !result.segments.find(x => !this.getAirline(x.airline))
     }
     const filteredByFlight = (result) => {
+      return !result.segments.find(x => !this.getFlight(x))
+    }
+    const mapedFlight = (result) => {
       return (result.segments.find(x => !this.getFlight(x)))
         ? { ...result, fares: '' }
         : result
     }
     return this.results
       .filter(x => filteredByAirline(x))
-      .map(x => filteredByFlight(x))
+      .filter(x => filteredByFlight(x))
+      .map(x => mapedFlight(x))
   }
 
   @computed get aircraftInfo () {
