@@ -264,9 +264,15 @@ export default class SearchStore {
     sel.set(key, val)
 
     // Propagate to airlines
-    if (val) {
-      this.selectedAirlines.set(flight.airline, true)
-    }
+    const { flights } = this
+    const context = this
+    this.airlines
+      .map(x => x.code)
+      .forEach(x => {
+        const isAirlineSelected = flights.filter(y => y.airline === x).some(z => context.getFlight(z))
+        context.selectedAirlines.set(x, isAirlineSelected)
+      })
+
   }
 
   @action update (params) {
