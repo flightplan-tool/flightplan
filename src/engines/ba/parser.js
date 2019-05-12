@@ -85,14 +85,22 @@ module.exports = class extends Parser {
   }
 
   parseDate (str, query, outbound) {
-    const m = moment.utc(str, 'D MMM', true)
+    let m = moment.utc(str, 'D MMM', true)
+    
+    // if the moment is invalid and the date string is '29 Feb', then assume that
+    // the leap year is for the next year and re-initialize the moment
+    if(!m.isValid() && str === '29 Feb') {
+      m = moment.utc(`${str} ${new Date().getFullYear() + 1}`, 'D MMM YYYY', true)
+    }
+    
     if (m.isValid()) {
       return outbound
         ? query.closestDeparture(m)
         : query.closestReturn(m)
-    }
+    } 
     return null
   }
+
 
   parseQuantity (ele) {
     if (ele) {
