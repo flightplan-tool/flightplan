@@ -2,6 +2,7 @@ const program = require('commander')
 const fs = require('fs')
 const prompt = require('syncprompt')
 const timetable = require('timetable-fns')
+const chalk = require('chalk')
 
 const fp = require('../src')
 const accounts = require('../shared/accounts')
@@ -164,8 +165,8 @@ function generateQueries (args, engine, days) {
   // Get search strategy based on engine
   const {
     roundtripOptimized = true,
-    oneWaySupported = true,
-    tripMinDays = 3
+      oneWaySupported = true,
+      tripMinDays = 3
   } = strategies[engine.id.toLowerCase()] || {}
   const gap = (args.oneway || !roundtripOptimized) ? 0 : Math.min(tripMinDays, days)
   const validEnd = engine.config.validDateRange()[1]
@@ -353,11 +354,17 @@ const main = async (args) => {
 
       // Lazy load the search engine
       if (!initialized) {
-        const credentials = loginRequired
+        const credentials = loginRequired 
           ? accounts.getCredentials(id, args.account) : null
         await engine.initialize({ ...options, credentials })
         initialized = true
       }
+
+      // first clean the awards in db for the given route
+      console.log(chalk.yellow(`Removing previous awards from ${query.engine} for ${query.fromCity} to ${query.toCity} on ${timetable.format(query.departDate)}.`))
+      const awardQuery = helpers.createAwardQuery(query.fromCity, query.toCity, 'oneway', query.departDate, query.departDate, 0, query.cabin, query.engine, query.limit)
+      const existingAwards = db.db().prepare(awardQuery.query).all(...awardQuery.params)
+      helpers.cleanupAwards(existingAwards);
 
       // Print route(s) being searched
       routes.print(query)
