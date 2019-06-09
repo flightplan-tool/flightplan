@@ -2,7 +2,6 @@ const program = require('commander')
 const fs = require('fs')
 const prompt = require('syncprompt')
 const timetable = require('timetable-fns')
-const chalk = require('chalk')
 
 const fp = require('../src')
 const accounts = require('../shared/accounts')
@@ -359,12 +358,6 @@ const main = async (args) => {
         await engine.initialize({ ...options, credentials })
         initialized = true
       }
-
-      // first clean the awards in db for the given route
-      console.log(chalk.yellow(`Removing previous awards from ${query.engine} for ${query.fromCity} to ${query.toCity} on ${timetable.format(query.departDate)}.`))
-      const awardQuery = helpers.createAwardQuery(query.fromCity, query.toCity, 'oneway', query.departDate, query.departDate, 0, query.cabin, query.engine, query.limit)
-      const existingAwards = db.db().prepare(awardQuery.query).all(...awardQuery.params)
-      helpers.cleanupAwards(existingAwards);
 
       // Print route(s) being searched
       routes.print(query)
