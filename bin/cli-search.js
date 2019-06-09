@@ -164,8 +164,8 @@ function generateQueries (args, engine, days) {
   // Get search strategy based on engine
   const {
     roundtripOptimized = true,
-      oneWaySupported = true,
-      tripMinDays = 3
+    oneWaySupported = true,
+    tripMinDays = 3
   } = strategies[engine.id.toLowerCase()] || {}
   const gap = (args.oneway || !roundtripOptimized) ? 0 : Math.min(tripMinDays, days)
   const validEnd = engine.config.validDateRange()[1]
@@ -353,7 +353,7 @@ const main = async (args) => {
 
       // Lazy load the search engine
       if (!initialized) {
-        const credentials = loginRequired 
+        const credentials = loginRequired
           ? accounts.getCredentials(id, args.account) : null
         await engine.initialize({ ...options, credentials })
         initialized = true
