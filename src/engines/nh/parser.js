@@ -136,7 +136,7 @@ module.exports = class extends Parser {
       throw new Error(`Invalid time / city structure: ${$(ele).html().trim()}`)
     }
     const strTime = $(fields[0]).text().trim()
-    const strCity = $(fields[1]).text().trim()
+    const strCity = $(fields[1]).children().remove().end().text().trim()
     return {
       time: this.flightTime(strTime),
       lagDays: this.lagDays(strTime),
@@ -209,7 +209,14 @@ module.exports = class extends Parser {
   parseDate (str, referenceDate) {
     const result = reDate.exec(str)
     if (result) {
-      const dt = moment.utc(result[0], 'MMM D', true)
+      let dt = moment.utc(result[0], 'MMM D', true)
+      
+      // if the moment is invalid and the date string is '29 Feb', then assume that
+      // the leap year is for the next year and re-initialize the moment
+      if (!dt.isValid() && result[0] === 'Feb 29') {
+        dt = moment.utc(`${result[0]} ${new Date().getFullYear() + 1}`, 'MMM D YYYY', true)
+      }
+
       if (dt.isValid()) {
         // Fill in year from query
         return timetable.coerce(utils.closestYear(dt, referenceDate))
