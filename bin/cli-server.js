@@ -4,6 +4,7 @@ const fp = require('../src')
 const db = require('../shared/db')
 const logger = require('../shared/logger')
 const utils = require('../src/utils')
+const helpers = require('../shared/helpers')
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -59,41 +60,10 @@ app.get('/api/search', async (req, res, next) => {
       throw new Error(`Invalid date range for search: ${startDate} -> ${endDate}`)
     }
 
-    let query = 'SELECT * FROM awards WHERE '
-    const params = []
-
-    // Add cities
-    const cities = [ fromCity.toUpperCase(), toCity.toUpperCase() ]
-    if (direction === 'oneway') {
-      query += 'fromCity = ? AND toCity = ?'
-      params.push(...cities)
-    } else if (direction === 'roundtrip') {
-      query += '((fromCity = ? AND toCity = ?) OR (toCity = ? AND fromCity = ?))'
-      params.push(...cities, ...cities)
-    } else {
-      throw new Error('Unrecognized direction parameter:', direction)
-    }
-
-    // Add dates
-    query += ' AND date BETWEEN ? AND ?'
-    params.push(startDate, endDate)
-
-    // Add quantity
-    query += ' AND quantity >= ?'
-    params.push(parseInt(quantity))
-
-    // Add cabins
-    if (cabin) {
-      const values = cabin.split(',')
-      query += ` AND cabin IN (${values.map(x => '?').join(',')})`
-      values.forEach(x => params.push(x))
-    }
-
-    // Add limit
-    if (limit) {
-      query += ' LIMIT ?'
-      params.push(parseInt(limit))
-    }
+    const {
+      query = '',
+      params = []
+    } = helpers.createAwardQuery(fromCity, toCity, direction, startDate, endDate, quantity, cabin, null, limit)
 
     // Run SQL query
     console.time('search')

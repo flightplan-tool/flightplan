@@ -1,4 +1,5 @@
 const fs = require('fs')
+const chalk = require('chalk')
 
 const db = require('./db')
 const Query = require('../src/Query')
@@ -113,8 +114,15 @@ function saveRequest (results) {
   return db.insertRow('requests', row).lastInsertROWID
 }
 
-function saveAwards (requestId, awards, placeholders) {
+function saveAwards (requestId, awards, placeholders, query) {
   const ids = []
+
+  // first clean the awards in db for the given route
+  const chalkContext = chalk.bold(`[${query.engine}]`)
+  console.log(chalk.yellow(`${chalkContext} CLEANUP [${query.fromCity} -> ${query.toCity}] - ${query.departDate}`))
+  const awardQuery = createAwardQuery(query.fromCity, query.toCity, 'oneway', query.departDate, query.departDate, 0, query.cabin, query.engine, query.limit)
+  const existingAwards = db.db().prepare(awardQuery.query).all(...awardQuery.params)
+  cleanupAwards(existingAwards);
 
   // Transform objects to rows
   const rows = [ ...placeholders ]
@@ -188,6 +196,55 @@ function saveSegment (awardId, position, segment) {
   return db.insertRow('segments', row).lastInsertROWID
 }
 
+function createAwardQuery(fromCity, toCity, direction, startDate, endDate, quantity, cabin, engine, limit) {
+  let query = 'SELECT * FROM awards WHERE '
+    const params = []
+
+    // Add cities
+    const cities = [ fromCity.toUpperCase(), toCity.toUpperCase() ]
+    if (direction === 'oneway') {
+      query += 'fromCity = ? AND toCity = ?'
+      params.push(...cities)
+    } else if (direction === 'roundtrip') {
+      query += '((fromCity = ? AND toCity = ?) OR (toCity = ? AND fromCity = ?))'
+      params.push(...cities, ...cities)
+    } else {
+      throw new Error('Unrecognized direction parameter:', direction)
+    }
+
+    // Add dates
+    query += ' AND date BETWEEN ? AND ?'
+    params.push(startDate, endDate)
+
+    // Add quantity
+    query += ' AND quantity >= ?'
+    params.push(parseInt(quantity))
+
+    // Add cabins
+    if (cabin) {
+      const values = cabin.split(',')
+      query += ` AND cabin IN (${values.map(x => '?').join(',')})`
+      values.forEach(x => params.push(x))
+    }
+
+    // Add engine
+    if (engine) {
+      query += ' AND engine = ?'
+      params.push(engine);
+    }
+
+    // Add limit
+    if (limit) {
+      query += ' LIMIT ?'
+      params.push(parseInt(limit))
+    }
+
+    return {
+      query,
+      params
+    }
+}
+
 module.exports = {
   createPlaceholders,
   assetsForRequest,
@@ -196,5 +253,6 @@ module.exports = {
   loadRequest,
   saveRequest,
   saveAwards,
-  saveSegment
+  saveSegment,
+  createAwardQuery
 }
