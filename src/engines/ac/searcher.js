@@ -55,7 +55,7 @@ module.exports = class extends Searcher {
     // Fill out the form
     if (oneWay) {
       await this.fillForm({
-        tripTypeOneWay: 'One-way',
+        tripTypeRoundTrip: 'One-way',
         currentTripTab: 'oneway',
         city1FromOnewayCode: fromCity,
         city1ToOnewayCode: toCity,
