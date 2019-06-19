@@ -81,15 +81,18 @@ module.exports = class extends Parser {
         const flight = new Flight(segments)
         const seatsLeft = $(x).find('.SeatsRemainingDiv')
         const quantity = this.parseQuantity(seatsLeft) || Math.max(query.quantity, 7)
-        const cabin = this.parseCabin(x)
-        const fare = this.findFare(cabin)
-        const cabins = flight.segments.map(x => cabin)
+        const fare = this.findFare(this.parseCabinFromAward(x))
+        const cabins = flight.segments.map((_, i) => this.parseCabinFromSegment($, x, i) || fare.cabin)
+        const mileageCost = this.parseMileageCost($(x))
+        const fees = this.parseFees($(x))
 
         awards.push(new Award({
           engine,
           fare,
           cabins,
-          quantity
+          quantity,
+          mileageCost,
+          fees
         }, flight))
       })
     })
@@ -127,7 +130,9 @@ module.exports = class extends Parser {
     const minutes = timeStr.split(':')[1]
     let time = `${hour}:${minutes}`
 
-    if (isPm && hour !== 12) {
+    if (!isPm && hour === 12) {
+      time = `00:${minutes}`
+    } else if (isPm && hour !== 12) {
       time = `${hour + 12}:${minutes}`
     } else if (hour < 10) {
       time = `0${hour}:${minutes}`
@@ -147,17 +152,45 @@ module.exports = class extends Parser {
     return null
   }
 
-  parseCabin(ele) {
+  parseCabinFromAward(ele) {
     const displayCodes = {
       'coach-fare': cabins.economy,
       'business-fare': cabins.business,
       'first-fare': cabins.first
     }
 
-    for (var cabinClass in displayCodes) {
+    for (let cabinClass in displayCodes) {
       if (ele.attribs.class.indexOf(cabinClass) !== -1) {
         return displayCodes[cabinClass]
       }
     }
+  }
+
+  parseCabinFromSegment($, ele, segmentIdx) {
+    const cabinNames = {
+      'Coach': cabins.economy,
+      'Main': cabins.economy,
+      'Business': cabins.business,
+      'First Class': cabins.first
+    }
+
+    if ($(ele).attr('title') === 'Mixed cabin itinerary') {
+      const cabinName = $($(ele).find('.mixed-cabin-dialog li')[segmentIdx]).find('.FlightNumber').last().text().trim()
+      return cabinNames[cabinName]
+    } else {
+      return this.parseCabinFromAward(ele);
+    }
+  }
+
+  parseMileageCost(ele) {
+    const costText = ele.find('.Price').text()
+    const regexMatches = costText.match(/\w*k/g)
+    return parseInt(regexMatches[0].replace('k', '')) * 1000
+  }
+
+  parseFees(ele) {
+    const feesText = ele.find('.Price').text()
+    const regexMatches = feesText.match(/\$.*/g)
+    return `${regexMatches[0].replace('$', '')} USD`
   }
 }

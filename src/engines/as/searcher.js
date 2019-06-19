@@ -39,7 +39,7 @@ module.exports = class extends Searcher {
 
     // Submit the form
     await page.click('#findFlights');
-    await page.waitFor(3000)
+    await page.waitFor(5000)
 
     // Wait for results to load
     await this.settle()
