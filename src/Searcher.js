@@ -160,10 +160,14 @@ class Searcher {
     return page.evaluate((values) => {
       for (var key in values) {
         if (values.hasOwnProperty(key)) {
-          const arr = document.getElementsByName(key)
+          let arr = document.getElementsByName(key)
+          if (arr.length === 0) {
+            arr = [document.getElementById(key)]
+          }
           if (arr.length === 0) {
             throw new Error(`Missing form element: ${key}`)
           }
+
           for (let i = 0; i < arr.length; i++) {
             const ele = arr[i]
             if (ele.tagName === 'SELECT') {

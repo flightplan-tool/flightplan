@@ -8,7 +8,8 @@ const engines = {
   cx: require('./cx'),
   ke: require('./ke'),
   nh: require('./nh'),
-  sq: require('./sq')
+  sq: require('./sq'),
+  vs: require('./vs')
 }
 
 // Validate all engine configs
