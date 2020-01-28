@@ -250,3 +250,30 @@ Runs the Web UI, which can be accessed by pointing your web browser at `http://l
 ### Server
 
 Runs the back-end server, which reads the database and provides an API endpoint for the web client to query available awards.
+
+# Development
+
+```
+yarn install
+```
+
+## Test
+
+```
+jest
+```
+
+## Running commands
+
+```
+node bin/cli-search.js -w AS -f CDG -t JFK -c business -s 2020-09-15 -e 2020-09-17
+```
+
+# New parser
+
+1. Go to search page (eg https://www.alaskaair.com/)
+1. Open inspector
+1. Open network tab
+1. CLick "Preserve log"
+1. Search for a ticket
+1. Look at Form Data
