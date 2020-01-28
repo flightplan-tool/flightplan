@@ -61,19 +61,19 @@ module.exports = class extends Searcher {
     //   await page.click("#shopWithMiles");
     // }
 
-    const formValues = {};
-    //formValues["tripType"] = oneWay ? "2" : "ROUND_TRIP";
-    formValues["selectTripType"] = "ROUND_TRIP";
-    formValues["fromAirportCode"] = fromCity;
-    formValues["arrivalCity"] = toCity;
-    formValues["departureDate"] = departDate.format("YYYY-MM-DD");
-    formValues["returnDate"] = returnDate
-      ? returnDate.format("YYYY-MM-DD")
-      : "";
-    formValues["paxCount"] = quantity.toString();
-    formValues["shopType"] = "AWARD";
+    // const formValues = {};
+    // //formValues["tripType"] = oneWay ? "2" : "ROUND_TRIP";
+    // formValues["selectTripType"] = "ROUND_TRIP";
+    // formValues["fromAirportCode"] = fromCity;
+    // formValues["arrivalCity"] = toCity;
+    // formValues["departureDate"] = departDate.format("YYYY-MM-DD");
+    // formValues["returnDate"] = returnDate
+    //   ? returnDate.format("YYYY-MM-DD")
+    //   : "";
+    // formValues["paxCount"] = quantity.toString();
+    // formValues["shopType"] = "AWARD";
 
-    await this.fillForm(formValues);
+    // await this.fillForm(formValues);
 
     // Submit the form
     // console.log("DT: Submitting form");
@@ -90,56 +90,65 @@ module.exports = class extends Searcher {
     // await page.waitFor(3000);
 
     // // Wait for results to load
+    this.info("Submitting search form");
     // await this.settle();
-    await page.evaluate(() => {
-      request = {
-        airports: {
-          fromCity: "New York-Kennedy, NY",
-          toCity: "Paris-De Gaulle, France",
-          fromAirportcode: "JFK",
-          toAirportcode: "CDG",
-          invalidAirportCodes: null
-        },
-        selectTripType: "ROUND_TRIP",
-        dates: {
-          departureDate: "01/29/2020",
-          returnDate: "01/30/2020",
+    const returnDateStr = returnDate ? returnDate.format("MM/DD/YYYY") : "";
+    const departDateStr = departDate.format("MM/DD/YYYY");
+    await page.evaluate(
+      (fromCity, toCity, departDateStr, returnDateStr) => {
+        request = {
+          airports: {
+            fromCity: "New York-Kennedy, NY",
+            toCity: "Paris-De Gaulle, France",
+            fromAirportcode: fromCity,
+            toAirportcode: toCity,
+            invalidAirportCodes: null
+          },
+          selectTripType: "ROUND_TRIP",
+          dates: {
+            departureDate: departDateStr,
+            returnDate: "09/30/2020",
+            chkFlexDate: false
+          },
+          passenger: "1",
+          swapedFromCity: null,
+          swapedToCity: null,
+          schedulePrice: "price",
+          flightHotelDeals: false,
+          faresFor: "BE",
+          meetingEventCode: "",
+          refundableFlightsOnly: null,
+          nearbyAirports: false,
+          deltaOnly: "off",
+          awardTravel: false,
+          departureTime: "AT",
+          returnTime: "AT",
+          adtGbeCount: null,
+          infantCount: null,
+          maxPaxCount: null,
+          adtCount: null,
+          cnnCount: null,
+          gbeCount: null,
           chkFlexDate: false
-        },
-        passenger: "1",
-        swapedFromCity: null,
-        swapedToCity: null,
-        schedulePrice: "price",
-        flightHotelDeals: false,
-        faresFor: "BE",
-        meetingEventCode: "",
-        refundableFlightsOnly: null,
-        nearbyAirports: false,
-        deltaOnly: "off",
-        awardTravel: false,
-        departureTime: "AT",
-        returnTime: "AT",
-        adtGbeCount: null,
-        infantCount: null,
-        maxPaxCount: null,
-        adtCount: null,
-        cnnCount: null,
-        gbeCount: null,
-        chkFlexDate: false
-      };
-      var data = {
-        method: "POST",
-        body: JSON.stringify(request),
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json; charset=UTF-8"
-        }
-      };
-      fetch(
-        "https://www.delta.com/prefill/updateSearch?searchType=RecentSearchesJSON",
-        data
-      );
-    });
+        };
+        var data = {
+          method: "POST",
+          body: JSON.stringify(request),
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            "Content-Type": "application/json; charset=UTF-8"
+          }
+        };
+        fetch(
+          "https://www.delta.com/prefill/updateSearch?searchType=RecentSearchesJSON",
+          data
+        );
+      },
+      fromCity,
+      toCity,
+      departDateStr,
+      returnDateStr
+    );
 
     // then go here
     // submit button
