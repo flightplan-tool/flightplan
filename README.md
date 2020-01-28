@@ -14,15 +14,16 @@ Don't feel comfortable with a command line? Wish there was a way to use Flightpl
 
 ### Supported Airlines
 
-Airline                 | Website               | Search             | Parse              | Notes
-------------------------|-----------------------|:------------------:|:------------------:|:------
-AC (Air Canada)         | [Aeroplan][1]         | :white_check_mark: | :white_check_mark: |
-BA (British Airways)    | [Executive Club][2]   | :white_check_mark: | :white_check_mark: | Award mileage not available
-CX (Cathay Pacific)     | [AsiaMiles][3]        | :white_check_mark: | :white_check_mark: |
-KE (Korean Air)         | [SKYPASS][4]          | :white_check_mark: | :white_check_mark: | Award mileage not available for partner awards
-NH (All Nippon Airways) | [ANA Mileage Club][5] | :white_check_mark: | :white_check_mark: |
-QF (Qantas)             | [Frequent Flyer][6]   | :construction:     | :construction:     | In progress
-SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_check_mark: |
+| Airline                 | Website               |       Search       |       Parse        | Notes                                          |
+| ----------------------- | --------------------- | :----------------: | :----------------: | :--------------------------------------------- |
+| AC (Air Canada)         | [Aeroplan][1]         | :white_check_mark: | :white_check_mark: |
+| AS (Alaska Airlines)    | [Aeroplan][8]         | :white_check_mark: | :white_check_mark: |
+| BA (British Airways)    | [Executive Club][2]   | :white_check_mark: | :white_check_mark: | Award mileage not available                    |
+| CX (Cathay Pacific)     | [AsiaMiles][3]        | :white_check_mark: | :white_check_mark: |
+| KE (Korean Air)         | [SKYPASS][4]          | :white_check_mark: | :white_check_mark: | Award mileage not available for partner awards |
+| NH (All Nippon Airways) | [ANA Mileage Club][5] | :white_check_mark: | :white_check_mark: |
+| QF (Qantas)             | [Frequent Flyer][6]   |   :construction:   |   :construction:   | In progress                                    |
+| SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_check_mark: |
 
 [1]: https://www.aeroplan.com/
 [2]: https://www.britishairways.com/en-us/executive-club
@@ -31,6 +32,7 @@ SQ (Singapore Airlines) | [KrisFlyer][7]        | :white_check_mark: | :white_ch
 [5]: https://www.ana.co.jp/en/us/amc/
 [6]: https://www.qantas.com/fflyer/dyn/program/welcome
 [7]: http://www.singaporeair.com/en_UK/us/ppsclub-krisflyer/
+[8]: https://www.alaskaair.com/
 
 ## Installation
 
