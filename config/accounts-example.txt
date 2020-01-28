@@ -1,4 +1,5 @@
 AC:XXXXXXXXX:password
+AS:XXXXXXXXX:password
 BA:XXXXXXXX:password
 CX:XXXXXXXXXX:password
 KE:XXXXXXXXXXXX:password
