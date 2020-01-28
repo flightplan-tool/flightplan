@@ -1,0 +1,461 @@
+{
+  "engine": "DL",
+  "query": {
+    "partners": true,
+    "cabin": "business",
+    "quantity": 1,
+    "fromCity": "BOS",
+    "toCity": "JFK",
+    "departDate": "2020-03-10",
+    "returnDate": "2020-03-10"
+  },
+  "html": [
+    {
+      "name": "results",
+      "path": "./test/__mock__/DL-BOS-JFK-2020-03-10-1580841057916.html"
+    }
+  ],
+  "flights": [
+    {
+      "awards": [
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 7000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["first"],
+          "fare": "O",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 11000,
+          "fees": null
+        }
+      ],
+      "segments": [
+        {
+          "flight": "DL1360",
+          "airline": "DL",
+          "aircraft": "-",
+          "fromCity": "BOS",
+          "toCity": "JFK",
+          "date": "2020-03-10",
+          "departure": "19:59",
+          "arrival": "21:29",
+          "stops": 0,
+          "lagDays": 0,
+          "cabin": "business"
+        }
+      ]
+    },
+    {
+      "awards": [
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 7000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["first"],
+          "fare": "O",
+          "quantity": 1,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 36500,
+          "fees": null
+        }
+      ],
+      "segments": [
+        {
+          "flight": "DL3022",
+          "airline": "DL",
+          "aircraft": "-",
+          "fromCity": "BOS",
+          "toCity": "JFK",
+          "date": "2020-03-10",
+          "departure": "17:10",
+          "arrival": "18:40",
+          "stops": 0,
+          "lagDays": 0,
+          "cabin": "business"
+        }
+      ]
+    },
+    {
+      "awards": [
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 1,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 7500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["first"],
+          "fare": "O",
+          "quantity": 3,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 11000,
+          "fees": null
+        }
+      ],
+      "segments": [
+        {
+          "flight": "DL5360",
+          "airline": "DL",
+          "aircraft": "-",
+          "fromCity": "BOS",
+          "toCity": "JFK",
+          "date": "2020-03-10",
+          "departure": "14:05",
+          "arrival": "15:29",
+          "stops": 0,
+          "lagDays": 0,
+          "cabin": "business"
+        }
+      ]
+    },
+    {
+      "awards": [
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 7000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["first"],
+          "fare": "O",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 11000,
+          "fees": null
+        }
+      ],
+      "segments": [
+        {
+          "flight": "DL5419",
+          "airline": "DL",
+          "aircraft": "-",
+          "fromCity": "BOS",
+          "toCity": "JFK",
+          "date": "2020-03-10",
+          "departure": "08:30",
+          "arrival": "09:56",
+          "stops": 0,
+          "lagDays": 0,
+          "cabin": "business"
+        }
+      ]
+    },
+    {
+      "awards": [
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 7000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["first"],
+          "fare": "O",
+          "quantity": 3,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 11000,
+          "fees": null
+        }
+      ],
+      "segments": [
+        {
+          "flight": "DL5992",
+          "airline": "DL",
+          "aircraft": "-",
+          "fromCity": "BOS",
+          "toCity": "JFK",
+          "date": "2020-03-10",
+          "departure": "12:40",
+          "arrival": "14:10",
+          "stops": 0,
+          "lagDays": 0,
+          "cabin": "business"
+        }
+      ]
+    },
+    {
+      "awards": [
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 7000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["first"],
+          "fare": "O",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 11000,
+          "fees": null
+        }
+      ],
+      "segments": [
+        {
+          "flight": "DL6128",
+          "airline": "DL",
+          "aircraft": "-",
+          "fromCity": "BOS",
+          "toCity": "JFK",
+          "date": "2020-03-10",
+          "departure": "10:50",
+          "arrival": "12:15",
+          "stops": 0,
+          "lagDays": 0,
+          "cabin": "business"
+        }
+      ]
+    },
+    {
+      "awards": [
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 7,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 7000,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["first"],
+          "fare": "O",
+          "quantity": 4,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 11000,
+          "fees": null
+        }
+      ],
+      "segments": [
+        {
+          "flight": "DL928",
+          "airline": "DL",
+          "aircraft": "-",
+          "fromCity": "BOS",
+          "toCity": "JFK",
+          "date": "2020-03-10",
+          "departure": "06:00",
+          "arrival": "07:28",
+          "stops": 0,
+          "lagDays": 0,
+          "cabin": "business"
+        }
+      ]
+    }
+  ]
+}
