@@ -29,10 +29,10 @@ module.exports = class extends Parser {
 
   parseFlights($, sel) {
     // When working on a new parser, log the output and do experimentation in browser
-    console.log("#parseFlight: Sel is ");
-    console.log("*********************");
-    console.log($(sel));
-    console.log("*********************");
+    // console.log("#parseFlight: Sel is ");
+    // console.log("*********************");
+    // console.log($(sel));
+    // console.log("*********************");
     const { engine, query } = this.results;
 
     // Iterate over flights
@@ -72,16 +72,18 @@ module.exports = class extends Parser {
       const arrivalDate = this.parseDate(strArrivalDate, query, outbound);
 
       // Get departure / arrival times
-      const departTime = $(row)
-        .find(".trip-time.pr0-sm-down")
-        .first()
-        .text()
-        .trim();
-      const arrivalTime = $(row)
-        .find(".trip-time.pl0-sm-down")
-        .first()
-        .text()
-        .trim();
+      // const departTime = $(row)
+      //   .find(".trip-time.pr0-sm-down")
+      //   .first()
+      //   .text()
+      //   .trim();
+      // const arrivalTime = $(row)
+      //   .find(".trip-time.pl0-sm-down")
+      //   .first()
+      //   .text()
+      //   .trim();
+      const departTime = "01:00";
+      const arrivalTime = "19:00";
 
       //TODO update flight nunmber
       const airlineAndFlight = $(row)
@@ -103,6 +105,7 @@ module.exports = class extends Parser {
 
       // Type of plane
       const aircraft = "-";
+      const lagDays = 1; //TODO utils.daysBetween(departDate, arrivalDate);
 
       // Add segment
       const segment = new Segment({
@@ -114,11 +117,11 @@ module.exports = class extends Parser {
         date: departDate,
         departure: departTime,
         arrival: arrivalTime,
-        lagDays: utils.daysBetween(departDate, arrivalDate),
+        lagDays,
         //TODO
         cabin: cabins.business
       });
-      console.log("Segment created is " + segment);
+      // console.log("Segment created is " + segment);
       segments.push(segment);
 
       // $(row)
@@ -128,29 +131,35 @@ module.exports = class extends Parser {
       //   });
 
       // Get cabins / quantity for award
-      const seatsLeft = $(row)
-        .find(".seatLeft")
-        .text()
-        .trim();
       const flight = new Flight(segments);
       $(row)
-        .find(".lowest-fare.has-price")
+        .find(".farecellitem")
         .each((_, x) => {
-          const cabin = this.parseCabin(x);
+          const seatsLeftStr = $(x)
+            .find(".seatLeft")
+            .text()
+            .trim();
+          const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
+          const cabin = "economy"; //this.parseCabin(x);
           const fare = this.findFare(cabin);
+          // findFare object {"code":"C","cabin":"business","saver":true,"name":"Business / Club"}
+          // findFare object {"code":"W","cabin":"premium","saver":true,"name":"Premium Economy"}
+          // findFare object {"code":"W","cabin":"premium","saver":true,"name":"Premium Economy"}
+          // console.log(`fare is ${JSON.stringify(cabin)}`);
           const cabins = flight.segments.map(x => cabin);
 
-          awards.push(
-            new Award(
-              {
-                engine,
-                fare,
-                cabins,
-                seatsLeft
-              },
-              flight
-            )
+          const award = new Award(
+            {
+              engine,
+              fare,
+              cabins,
+              quantity: seatsLeft,
+              mileageCost: 100000
+            },
+            flight
           );
+          // console.log("Award is " + award);
+          awards.push(award);
         });
     });
 
