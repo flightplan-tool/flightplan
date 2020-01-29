@@ -10,6 +10,12 @@ const utils = require("../../utils");
 // Regex patterns
 const reQuantity = /only\s(\d+)\s+left\sat/i;
 
+const cabinCodes = {
+  E: cabins.economy,
+  P: cabins.premium,
+  B: cabins.business,
+  F: cabins.first
+};
 module.exports = class extends Parser {
   parse(results) {
     const $ = results.$("results");
@@ -55,37 +61,48 @@ module.exports = class extends Parser {
       }
 
       // Get departure / arrival dates
-      const strDepartDateTime = $(row)
-        .find(".trip-time.pr0-sm-down")
-        .first()
-        .text();
-      const strArrivalDateTime = $(row)
-        .find(".trip-time.pl0-sm-down")
-        .last()
-        .text();
+      const strDepartDate = $(".airportinfo")
+        .text()
+        .trim();
+      const strArrivalDate = $(".airportinfo")
+        .text()
+        .trim();
 
-      //TODO
-      const strDepartDateTime1 = Date();
-      const strArrivalDateTime1 = Date();
-      const departDate = this.parseDate(strDepartDateTime1, query, outbound);
-      const arrivalDate = this.parseDate(strArrivalDateTime1, query, outbound);
+      const departDate = moment(strDepartDate).format("YYYY-MM-YY");
+      const arrivalDate = this.parseDate(strArrivalDate, query, outbound);
 
       // Get departure / arrival times
-      const departTime = strDepartDateTime; //this.parseTime(strDepartDateTime);
-      const arrivalTime = strArrivalDateTime; //this.parseTime(strArrivalDateTime);
+      const departTime = $(row)
+        .find(".trip-time.pr0-sm-down")
+        .first()
+        .text()
+        .trim();
+      const arrivalTime = $(row)
+        .find(".trip-time.pl0-sm-down")
+        .first()
+        .text()
+        .trim();
 
       //TODO update flight nunmber
-      const airline = "AZ";
-      const flightNumberArr = $(row)
-        .find(".upsellpopupanchor")
+      const airlineAndFlight = $(row)
+        .find(".upsellpopupanchor.ng-star-inserted")
+        .first()
         .text()
         .trim()
-        .split(" ");
+        .split(" ")[0];
+      const airline = airlineAndFlight.substr(0, 2);
+      const flightNumber = airlineAndFlight.substr(2);
+      // console.log("airline " + airline);
+      // const flightNumberArr = $(row)
+      //   .find(".upsellpopupanchor")
+      //   .text()
+      //   .trim()
+      //   .split(" ");
       // const flightNumber = flightNumberArr[flightNumberArr.length - 1];
-      const flightNumber = "102";
+      // const flightNumber = "102";
 
       // Type of plane
-      const aircraft = "Boeing Placeholder";
+      const aircraft = "-";
 
       // Add segment
       const segment = new Segment({
@@ -97,7 +114,9 @@ module.exports = class extends Parser {
         date: departDate,
         departure: departTime,
         arrival: arrivalTime,
-        lagDays: utils.daysBetween(departDate, arrivalDate)
+        lagDays: utils.daysBetween(departDate, arrivalDate),
+        //TODO
+        cabin: cabins.business
       });
       console.log("Segment created is " + segment);
       segments.push(segment);
@@ -109,13 +128,14 @@ module.exports = class extends Parser {
       //   });
 
       // Get cabins / quantity for award
+      const seatsLeft = $(row)
+        .find(".seatLeft")
+        .text()
+        .trim();
+      const flight = new Flight(segments);
       $(row)
         .find(".lowest-fare.has-price")
         .each((_, x) => {
-          const flight = new Flight(segments);
-          const seatsLeft = $(x).find(".SeatsRemainingDiv");
-          const quantity =
-            this.parseQuantity(seatsLeft) || Math.max(query.quantity, 7);
           const cabin = this.parseCabin(x);
           const fare = this.findFare(cabin);
           const cabins = flight.segments.map(x => cabin);
@@ -126,7 +146,7 @@ module.exports = class extends Parser {
                 engine,
                 fare,
                 cabins,
-                quantity
+                seatsLeft
               },
               flight
             )

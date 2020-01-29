@@ -106,7 +106,7 @@ module.exports = class extends Searcher {
           selectTripType: "ROUND_TRIP",
           dates: {
             departureDate: departDateStr,
-            returnDate: "09/30/2020",
+            returnDate: "02/11/2020",
             chkFlexDate: false
           },
           passenger: "1",
