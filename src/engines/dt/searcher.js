@@ -91,10 +91,15 @@ module.exports = class extends Searcher {
     // // Wait for results to load
     this.info("Submitting search form");
     // await this.settle();
-    const returnDateStr = returnDate ? returnDate.format("MM/DD/YYYY") : "";
+    const returnDateStr = oneWay ? "" : returnDate.format("MM/DD/YYYY");
     const departDateStr = departDate.format("MM/DD/YYYY");
+    const selectTripType = oneWay ? "ONE_WAY" : "ROUND_TRIP";
+    this.info(`oneWay ${oneWay}`);
+    this.info(`returnDate ${returnDate}`);
+    this.info(`returnDateStr ${returnDateStr}`);
+    this.info(`departDateStr ${departDateStr}`);
     await page.evaluate(
-      (fromCity, toCity, departDateStr, returnDateStr) => {
+      (fromCity, toCity, departDateStr, returnDateStr, selectTripType) => {
         request = {
           airports: {
             fromCity: "New York-Kennedy, NY",
@@ -103,10 +108,10 @@ module.exports = class extends Searcher {
             toAirportcode: toCity,
             invalidAirportCodes: null
           },
-          selectTripType: "ROUND_TRIP",
+          selectTripType: selectTripType,
           dates: {
             departureDate: departDateStr,
-            returnDate: "02/11/2020",
+            returnDate: returnDateStr,
             chkFlexDate: false
           },
           passenger: "1",
@@ -146,7 +151,8 @@ module.exports = class extends Searcher {
       fromCity,
       toCity,
       departDateStr,
-      returnDateStr
+      returnDateStr,
+      selectTripType
     );
 
     // then go here

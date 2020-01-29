@@ -29,7 +29,7 @@ module.exports = class extends Parser {
 
   parseFlights($, sel) {
     // When working on a new parser, log the output and do experimentation in browser
-    console.log("Sel is ");
+    console.log("#parseFlight: Sel is ");
     console.log("*********************");
     console.log($(sel));
     console.log("*********************");
