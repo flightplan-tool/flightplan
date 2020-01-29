@@ -38,7 +38,6 @@ module.exports = class extends Searcher {
   }
 
   async search(page, query, results) {
-    debugger;
     const { oneWay, fromCity, toCity, quantity } = query;
     const departDate = query.departDateMoment();
     const returnDate = query.returnDateMoment();
