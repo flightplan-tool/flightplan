@@ -121,6 +121,7 @@ module.exports = class extends Parser {
           const fare = this.findFare(cabin);
           const cabins = flight.segments.map(x => cabin);
 
+          console.log(`Fare is ${typeof fare} ${JSON.stringify(fare)}}`);
           awards.push(
             new Award(
               {
