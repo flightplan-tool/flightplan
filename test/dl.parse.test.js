@@ -1,25 +1,5 @@
 const fp = require("../src/index");
 
-// id = "SQ";
-// query = {
-//   partners: true,
-//   cabin: "business",
-//   quantity: 1,
-//   fromCity: "SFO",
-//   toCity: "SIN",
-//   departDate: "2019-09-18",
-//   returnDate: "2019-09-25"
-// };
-// html = [
-//   {
-//     name: "results",
-//     path: "./test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-5ebd.html"
-//   },
-//   {
-//     name: "partners1",
-//     path: "test/__mock__/SQ-SFO-SIN-2019-09-18-RT1JP-5ebd-1.html"
-//   }
-// ];
 describe("Run parse", () => {
   test("Parse", () => {
     id = "DL";
