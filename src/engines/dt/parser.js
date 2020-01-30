@@ -68,22 +68,22 @@ module.exports = class extends Parser {
         .text()
         .trim();
 
-      const departDate = moment(strDepartDate).format("YYYY-MM-YY");
+      const departDate = moment(strDepartDate).format("YYYY-MM-DD");
       const arrivalDate = this.parseDate(strArrivalDate, query, outbound);
 
       // Get departure / arrival times
-      // const departTime = $(row)
-      //   .find(".trip-time.pr0-sm-down")
-      //   .first()
-      //   .text()
-      //   .trim();
-      // const arrivalTime = $(row)
-      //   .find(".trip-time.pl0-sm-down")
-      //   .first()
-      //   .text()
-      //   .trim();
-      const departTime = "01:00";
-      const arrivalTime = "19:00";
+      const departTimeStr = $(row)
+        .find(".trip-time.pr0-sm-down")
+        .first()
+        .text()
+        .trim();
+      const arrivalTimeStr = $(row)
+        .find(".trip-time.pl0-sm-down")
+        .first()
+        .text()
+        .trim();
+      const departTime = moment(departTimeStr, "hh:mm a").format("HH:mm");
+      const arrivalTime = moment(arrivalTimeStr, "hh:mm a").format("HH:mm");
 
       //TODO update flight nunmber
       const airlineAndFlight = $(row)
