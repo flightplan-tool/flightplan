@@ -63,12 +63,11 @@ module.exports = class extends Parser {
       const strDepartDate = $(".airportinfo")
         .text()
         .trim();
-      const strArrivalDate = $(".airportinfo")
-        .text()
-        .trim();
 
       const departDate = moment(strDepartDate).format("YYYY-MM-DD");
-      const arrivalDate = this.parseDate(strArrivalDate, query, outbound);
+      // By default, Delta does not show any arrival dates
+      // hence default arrivale date is the same as departure date
+      const defaultArrivalDate = departDate;
 
       // Get departure / arrival times
       const departTimeStr = $(row)
@@ -97,7 +96,8 @@ module.exports = class extends Parser {
         fromCity,
         departDate,
         departTime,
-        arrivalTime
+        arrivalTime,
+        defaultArrivalDate
       );
       console.log("******************* segments creaated *******");
       // $(row)
@@ -138,14 +138,22 @@ module.exports = class extends Parser {
     return awards;
   }
 
-  createSegmentsForRow($, row, fromCity, departDate, departTime, arrivalTime) {
+  createSegmentsForRow(
+    $,
+    row,
+    fromCity,
+    departDate,
+    departTime,
+    arrivalTime,
+    defaultArrivalDate
+  ) {
     const segments = [];
     let index = 0;
     $(row)
       .find(".upsellpopupanchor.ng-star-inserted")
       .each((_, x) => {
-        const numberOfLayovers = $(row).find(".flightStopLayover").length;
-        const toCityEl = $(row).find(".flightStopLayover")[index];
+        const numberOfLayovers = calculateNumberOfLayovers($, row);
+        const toCityEl = $(row).find(".flightStopLayover")[index++];
         let toCity;
         let nextConnectionMinutes;
         ({ toCity, nextConnectionMinutes } = this.extractConnectionDetails(
@@ -159,10 +167,30 @@ module.exports = class extends Parser {
         const airline = airlineAndFlight.substr(0, 2);
         const flightNumber = airlineAndFlight.substr(2);
 
+        // if ("9378" == flightNumber) {
+        //   console.log("******************************");
+        //   console.log($(row).html());
+        //   console.log("******************************");
+        // }
+
         // Type of plane
         const aircraft = "-";
 
-        const lagDays = 1;
+        //TODO
+        // const lagDays = 0;
+        let arrivalDate = defaultArrivalDate;
+        if ($(row).find(".travelDate").length > 0) {
+          const strArrivalDate = $(row)
+            .find(".travelDate")
+            .text()
+            .trim();
+          console.log(`strArrivalDate is ${strArrivalDate}`);
+          arrivalDate = moment(strArrivalDate, "ddd D MMM").format(
+            "YYYY-MM-DD"
+          );
+          console.log(`New arrivalDate is ${arrivalDate}`);
+        }
+        const lagDays = this.calculateLagDays(departDate, arrivalDate);
 
         // Add segment
         const segment = new Segment({
@@ -198,6 +226,17 @@ module.exports = class extends Parser {
         }
       });
     return segments;
+  }
+
+  /**
+   *
+   * @param {*} departTime
+   * @param {*} arrivalTime
+   */
+  calculateLagDays(departDate, arrivalDate) {
+    const lag = moment(arrivalDate).diff(moment(departDate), "days");
+    console.log(`calculateLagDays ${lag} ${arrivalDate} ${departDate}`);
+    return lag;
   }
 
   /**
@@ -268,3 +307,13 @@ module.exports = class extends Parser {
     }
   }
 };
+function calculateNumberOfLayovers($, row) {
+  const isNonStop = $(row)
+    .find(".fareIconBadge")
+    .text()
+    .match("Nonstop");
+  if (isNonStop) {
+    return 0;
+  }
+  return $(row).find(".flightStopLayover").length;
+}
