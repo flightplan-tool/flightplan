@@ -37,7 +37,6 @@ module.exports = class extends Parser {
 
     // Iterate over flights
     const awards = [];
-    const segments = [];
 
     $(sel).each((_, row) => {
       let originCity = null;
@@ -50,15 +49,15 @@ module.exports = class extends Parser {
         .text()
         .trim()
         .split(" ")[3];
-      const toCity = airports
-        .last()
-        .text()
-        .trim()
-        .split(" ")[3];
-      if (!originCity) {
-        originCity = fromCity;
-        outbound = originCity === query.fromCity;
-      }
+      // const toCity = airports
+      //   .last()
+      //   .text()
+      //   .trim()
+      //   .split(" ")[3];
+      // if (!originCity) {
+      //   originCity = fromCity;
+      //   outbound = originCity === query.fromCity;
+      // }
 
       // Get departure / arrival dates
       const strDepartDate = $(".airportinfo")
@@ -88,42 +87,19 @@ module.exports = class extends Parser {
       //TODO update flight nunmber
       const airlineAndFlight = $(row)
         .find(".upsellpopupanchor.ng-star-inserted")
-        .first()
         .text()
         .trim()
         .split(" ")[0];
-      const airline = airlineAndFlight.substr(0, 2);
-      const flightNumber = airlineAndFlight.substr(2);
-      // console.log("airline " + airline);
-      // const flightNumberArr = $(row)
-      //   .find(".upsellpopupanchor")
-      //   .text()
-      //   .trim()
-      //   .split(" ");
-      // const flightNumber = flightNumberArr[flightNumberArr.length - 1];
-      // const flightNumber = "102";
 
-      // Type of plane
-      const aircraft = "-";
-      const lagDays = 1; //TODO utils.daysBetween(departDate, arrivalDate);
-
-      // Add segment
-      const segment = new Segment({
-        aircraft: aircraft,
-        airline: airline,
-        flight: `${airline}${flightNumber}`,
+      const segments = this.createSegmentsForRow(
+        $,
+        row,
         fromCity,
-        toCity,
-        date: departDate,
-        departure: departTime,
-        arrival: arrivalTime,
-        lagDays,
-        //TODO
-        cabin: cabins.business
-      });
-      // console.log("Segment created is " + segment);
-      segments.push(segment);
-
+        departDate,
+        departTime,
+        arrivalTime
+      );
+      console.log("******************* segments creaated *******");
       // $(row)
       //   .find("div.SegmentContainer")
       //   .each((_, x) => {
@@ -131,10 +107,10 @@ module.exports = class extends Parser {
       //   });
 
       // Get cabins / quantity for award
-      const flight = new Flight(segments);
       $(row)
         .find(".farecellitem")
         .each((_, x) => {
+          const flight = new Flight(segments);
           const seatsLeftStr = $(x)
             .find(".seatLeft")
             .text()
@@ -142,10 +118,6 @@ module.exports = class extends Parser {
           const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
           const cabin = "economy"; //this.parseCabin(x);
           const fare = this.findFare(cabin);
-          // findFare object {"code":"C","cabin":"business","saver":true,"name":"Business / Club"}
-          // findFare object {"code":"W","cabin":"premium","saver":true,"name":"Premium Economy"}
-          // findFare object {"code":"W","cabin":"premium","saver":true,"name":"Premium Economy"}
-          // console.log(`fare is ${JSON.stringify(cabin)}`);
           const cabins = flight.segments.map(x => cabin);
 
           const award = new Award(
@@ -164,6 +136,59 @@ module.exports = class extends Parser {
     });
 
     return awards;
+  }
+
+  createSegmentsForRow($, row, fromCity, departDate, departTime, arrivalTime) {
+    const segments = [];
+    let index = 0;
+    $(row)
+      .find(".upsellpopupanchor.ng-star-inserted")
+      .each((_, x) => {
+        const numberOfLayovers = $(row).find(".flightStopLayover").length;
+        const toCityEl = $(row).find(".flightStopLayover")[index];
+        const toCity = $(toCityEl)
+          .text()
+          .split(" ")[3];
+
+        const airlineAndFlight = $(x)
+          .text()
+          .trim()
+          .split(" ")[0];
+        const airline = airlineAndFlight.substr(0, 2);
+        const flightNumber = airlineAndFlight.substr(2);
+
+        // Type of plane
+        const aircraft = "-";
+
+        const lagDays = 1;
+
+        // Add segment
+        const segment = new Segment({
+          aircraft: aircraft,
+          airline: airline,
+          flight: `${airline}${flightNumber}`,
+          fromCity: fromCity,
+          toCity,
+          date: departDate,
+          departure: departTime,
+          arrival: arrivalTime,
+          lagDays,
+          //TODO
+          cabin: cabins.business
+        });
+        console.log("Segment created is " + segment);
+        segments.push(segment);
+        fromCity = toCity;
+        //TODO: Hack since it's not easy to tell
+        departTime = moment(arrivalTime, "hh:mm a")
+          .add("minutes", 30)
+          .format("HH:mm");
+        departDate = moment(departDate).add("days", 1);
+        arrivalTime = moment(arrivalTime, "hh:mm a")
+          .add("hours", 1)
+          .format("HH:mm");
+      });
+    return segments;
   }
 
   parseDate(str, query, outbound) {
