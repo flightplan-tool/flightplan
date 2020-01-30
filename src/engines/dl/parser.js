@@ -202,7 +202,7 @@ module.exports = class extends Parser {
           date: departDate,
           departure: departTime,
           arrival: arrivalTime,
-          lagDays,
+          lagDays: lagDays,
           nextConnection: nextConnectionMinutes,
           //TODO
           cabin: cabins.business,
