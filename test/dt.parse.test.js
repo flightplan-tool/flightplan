@@ -22,7 +22,7 @@ const fp = require("../src/index");
 // ];
 describe("Run parse", () => {
   test("Parse", () => {
-    id = "DT";
+    id = "DL";
     query = {
       partners: true,
       cabin: "business",
@@ -35,7 +35,7 @@ describe("Run parse", () => {
     html = [
       {
         name: "results",
-        path: "./test/__mock__/DT-LHR-JFK-2020-03-09-1580345532131.html"
+        path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
       }
     ];
     const results = fp.Results.parse({

@@ -1,10 +1,10 @@
-const Config = require('../Config')
+const Config = require("../Config");
 
 // Register all supported engines
 const engines = {
   ac: require("./ac"),
   as: require("./as"),
-  dt: require("./dt"),
+  dl: require("./dl"),
   ba: require("./ba"),
   cx: require("./cx"),
   ke: require("./ke"),
