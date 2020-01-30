@@ -146,9 +146,22 @@ module.exports = class extends Parser {
       .each((_, x) => {
         const numberOfLayovers = $(row).find(".flightStopLayover").length;
         const toCityEl = $(row).find(".flightStopLayover")[index];
-        const toCity = $(toCityEl)
-          .text()
-          .split(" ")[3];
+        let toCity;
+        let matching;
+        let nextConnection;
+        if (
+          (matching = $(toCityEl)
+            .text()
+            .match(/layover airport code (.*) layover duration(.*)/))
+        ) {
+          toCity = matching[1].trim();
+          nextConnection = matching[2].trim();
+        } else {
+          matching = $(toCityEl)
+            .text()
+            .match(/arrival airport code (.*)/);
+          toCity = matching[1].trim();
+        }
 
         const airlineAndFlight = $(x)
           .text()
@@ -173,17 +186,21 @@ module.exports = class extends Parser {
           departure: departTime,
           arrival: arrivalTime,
           lagDays,
+          nextConnection,
           //TODO
-          cabin: cabins.business
+          cabin: cabins.business,
+          stops: numberOfLayovers
         });
-        console.log("Segment created is " + segment);
+        // console.log("Segment created is " + segment);
         segments.push(segment);
         fromCity = toCity;
         //TODO: Hack since it's not easy to tell
         departTime = moment(arrivalTime, "hh:mm a")
           .add("minutes", 30)
           .format("HH:mm");
-        departDate = moment(departDate).add("days", 1);
+        departDate = moment(departDate)
+          .add("days", 1)
+          .format("YYYY-MM-DD");
         arrivalTime = moment(arrivalTime, "hh:mm a")
           .add("hours", 1)
           .format("HH:mm");
