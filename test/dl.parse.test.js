@@ -1,4 +1,29 @@
 const fp = require("../src/index");
+const Parser = require("../src/engines/dl/parser");
+
+describe("extractConnectionDetails", () => {
+  parser = new Parser();
+
+  test("hours and minutes provided", () => {
+    const res = parser.extractConnectionDetails(
+      "layover airport code AMS layover duration1h  25m"
+    );
+
+    expect(res).toEqual({ nextConnectionMinutes: 85, toCity: "AMS" });
+  });
+
+  test("only minutes provided", () => {
+    res = parser.extractConnectionDetails(
+      "layover airport code AMS layover duration 50m"
+    );
+    expect(res).toEqual({ nextConnectionMinutes: 50, toCity: "AMS" });
+  });
+
+  test("final destiation only (no connections)", () => {
+    res = parser.extractConnectionDetails("arrival airport code JFK");
+    expect(res).toEqual({ nextConnectionMinutes: undefined, toCity: "JFK" });
+  });
+});
 
 describe("Run parse", () => {
   test("Parse", () => {

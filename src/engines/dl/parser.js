@@ -147,8 +147,8 @@ module.exports = class extends Parser {
         const numberOfLayovers = $(row).find(".flightStopLayover").length;
         const toCityEl = $(row).find(".flightStopLayover")[index];
         let toCity;
-        let nextConnection;
-        ({ toCity, nextConnection } = this.extractConnectionDetails(
+        let nextConnectionMinutes;
+        ({ toCity, nextConnectionMinutes } = this.extractConnectionDetails(
           $(toCityEl).text()
         ));
 
@@ -175,35 +175,37 @@ module.exports = class extends Parser {
           departure: departTime,
           arrival: arrivalTime,
           lagDays,
-          nextConnection,
+          nextConnection: nextConnectionMinutes,
           //TODO
           cabin: cabins.business,
           stops: numberOfLayovers
         });
-        // console.log("Segment created is " + segment);
+        console.log("Segment created is " + segment);
         segments.push(segment);
         fromCity = toCity;
-        //TODO: Hack since it's not easy to tell
-        departTime = moment(arrivalTime, "hh:mm a")
-          .add("minutes", 30)
-          .format("HH:mm");
-        departDate = moment(departDate)
-          .add("days", 1)
-          .format("YYYY-MM-DD");
-        arrivalTime = moment(arrivalTime, "hh:mm a")
-          .add("hours", 1)
-          .format("HH:mm");
+
+        if (nextConnectionMinutes) {
+          console.log("Calculating info for next segment");
+          departTime = moment(arrivalTime, "hh:mm a")
+            .add("minutes", nextConnectionMinutes)
+            .format("HH:mm");
+          departDate = moment(departDate)
+            .add("minutes", nextConnectionMinutes)
+            .format("YYYY-MM-DD");
+          arrivalTime = moment(arrivalTime, "hh:mm a")
+            .add("hours", 1)
+            .format("HH:mm");
+        }
       });
     return segments;
   }
 
   /**
    *
-   * @param {*} matching
    * @param {*} toCityString "arrival airport code LHR" or "layover airport code AMS layover duration1h  25m"
    */
   extractConnectionDetails(toCityString) {
-    let toCity, nextConnection;
+    let toCity, nextConnectionMinutes;
     let matching;
     if (
       (matching = toCityString.match(
@@ -211,12 +213,20 @@ module.exports = class extends Parser {
       ))
     ) {
       toCity = matching[1].trim();
-      nextConnection = matching[2].trim();
+      const nextConnection = matching[2].trim();
+      let nextConnectionMoment = moment(nextConnection, "hh:mm a");
+      if (!nextConnectionMoment.isValid()) {
+        nextConnectionMoment = moment(nextConnection, "mm");
+      }
+      let nextConnectionInFormat = nextConnectionMoment.format("HH:mm");
+      nextConnectionMinutes = moment
+        .duration(nextConnectionInFormat)
+        .asMinutes();
     } else {
       matching = toCityString.match(/arrival airport code (.*)/);
       toCity = matching[1].trim();
     }
-    return { toCity, nextConnection };
+    return { toCity, nextConnectionMinutes };
   }
 
   parseDate(str, query, outbound) {
