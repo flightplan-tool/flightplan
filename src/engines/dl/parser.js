@@ -147,21 +147,10 @@ module.exports = class extends Parser {
         const numberOfLayovers = $(row).find(".flightStopLayover").length;
         const toCityEl = $(row).find(".flightStopLayover")[index];
         let toCity;
-        let matching;
         let nextConnection;
-        if (
-          (matching = $(toCityEl)
-            .text()
-            .match(/layover airport code (.*) layover duration(.*)/))
-        ) {
-          toCity = matching[1].trim();
-          nextConnection = matching[2].trim();
-        } else {
-          matching = $(toCityEl)
-            .text()
-            .match(/arrival airport code (.*)/);
-          toCity = matching[1].trim();
-        }
+        ({ toCity, nextConnection } = this.extractConnectionDetails(
+          $(toCityEl).text()
+        ));
 
         const airlineAndFlight = $(x)
           .text()
@@ -206,6 +195,28 @@ module.exports = class extends Parser {
           .format("HH:mm");
       });
     return segments;
+  }
+
+  /**
+   *
+   * @param {*} matching
+   * @param {*} toCityString "arrival airport code LHR" or "layover airport code AMS layover duration1h  25m"
+   */
+  extractConnectionDetails(toCityString) {
+    let toCity, nextConnection;
+    let matching;
+    if (
+      (matching = toCityString.match(
+        /layover airport code (.*) layover duration(.*)/
+      ))
+    ) {
+      toCity = matching[1].trim();
+      nextConnection = matching[2].trim();
+    } else {
+      matching = toCityString.match(/arrival airport code (.*)/);
+      toCity = matching[1].trim();
+    }
+    return { toCity, nextConnection };
   }
 
   parseDate(str, query, outbound) {
