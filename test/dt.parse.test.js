@@ -28,14 +28,14 @@ describe("Run parse", () => {
       cabin: "business",
       quantity: 1,
       fromCity: "JFK",
-      toCity: "HKG",
-      departDate: "2020-02-09",
-      returnDate: "2020-02-11"
+      toCity: "LHR",
+      departDate: "2020-03-09",
+      returnDate: "2020-03-10"
     };
     html = [
       {
         name: "results",
-        path: "./test/__mock__/DT-HKG-JFK-2020-01-29-1580273858604.html"
+        path: "./test/__mock__/DT-LHR-JFK-2020-03-09-1580345532131.html"
       }
     ];
     const results = fp.Results.parse({
@@ -50,7 +50,7 @@ describe("Run parse", () => {
     res = results.trimContents().toJSON(true);
     // console.log("Test results are \n *************");
     // console.log(res);
-    console.log(JSON.stringify(res.flights));
+    // console.log(JSON.stringify(res.flights));
     // console.log("Test results are \n *************");
   });
 });
