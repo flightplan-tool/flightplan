@@ -143,22 +143,7 @@ module.exports = class extends Parser {
     const segments = [];
     let index = 0;
 
-    const totalJourneyDurationStr = $(row)
-      .find(".totalTime")
-      .text();
-
-    const totalJourneyDuration = this.totalJourneyDuration(
-      totalJourneyDurationStr
-    );
-
-    const totalLayoverTime = this.totalLayoverTime();
-
-    const numberOfLayovers = calculateNumberOfLayovers($, row);
-
-    // TODO: Hack! It's not easy to get individual flight times so
-    // we are going to use an average. I know it's bad, but whatcha gonna do
-    const averageFlightTime =
-      (totalJourneyDuration - totalLayoverTime) / numberOfLayovers;
+    const { numberOfLayovers, averageFlightTime } = this.getFlightTime($, row);
 
     $(row)
       .find(".upsellpopupanchor.ng-star-inserted")
@@ -170,28 +155,9 @@ module.exports = class extends Parser {
           $(toCityEl).text()
         ));
 
-        const airlineAndFlight = $(x)
-          .text()
-          .trim()
-          .split(" ")[0];
-        const airline = airlineAndFlight.substr(0, 2);
-        const flightNumber = airlineAndFlight.substr(2);
+        const { aircraft, airline, flightNumber } = this.getFlightDetails($, x);
 
-        // Type of plane
-        const aircraft = "-";
-
-        let arrivalDate = defaultArrivalDate;
-        if ($(row).find(".travelDate").length > 0) {
-          const strArrivalDate = $(row)
-            .find(".travelDate")
-            .text()
-            .trim();
-          // console.log(`strArrivalDate is ${strArrivalDate}`);
-          arrivalDate = moment(strArrivalDate, "ddd D MMM").format(
-            "YYYY-MM-DD"
-          );
-          // console.log(`New arrivalDate is ${arrivalDate}`);
-        }
+        let arrivalDate = this.getArrivalDate(defaultArrivalDate, $, row);
         const lagDays = this.calculateLagDays(departDate, arrivalDate);
 
         // Add segment
@@ -228,6 +194,48 @@ module.exports = class extends Parser {
         }
       });
     return segments;
+  }
+
+  getArrivalDate(defaultArrivalDate, $, row) {
+    let arrivalDate = defaultArrivalDate;
+    if ($(row).find(".travelDate").length > 0) {
+      const strArrivalDate = $(row)
+        .find(".travelDate")
+        .text()
+        .trim();
+      // console.log(`strArrivalDate is ${strArrivalDate}`);
+      arrivalDate = moment(strArrivalDate, "ddd D MMM").format("YYYY-MM-DD");
+      // console.log(`New arrivalDate is ${arrivalDate}`);
+    }
+    return arrivalDate;
+  }
+
+  getFlightTime($, row) {
+    const totalJourneyDurationStr = $(row)
+      .find(".totalTime")
+      .text();
+    const totalJourneyDuration = this.totalJourneyDuration(
+      totalJourneyDurationStr
+    );
+    const totalLayoverTime = this.totalLayoverTime();
+    const numberOfLayovers = calculateNumberOfLayovers($, row);
+    // TODO: Hack! It's not easy to get individual flight times so
+    // we are going to use an average. I know it's bad, but whatcha gonna do
+    const averageFlightTime =
+      (totalJourneyDuration - totalLayoverTime) / numberOfLayovers;
+    return { numberOfLayovers, averageFlightTime };
+  }
+
+  getFlightDetails($, x) {
+    const airlineAndFlight = $(x)
+      .text()
+      .trim()
+      .split(" ")[0];
+    const airline = airlineAndFlight.substr(0, 2);
+    const flightNumber = airlineAndFlight.substr(2);
+    // Type of plane
+    const aircraft = "-";
+    return { aircraft, airline, flightNumber };
   }
 
   /**
