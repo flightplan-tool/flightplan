@@ -41,7 +41,7 @@ describe("extractConnectionDetails", () => {
 });
 
 describe("Run parse", () => {
-  test("Parse BOS -> JFK", () => {
+  test("Parse BOS -> JFK (all non stop flights)", () => {
     id = "DL";
     query = {
       partners: true,
@@ -55,8 +55,6 @@ describe("Run parse", () => {
     html = [
       {
         name: "results",
-        // path: "./test/__mock__/DL-LHR-JFK-2020-03-10-1580417606309.html"
-        // path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
         path: "./test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.html"
       }
     ];
@@ -75,7 +73,41 @@ describe("Run parse", () => {
       "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
     );
     let expected = JSON.parse(rawdata);
-    // console.log(JSON.stringify(expected));
     compare(expected, results);
+  });
+  test("Parse BOS -> JFK", () => {
+    id = "DL";
+    query = {
+      partners: true,
+      cabin: "business",
+      quantity: 1,
+      fromCity: "BOS",
+      toCity: "JFK",
+      departDate: "2020-03-10",
+      returnDate: "2020-03-10"
+    };
+    html = [
+      {
+        name: "results",
+        // path: "./test/__mock__/DL-LHR-JFK-2020-03-10-1580417606309.html"
+        path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
+      }
+    ];
+    const results = fp.Results.parse({
+      engine: id,
+      query: query,
+      html: html
+    });
+
+    expect(results.ok).toBeTruthy();
+    expect(results.error).toBeNull();
+
+    res = results.trimContents().toJSON(true);
+
+    let rawdata = fs.readFileSync(
+      "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
+    );
+    let expected = JSON.parse(rawdata);
+    // compare(expected, results);
   });
 });
