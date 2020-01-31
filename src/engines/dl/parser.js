@@ -39,56 +39,14 @@ module.exports = class extends Parser {
     const awards = [];
 
     $(sel).each((_, row) => {
-      let originCity = null;
-      let outbound = null;
-
       // Get cities, and direction
-      const airports = $(row).find(".flightSecFocus");
-      const fromCity = airports
-        .first()
-        .text()
-        .trim()
-        .split(" ")[3];
-      // const toCity = airports
-      //   .last()
-      //   .text()
-      //   .trim()
-      //   .split(" ")[3];
-      // if (!originCity) {
-      //   originCity = fromCity;
-      //   outbound = originCity === query.fromCity;
-      // }
+      const fromCity = this.generateCities($, row);
 
       // Get departure / arrival dates
-      const strDepartDate = $(".airportinfo")
-        .text()
-        .trim();
-
-      const departDate = moment(strDepartDate).format("YYYY-MM-DD");
-      // By default, Delta does not show any arrival dates
-      // hence default arrivale date is the same as departure date
-      const defaultArrivalDate = departDate;
+      const { departDate, defaultArrivalDate } = this.generateDates($);
 
       // Get departure / arrival times
-      const departTimeStr = $(row)
-        .find(".trip-time.pr0-sm-down")
-        .first()
-        .text()
-        .trim();
-      const arrivalTimeStr = $(row)
-        .find(".trip-time.pl0-sm-down")
-        .first()
-        .text()
-        .trim();
-      const departTime = moment(departTimeStr, "hh:mm a").format("HH:mm");
-      const arrivalTime = moment(arrivalTimeStr, "hh:mm a").format("HH:mm");
-
-      //TODO update flight nunmber
-      const airlineAndFlight = $(row)
-        .find(".upsellpopupanchor.ng-star-inserted")
-        .text()
-        .trim()
-        .split(" ")[0];
+      const { departTime, arrivalTime } = this.generateTimes($, row);
 
       const segments = this.createSegmentsForRow(
         $,
@@ -100,42 +58,77 @@ module.exports = class extends Parser {
         defaultArrivalDate
       );
       console.log("******************* segments creaated *******");
-      // $(row)
-      //   .find("div.SegmentContainer")
-      //   .each((_, x) => {
-      //     // Create segment for each parsed item
-      //   });
 
       // Get cabins / quantity for award
-      $(row)
-        .find(".farecellitem")
-        .each((_, x) => {
-          const flight = new Flight(segments);
-          const seatsLeftStr = $(x)
-            .find(".seatLeft")
-            .text()
-            .trim();
-          const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
-          const cabin = "economy"; //this.parseCabin(x);
-          const fare = this.findFare(cabin);
-          const cabins = flight.segments.map(x => cabin);
-
-          const award = new Award(
-            {
-              engine,
-              fare,
-              cabins,
-              quantity: seatsLeft,
-              mileageCost: 100000
-            },
-            flight
-          );
-          // console.log("Award is " + award);
-          awards.push(award);
-        });
+      this.generateAwards($, row, segments, engine, awards);
     });
 
     return awards;
+  }
+
+  generateCities($, row) {
+    const airports = $(row).find(".flightSecFocus");
+    const fromCity = airports
+      .first()
+      .text()
+      .trim()
+      .split(" ")[3];
+    return fromCity;
+  }
+
+  generateDates($) {
+    const strDepartDate = $(".airportinfo")
+      .text()
+      .trim();
+    const departDate = moment(strDepartDate).format("YYYY-MM-DD");
+    // By default, Delta does not show any arrival dates
+    // hence default arrivale date is the same as departure date
+    const defaultArrivalDate = departDate;
+    return { departDate, defaultArrivalDate };
+  }
+
+  generateTimes($, row) {
+    const departTimeStr = $(row)
+      .find(".trip-time.pr0-sm-down")
+      .first()
+      .text()
+      .trim();
+    const arrivalTimeStr = $(row)
+      .find(".trip-time.pl0-sm-down")
+      .first()
+      .text()
+      .trim();
+    const departTime = moment(departTimeStr, "hh:mm a").format("HH:mm");
+    const arrivalTime = moment(arrivalTimeStr, "hh:mm a").format("HH:mm");
+    return { departTime, arrivalTime };
+  }
+
+  generateAwards($, row, segments, engine, awards) {
+    $(row)
+      .find(".farecellitem")
+      .each((_, x) => {
+        const flight = new Flight(segments);
+        const seatsLeftStr = $(x)
+          .find(".seatLeft")
+          .text()
+          .trim();
+        const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
+        const cabin = "economy"; //this.parseCabin(x);
+        const fare = this.findFare(cabin);
+        const cabins = flight.segments.map(x => cabin);
+        const award = new Award(
+          {
+            engine,
+            fare,
+            cabins,
+            quantity: seatsLeft,
+            mileageCost: 100000
+          },
+          flight
+        );
+        // console.log("Award is " + award);
+        awards.push(award);
+      });
   }
 
   createSegmentsForRow(
