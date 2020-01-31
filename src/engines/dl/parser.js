@@ -149,10 +149,27 @@ module.exports = class extends Parser {
   ) {
     const segments = [];
     let index = 0;
+
+    const totalJourneyDurationStr = $(row)
+      .find(".totalTime")
+      .text();
+
+    const totalJourneyDuration = this.totalJourneyDuration(
+      totalJourneyDurationStr
+    );
+
+    const totalLayoverTime = this.totalLayoverTime();
+
+    const numberOfLayovers = calculateNumberOfLayovers($, row);
+
+    // TODO: Hack! It's not easy to get individual flight times so
+    // we are going to use an average. I know it's bad, but whatcha gonna do
+    const averageFlightTime =
+      (totalJourneyDuration - totalLayoverTime) / numberOfLayovers;
+
     $(row)
       .find(".upsellpopupanchor.ng-star-inserted")
       .each((_, x) => {
-        const numberOfLayovers = calculateNumberOfLayovers($, row);
         const toCityEl = $(row).find(".flightStopLayover")[index++];
         let toCity;
         let nextConnectionMinutes;
@@ -167,28 +184,20 @@ module.exports = class extends Parser {
         const airline = airlineAndFlight.substr(0, 2);
         const flightNumber = airlineAndFlight.substr(2);
 
-        // if ("9378" == flightNumber) {
-        //   console.log("******************************");
-        //   console.log($(row).html());
-        //   console.log("******************************");
-        // }
-
         // Type of plane
         const aircraft = "-";
 
-        //TODO
-        // const lagDays = 0;
         let arrivalDate = defaultArrivalDate;
         if ($(row).find(".travelDate").length > 0) {
           const strArrivalDate = $(row)
             .find(".travelDate")
             .text()
             .trim();
-          console.log(`strArrivalDate is ${strArrivalDate}`);
+          // console.log(`strArrivalDate is ${strArrivalDate}`);
           arrivalDate = moment(strArrivalDate, "ddd D MMM").format(
             "YYYY-MM-DD"
           );
-          console.log(`New arrivalDate is ${arrivalDate}`);
+          // console.log(`New arrivalDate is ${arrivalDate}`);
         }
         const lagDays = this.calculateLagDays(departDate, arrivalDate);
 
@@ -215,13 +224,13 @@ module.exports = class extends Parser {
         if (nextConnectionMinutes) {
           console.log("Calculating info for next segment");
           departTime = moment(arrivalTime, "hh:mm a")
-            .add("minutes", nextConnectionMinutes)
+            .add(nextConnectionMinutes, "minutes")
             .format("HH:mm");
           departDate = moment(departDate)
-            .add("minutes", nextConnectionMinutes)
+            .add(nextConnectionMinutes, "minutes")
             .format("YYYY-MM-DD");
-          arrivalTime = moment(arrivalTime, "hh:mm a")
-            .add("hours", 1)
+          arrivalTime = moment(departDate)
+            .add(averageFlightTime, "minutes")
             .format("HH:mm");
         }
       });
@@ -266,6 +275,32 @@ module.exports = class extends Parser {
       toCity = matching[1].trim();
     }
     return { toCity, nextConnectionMinutes };
+  }
+
+  /**
+   *
+   * Return time in minutes
+   */
+  totalLayoverTime() {
+    return 206;
+  }
+
+  /**
+   * Total time spent on the trip
+   *
+   * @param {String} durationString
+   */
+  totalJourneyDuration(durationString) {
+    let timeStr;
+    const matching = durationString.match(/journey duration(.*)/);
+    timeStr = matching[1].trim();
+    let timeMoment = moment(timeStr, "hh:mm a");
+    if (!timeMoment.isValid()) {
+      timeMoment = moment(timeStr, "mm a");
+    }
+    const time = timeMoment.format("HH:mm");
+    // console.log(`timeStr is ${timeStr} ${moment.duration(time).asMinutes()}`);
+    return moment.duration(time).asMinutes();
   }
 
   parseDate(str, query, outbound) {
@@ -315,5 +350,5 @@ function calculateNumberOfLayovers($, row) {
   if (isNonStop) {
     return 0;
   }
-  return $(row).find(".flightStopLayover").length;
+  return $(row).find(".flightStopLayover").length - 1;
 }

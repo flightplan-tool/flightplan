@@ -1,9 +1,23 @@
 const fp = require("../src/index");
 const Parser = require("../src/engines/dl/parser");
+const fs = require("fs");
 
+parser = new Parser();
+describe("totalJourneyDuration", () => {
+  test("hours and minutes", () => {
+    const res = parser.totalJourneyDuration("journey duration8h 15m");
+    expect(res).toEqual(495);
+  });
+  test("hours", () => {
+    const res = parser.totalJourneyDuration("journey duration13h");
+    expect(res).toEqual(780);
+  });
+  test("hours", () => {
+    const res = parser.totalJourneyDuration("journey duration59h");
+    expect(res).toEqual(59);
+  });
+});
 describe("extractConnectionDetails", () => {
-  parser = new Parser();
-
   test("hours and minutes provided", () => {
     const res = parser.extractConnectionDetails(
       "layover airport code AMS layover duration1h  25m"
