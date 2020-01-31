@@ -1,6 +1,7 @@
 const fp = require("../src/index");
 const Parser = require("../src/engines/dl/parser");
 const fs = require("fs");
+const compare = require("./playback").compare;
 
 parser = new Parser();
 describe("totalJourneyDuration", () => {
@@ -40,21 +41,23 @@ describe("extractConnectionDetails", () => {
 });
 
 describe("Run parse", () => {
-  test("Parse", () => {
+  test("Parse BOS -> JFK", () => {
     id = "DL";
     query = {
       partners: true,
       cabin: "business",
       quantity: 1,
-      fromCity: "JFK",
-      toCity: "LHR",
-      departDate: "2020-03-09",
+      fromCity: "BOS",
+      toCity: "JFK",
+      departDate: "2020-03-10",
       returnDate: "2020-03-10"
     };
     html = [
       {
         name: "results",
-        path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
+        // path: "./test/__mock__/DL-LHR-JFK-2020-03-10-1580417606309.html"
+        // path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
+        path: "./test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.html"
       }
     ];
     const results = fp.Results.parse({
@@ -67,9 +70,12 @@ describe("Run parse", () => {
     expect(results.error).toBeNull();
 
     res = results.trimContents().toJSON(true);
-    // console.log("Test results are \n *************");
-    // console.log(res);
-    // console.log(JSON.stringify(res.flights));
-    // console.log("Test results are \n *************");
+
+    let rawdata = fs.readFileSync(
+      "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
+    );
+    let expected = JSON.parse(rawdata);
+    // console.log(JSON.stringify(expected));
+    compare(expected, results);
   });
 });
