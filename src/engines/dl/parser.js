@@ -40,24 +40,34 @@ module.exports = class extends Parser {
 
     $(sel).each((_, row) => {
       // Get cities, and direction
-      const fromCity = this.generateCities($, row);
+      const { fromCity, toCity } = this.generateCities($, row);
 
       // Get departure / arrival dates
-      const { departDate, defaultArrivalDate } = this.generateDates($);
+      const { departDate } = this.generateDates($, fromCity);
+
+      // By default, Delta does not show any arrival dates
+      // hence default arrivale date is the same as departure date
+      const defaultArrivalDate = departDate;
 
       // Get departure / arrival times
-      const { departTime, arrivalTime } = this.generateTimes($, row);
+      const { departTimeMoment, arrivalTimeMoment } = this.generateTimes(
+        $,
+        row,
+        departDate,
+        defaultArrivalDate,
+        fromCity,
+        toCity
+      );
 
       const segments = this.createSegmentsForRow(
         $,
         row,
         fromCity,
         departDate,
-        departTime,
-        arrivalTime,
+        departTimeMoment,
+        arrivalTimeMoment,
         defaultArrivalDate
       );
-      console.log("******************* segments creaated *******");
 
       // Get cabins / quantity for award
       this.generateAwards($, row, segments, engine, awards);
@@ -73,21 +83,27 @@ module.exports = class extends Parser {
       .text()
       .trim()
       .split(" ")[3];
-    return fromCity;
+
+    const toCity = $(row)
+      .find(".flightStopLayover")
+      .last()
+      .text()
+      .trim()
+      .split(" ")[3];
+    return { fromCity, toCity };
   }
 
-  generateDates($) {
+  generateDates($, fromCity) {
+    const timezone = utils.airportTimezone(fromCity);
     const strDepartDate = $(".airportinfo")
       .text()
       .trim();
-    const departDate = moment(strDepartDate).format("YYYY-MM-DD");
-    // By default, Delta does not show any arrival dates
-    // hence default arrivale date is the same as departure date
-    const defaultArrivalDate = departDate;
-    return { departDate, defaultArrivalDate };
+    let departDate = moment(strDepartDate);
+    departDate = moment(moment(strDepartDate), timezone);
+    return { departDate };
   }
 
-  generateTimes($, row) {
+  generateTimes($, row, departDate, arrivalDate, departCity, arrivalCity) {
     const departTimeStr = $(row)
       .find(".trip-time.pr0-sm-down")
       .first()
@@ -98,9 +114,30 @@ module.exports = class extends Parser {
       .first()
       .text()
       .trim();
-    const departTime = moment(departTimeStr, "hh:mm a").format("HH:mm");
-    const arrivalTime = moment(arrivalTimeStr, "hh:mm a").format("HH:mm");
-    return { departTime, arrivalTime };
+
+    let departTimeMoment = this.convertToProperMoment(
+      departCity,
+      departDate,
+      departTimeStr
+    );
+
+    let arrivalTimeMoment = this.convertToProperMoment(
+      arrivalCity,
+      arrivalDate,
+      arrivalTimeStr
+    );
+
+    return { departTimeMoment, arrivalTimeMoment };
+  }
+
+  convertToProperMoment(city, date, time) {
+    const timezone = utils.airportTimezone(city);
+    date = date.startOf("days");
+    date = moment.tz(date, timezone).startOf("days");
+    let timeMoment = moment(time, "hh:mm a").format("HH:mm");
+    const timeInMinutes = moment.duration(timeMoment).asMinutes();
+    timeMoment = date.add(timeInMinutes, "minutes");
+    return timeMoment;
   }
 
   generateAwards($, row, segments, engine, awards) {
@@ -181,16 +218,16 @@ module.exports = class extends Parser {
         fromCity = toCity;
 
         if (nextConnectionMinutes) {
-          console.log("Calculating info for next segment");
-          departTime = moment(arrivalTime, "hh:mm a")
-            .add(nextConnectionMinutes, "minutes")
-            .format("HH:mm");
-          departDate = moment(departDate)
-            .add(nextConnectionMinutes, "minutes")
-            .format("YYYY-MM-DD");
-          arrivalTime = moment(departDate)
-            .add(averageFlightTime, "minutes")
-            .format("HH:mm");
+          // console.log("Calculating info for next segment");
+          departTime = moment(arrivalTime, "hh:mm a").add(
+            nextConnectionMinutes,
+            "minutes"
+          );
+          // .format("HH:mm");
+          departDate = moment(departDate).add(nextConnectionMinutes, "minutes");
+          // .format("YYYY-MM-DD");
+          arrivalTime = moment(departDate).add(averageFlightTime, "minutes");
+          // .format("HH:mm");
         }
       });
     return segments;
@@ -203,9 +240,7 @@ module.exports = class extends Parser {
         .find(".travelDate")
         .text()
         .trim();
-      // console.log(`strArrivalDate is ${strArrivalDate}`);
       arrivalDate = moment(strArrivalDate, "ddd D MMM").format("YYYY-MM-DD");
-      // console.log(`New arrivalDate is ${arrivalDate}`);
     }
     return arrivalDate;
   }
@@ -231,8 +266,8 @@ module.exports = class extends Parser {
       .text()
       .trim()
       .split(" ")[0];
-    const airline = airlineAndFlight.substr(0, 2);
-    const flightNumber = airlineAndFlight.substr(2);
+    const airline = airlineAndFlight.substr(0, 2).trim();
+    const flightNumber = airlineAndFlight.substr(2).trim();
     // Type of plane
     const aircraft = "-";
     return { aircraft, airline, flightNumber };
@@ -245,7 +280,6 @@ module.exports = class extends Parser {
    */
   calculateLagDays(departDate, arrivalDate) {
     const lag = moment(arrivalDate).diff(moment(departDate), "days");
-    console.log(`calculateLagDays ${lag} ${arrivalDate} ${departDate}`);
     return lag;
   }
 
@@ -255,6 +289,8 @@ module.exports = class extends Parser {
    */
   extractConnectionDetails(toCityString) {
     let toCity, nextConnectionMinutes;
+    toCityString = toCityString.replace(/[\r\n]+/gm, "");
+    toCityString = toCityString.replace(/\W+/gm, " ");
     let matching;
     if (
       (matching = toCityString.match(
@@ -300,7 +336,6 @@ module.exports = class extends Parser {
       timeMoment = moment(timeStr, "mm a");
     }
     const time = timeMoment.format("HH:mm");
-    // console.log(`timeStr is ${timeStr} ${moment.duration(time).asMinutes()}`);
     return moment.duration(time).asMinutes();
   }
 
