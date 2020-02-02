@@ -75,7 +75,8 @@ describe("Run parse", () => {
     let expected = JSON.parse(rawdata);
     compare(expected, results);
   });
-  test("Parse BOS -> JFK", () => {
+
+  test("Parse LHR -> JFK", () => {
     id = "DL";
     query = {
       partners: true,
@@ -89,8 +90,8 @@ describe("Run parse", () => {
     html = [
       {
         name: "results",
-        // path: "./test/__mock__/DL-LHR-JFK-2020-03-10-1580417606309.html"
-        path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
+        path: "./test/__mock__/DL-LHR-JFK-2020-03-10-1580417606309.html"
+        // path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
       }
     ];
     const results = fp.Results.parse({

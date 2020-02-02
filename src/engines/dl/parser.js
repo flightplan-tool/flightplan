@@ -6,6 +6,7 @@ const Parser = require("../../Parser");
 const Segment = require("../../Segment");
 const { cabins } = require("../../consts");
 const utils = require("../../utils");
+const request = require("sync-request");
 
 // Regex patterns
 const reQuantity = /only\s(\d+)\s+left\sat/i;
@@ -130,6 +131,12 @@ module.exports = class extends Parser {
     return { departTimeMoment, arrivalTimeMoment };
   }
 
+  /**
+   *
+   * @param {String} city airport code
+   * @param {moment} date
+   * @param {String} time time in format "hh:mm"
+   */
   convertToProperMoment(city, date, time) {
     const timezone = utils.airportTimezone(city);
     date = date.startOf("days");
@@ -144,28 +151,39 @@ module.exports = class extends Parser {
     $(row)
       .find(".farecellitem")
       .each((_, x) => {
-        const flight = new Flight(segments);
-        const seatsLeftStr = $(x)
-          .find(".seatLeft")
-          .text()
-          .trim();
-        const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
-        const cabin = "economy"; //this.parseCabin(x);
-        const fare = this.findFare(cabin);
-        const cabins = flight.segments.map(x => cabin);
-        const award = new Award(
-          {
-            engine,
-            fare,
-            cabins,
-            quantity: seatsLeft,
-            mileageCost: 100000
-          },
-          flight
-        );
-        // console.log("Award is " + award);
-        awards.push(award);
+        if (segments.indexOf(undefined) > -1) {
+          console.log(
+            "One of the segment is undefined. Award cannot be created"
+          );
+        } else {
+          const award = this.createAwardObject(segments, $, x, engine);
+          // console.log("Award is " + award);
+          awards.push(award);
+        }
       });
+  }
+
+  createAwardObject(segments, $, x, engine) {
+    const flight = new Flight(segments);
+    const seatsLeftStr = $(x)
+      .find(".seatLeft")
+      .text()
+      .trim();
+    const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
+    const cabin = "economy"; //this.parseCabin(x);
+    const fare = this.findFare(cabin);
+    const cabins = flight.segments.map(x => cabin);
+    const award = new Award(
+      {
+        engine,
+        fare,
+        cabins,
+        quantity: seatsLeft,
+        mileageCost: 100000
+      },
+      flight
+    );
+    return award;
   }
 
   createSegmentsForRow(
@@ -174,63 +192,110 @@ module.exports = class extends Parser {
     fromCity,
     departDate,
     departTime,
-    arrivalTime,
+    defaultArrivalTime,
     defaultArrivalDate
   ) {
     const segments = [];
     let index = 0;
 
-    const { numberOfLayovers, averageFlightTime } = this.getFlightTime($, row);
+    const { numberOfLayovers } = this.getFlightTime($, row);
 
-    $(row)
-      .find(".upsellpopupanchor.ng-star-inserted")
-      .each((_, x) => {
-        const toCityEl = $(row).find(".flightStopLayover")[index++];
-        let toCity;
-        let nextConnectionMinutes;
-        ({ toCity, nextConnectionMinutes } = this.extractConnectionDetails(
-          $(toCityEl).text()
-        ));
+    const withinRow = $(row).find(".upsellpopupanchor.ng-star-inserted");
 
-        const { aircraft, airline, flightNumber } = this.getFlightDetails($, x);
+    withinRow.each((_, x) => {
+      var { segment, toCity } = this.extractSegment(
+        $,
+        row,
+        index,
+        x,
+        defaultArrivalDate,
+        departDate,
+        numberOfLayovers,
+        fromCity,
+        defaultArrivalTime,
+        departTime
+      );
+      // console.log(`Segment created is ${segment}`);
+      segments.push(segment);
+      fromCity = toCity;
 
-        let arrivalDate = this.getArrivalDate(defaultArrivalDate, $, row);
-        const lagDays = this.calculateLagDays(departDate, arrivalDate);
-
-        // Add segment
-        const segment = new Segment({
-          aircraft: aircraft,
-          airline: airline,
-          flight: `${airline}${flightNumber}`,
-          fromCity: fromCity,
-          toCity,
-          date: departDate,
-          departure: departTime,
-          arrival: arrivalTime,
-          lagDays: lagDays,
-          nextConnection: nextConnectionMinutes,
-          //TODO
-          cabin: cabins.business,
-          stops: numberOfLayovers
-        });
-        console.log("Segment created is " + segment);
-        segments.push(segment);
-        fromCity = toCity;
-
-        if (nextConnectionMinutes) {
-          // console.log("Calculating info for next segment");
-          departTime = moment(arrivalTime, "hh:mm a").add(
-            nextConnectionMinutes,
-            "minutes"
-          );
-          // .format("HH:mm");
-          departDate = moment(departDate).add(nextConnectionMinutes, "minutes");
-          // .format("YYYY-MM-DD");
-          arrivalTime = moment(departDate).add(averageFlightTime, "minutes");
-          // .format("HH:mm");
-        }
-      });
+      // Increment index to indicate next leg(segment) of the flight
+      index++;
+    });
+    // console.log(segments);
     return segments;
+  }
+
+  extractSegment(
+    $,
+    row,
+    index,
+    x,
+    defaultArrivalDate,
+    departDate,
+    numberOfLayovers,
+    fromCity,
+    defaultArrivalTime,
+    departTime
+  ) {
+    const toCityEl = $(row).find(".flightStopLayover")[index];
+    let toCity;
+    let nextConnectionMinutes;
+    ({ toCity, nextConnectionMinutes } = this.extractConnectionDetails(
+      $(toCityEl).text()
+    ));
+    const { aircraft, airline, flightNumber } = this.getFlightDetails($, x);
+    // console.log(` ******  ${airline}${flightNumber} ${departDate}******* `);
+    let arrivalDate = this.getArrivalDate(defaultArrivalDate, $, row);
+    const lagDays = this.calculateLagDays(departDate, arrivalDate);
+    let arrivalTimeCalculated, departTimeCalculated;
+    // Delta makes it difficult to get data about connecting flights
+    // So use external data provider for these flights
+    if (numberOfLayovers > 0) {
+      try {
+        const res = this.getArrivalTimeFromExternal(
+          airline,
+          flightNumber,
+          toCity,
+          fromCity,
+          departDate
+        );
+
+        arrivalTimeCalculated = res.arrivalTimeMoment;
+        departTimeCalculated = res.departureTimeMoment;
+      } catch (err) {
+        arrivalTimeCalculated = undefined;
+        departTimeCalculated = undefined;
+      }
+    } else {
+      arrivalTimeCalculated = defaultArrivalTime;
+      departTimeCalculated = departTime;
+    }
+    // Add segment
+    let segment;
+    if (arrivalTimeCalculated && departTimeCalculated) {
+      segment = new Segment({
+        aircraft: aircraft,
+        airline: airline,
+        flight: `${airline}${flightNumber}`,
+        fromCity: fromCity,
+        toCity,
+        date: departDate,
+        departure: departTimeCalculated,
+        arrival: arrivalTimeCalculated,
+        lagDays: lagDays,
+        nextConnection: nextConnectionMinutes,
+        //TODO
+        cabin: cabins.business,
+        stops: numberOfLayovers
+      });
+    } else {
+      // console.log(
+      //   "unable to calculate arrivalTimeCalculated or departTimeCalculated"
+      // );
+      segment = undefined;
+    }
+    return { segment, toCity };
   }
 
   getArrivalDate(defaultArrivalDate, $, row) {
@@ -243,6 +308,66 @@ module.exports = class extends Parser {
       arrivalDate = moment(strArrivalDate, "ddd D MMM").format("YYYY-MM-DD");
     }
     return arrivalDate;
+  }
+
+  getArrivalTimeFromExternal(
+    airline,
+    flightNumber,
+    toCity,
+    fromCity,
+    departDate
+  ) {
+    const year = departDate.format("Y");
+    const month = departDate.format("MM");
+    const day = departDate.format("DD");
+    // console.log(` ${year} ${month} ${day}`);
+    const url = `https://www.flightstats.com/v2/flight-tracker/${airline}/${flightNumber}?year=${year}&month=${month}&date=${day}`;
+
+    const res = request("GET", url);
+    const body = res.getBody("utf-8");
+    const matcher = body.match(/__NEXT_DATA__\s=(.*)/);
+    const nextDataJson = matcher[1];
+    const nextData = JSON.parse(nextDataJson);
+
+    let scheduledArrival, scheduledDeparture;
+    const arrivalTimezone = utils.airportTimezone(toCity);
+    const departureTimezone = utils.airportTimezone(fromCity);
+    try {
+      scheduledArrival =
+        nextData["props"]["initialState"]["flightTracker"]["flight"][
+          "schedule"
+        ]["estimatedActualArrivalUTC"];
+      scheduledDeparture =
+        nextData["props"]["initialState"]["flightTracker"]["flight"][
+          "schedule"
+        ]["estimatedActualDepartureUTC"];
+    } catch (err) {
+      const otherDay =
+        nextData["props"]["initialState"]["flightTracker"]["otherDays"][0];
+
+      const arrivalTime = otherDay["flights"][0]["arrivalTime24"];
+
+      // const departureDate = `${otherDay["date2"]} ${otherDay["year"]}`;
+      const departureTime = otherDay["flights"][0]["departureTime24"];
+
+      scheduledArrival = this.convertToProperMoment(
+        toCity,
+        departDate,
+        arrivalTime
+      );
+      scheduledDeparture = this.convertToProperMoment(
+        fromCity,
+        departDate,
+        departureTime
+      );
+    }
+
+    const arrivalTimeMoment = moment.tz(scheduledArrival, arrivalTimezone);
+    const departureTimeMoment = moment.tz(
+      scheduledDeparture,
+      departureTimezone
+    );
+    return { arrivalTimeMoment, departureTimeMoment };
   }
 
   getFlightTime($, row) {
