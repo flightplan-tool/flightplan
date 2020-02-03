@@ -54,6 +54,7 @@ describe("Run parse", () => {
     expect(results.error).toBeNull();
 
     res = results.trimContents().toJSON(true);
+    // console.log(JSON.stringify(res));
 
     let rawdata = fs.readFileSync(
       "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
