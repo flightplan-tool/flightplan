@@ -203,33 +203,55 @@ module.exports = class extends Parser {
             engine
           );
           // console.log("Award is " + award);
-          awards.push(award);
+          if (award) {
+            awards.push(award);
+          }
         }
       });
   }
 
+  /**
+   *
+   * @param {[]} segments
+   * @param {*} $
+   * @param {String} cabinElement HTML element that represents one cell in the cabin column
+   * @param {*} engine
+   */
   createAwardObject(segments, $, cabinElement, engine) {
     const flight = new Flight(segments);
-    const seatsLeftStr = $(cabinElement)
-      .find(".seatLeft")
-      .text()
-      .trim();
-    const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
+    const seatsLeft = this.extractSeatsLeft($, cabinElement);
     const cabin = this.parseCabin($(cabinElement));
     const fare = this.findFare(cabin);
     const cabins = flight.segments.map(x => cabin);
 
-    const award = new Award(
-      {
-        engine,
-        fare,
-        cabins,
-        quantity: seatsLeft,
-        mileageCost: 100000
-      },
-      flight
-    );
-    return award;
+    if (seatsLeft > 0) {
+      const award = new Award(
+        {
+          engine,
+          fare,
+          cabins,
+          quantity: seatsLeft,
+          mileageCost: 100000
+        },
+        flight
+      );
+      return award;
+    } else {
+      return undefined;
+    }
+  }
+
+  extractSeatsLeft($, cabinElement) {
+    const seatsLeftStr = $(cabinElement)
+      .find(".seatLeft")
+      .text()
+      .trim();
+    // If there is no special note, the default value is assume to be 7
+    let seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 7;
+    if ($(cabinElement).find(".soldout").length > 0) {
+      seatsLeft = 0;
+    }
+    return seatsLeft;
   }
 
   createSegmentsForRow(
