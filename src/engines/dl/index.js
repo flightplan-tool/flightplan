@@ -11,6 +11,7 @@ module.exports = {
       minDays: 0,
       maxDays: 330
     },
+    waitUntil: "networkidle0",
     modifiable: ["departDate", "returnDate"],
     throttling: profiles.fast,
     /**

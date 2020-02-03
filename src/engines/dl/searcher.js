@@ -117,14 +117,14 @@ module.exports = class extends Searcher {
           passenger: "1",
           swapedFromCity: null,
           swapedToCity: null,
-          schedulePrice: "price",
+          schedulePrice: "miles",
           flightHotelDeals: false,
           faresFor: "BE",
           meetingEventCode: "",
           refundableFlightsOnly: null,
           nearbyAirports: false,
           deltaOnly: "off",
-          awardTravel: false,
+          awardTravel: true,
           departureTime: "AT",
           returnTime: "AT",
           adtGbeCount: null,
@@ -159,9 +159,20 @@ module.exports = class extends Searcher {
     // submit button
     page.goto("https://www.delta.com/flight-search-2/book-a-flight");
     await page.waitFor(3000);
+
+    // Uncheck flexible dates since we want to see specific dates
+    console.log("Unchecking things");
+    await page.evaluate(form => {
+      console.log("Unchecking things");
+      $("#chkFlexDate").attr("disabled", false);
+      $("#chkFlexDate").click();
+    });
+    await page.waitFor(3000);
+
     await page.click("#btnSubmit");
-    // // Save the results
     await this.settle();
+    // // Save the results
+    console.log("Current URL is " + page.url());
     await results.saveHTML("results");
   }
 
