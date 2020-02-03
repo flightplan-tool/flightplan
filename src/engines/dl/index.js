@@ -13,15 +13,73 @@ module.exports = {
     },
     modifiable: ["departDate", "returnDate"],
     throttling: profiles.fast,
+    /**
+     * I don't fully understand how these fare codes work,
+     * so these are largerly placeholder
+     *     https://thepointsguy.co.uk/guide/ba-fare-classes-explained/
+     * */
     fares: [
-      { code: "A", cabin: cabins.first, saver: true, name: "First" },
+      { code: "F", cabin: cabins.first, saver: true, name: "First" },
       {
-        code: "U",
+        code: "CS",
         cabin: cabins.business,
-        saver: true,
-        name: "Partner Business"
+        name: "Upper Class",
+        saver: true
       },
-      { code: "W", cabin: cabins.economy, saver: true, name: "Economy" }
+      {
+        code: "C1",
+        cabin: cabins.business,
+        name: "Delta One",
+        saver: true
+      },
+      {
+        code: "W",
+        cabin: cabins.premium,
+        name: "Premium",
+        saver: true
+      },
+      {
+        code: "WS",
+        cabin: cabins.premium,
+        name: "Premium Select",
+        saver: true
+      },
+      {
+        code: "YS",
+        cabin: cabins.economy,
+        name: "Main",
+        saver: true
+      },
+      {
+        code: "Y1",
+        cabin: cabins.economy,
+        name: "Comfort+",
+        saver: true
+      },
+      {
+        code: "Y2",
+        cabin: cabins.economy,
+        name: "Economy Delight",
+        saver: true
+      },
+      {
+        code: "Y3",
+        cabin: cabins.economy,
+        name: "Economy",
+        saver: true
+      },
+      {
+        code: "Y4",
+        cabin: cabins.economy,
+        name: "Basic Cabin",
+        saver: true
+      },
+      {
+        code: "Y5",
+        cabin: cabins.economy,
+        name: "Economy Classic",
+        saver: true
+      }
     ],
     loginRequired: true
   }

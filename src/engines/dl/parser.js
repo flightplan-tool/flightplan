@@ -188,29 +188,37 @@ module.exports = class extends Parser {
   generateAwards($, row, segments, engine, awards) {
     $(row)
       .find(".farecellitem")
-      .each((_, x) => {
+      .each((_, cabinElement) => {
         if (segments.indexOf(undefined) > -1) {
           console.log(
             "One of the segment is undefined. Award cannot be created"
           );
+        } else if (!segments) {
+          console.log("No segments!");
         } else {
-          const award = this.createAwardObject(segments, $, x, engine);
+          const award = this.createAwardObject(
+            segments,
+            $,
+            cabinElement,
+            engine
+          );
           // console.log("Award is " + award);
           awards.push(award);
         }
       });
   }
 
-  createAwardObject(segments, $, x, engine) {
+  createAwardObject(segments, $, cabinElement, engine) {
     const flight = new Flight(segments);
-    const seatsLeftStr = $(x)
+    const seatsLeftStr = $(cabinElement)
       .find(".seatLeft")
       .text()
       .trim();
     const seatsLeft = seatsLeftStr ? parseInt(seatsLeftStr) : 1;
-    const cabin = "economy"; //this.parseCabin(x);
+    const cabin = this.parseCabin($(cabinElement));
     const fare = this.findFare(cabin);
     const cabins = flight.segments.map(x => cabin);
+
     const award = new Award(
       {
         engine,
@@ -449,13 +457,21 @@ module.exports = class extends Parser {
 
   parseCabin(ele) {
     const displayCodes = {
-      "coach-fare": cabins.economy,
-      "business-fare": cabins.business,
-      "first-fare": cabins.first
+      "Economy Classic": cabins.economy,
+      "Basic Cabin": cabins.economy,
+      Economy: cabins.economy,
+      "Economy Delight": cabins.economy,
+      "Comfort+": cabins.economy,
+      Main: cabins.economy,
+      "Premium Select": cabins.premium,
+      Premium: cabins.premium,
+      "Delta One": cabins.business,
+      "Upper Class": cabins.business,
+      First: cabins.first
     };
 
     for (var cabinClass in displayCodes) {
-      if (ele.attribs.class.indexOf(cabinClass) !== -1) {
+      if (ele.text().indexOf(cabinClass) !== -1) {
         return displayCodes[cabinClass];
       }
     }
