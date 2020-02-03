@@ -104,31 +104,69 @@ module.exports = class extends Parser {
     return { departDate };
   }
 
+  getArrivalDate(defaultArrivalDate, $, row) {
+    let arrivalDate = defaultArrivalDate;
+    if ($(row).find(".travelDate").length > 0) {
+      const strArrivalDate = $(row)
+        .find(".travelDate")
+        .text()
+        .trim();
+      arrivalDate = moment(strArrivalDate, "ddd D MMM").format("YYYY-MM-DD");
+    }
+    return arrivalDate;
+  }
+
   generateTimes($, row, departDate, arrivalDate, departCity, arrivalCity) {
+    let departTimeMoment = this.generateDepartureMoment(
+      $,
+      row,
+      departCity,
+      departDate
+    );
+
+    let arrivalTimeMoment = this.generateArrivalTime(
+      $,
+      row,
+      arrivalCity,
+      arrivalDate
+    );
+
+    return { departTimeMoment, arrivalTimeMoment };
+  }
+
+  generateDepartureMoment($, row, departCity, departDate) {
     const departTimeStr = $(row)
       .find(".trip-time.pr0-sm-down")
       .first()
       .text()
       .trim();
-    const arrivalTimeStr = $(row)
-      .find(".trip-time.pl0-sm-down")
-      .first()
-      .text()
-      .trim();
-
     let departTimeMoment = this.convertToProperMoment(
       departCity,
       departDate,
       departTimeStr
     );
+    return departTimeMoment;
+  }
 
+  /**
+   *
+   * @param {*} $
+   * @param {String} row
+   * @param {String} arrivalCity airport code
+   * @param {moment} arrivalDate
+   */
+  generateArrivalTime($, row, arrivalCity, arrivalDate) {
+    const arrivalTimeStr = $(row)
+      .find(".trip-time.pl0-sm-down")
+      .first()
+      .text()
+      .trim();
     let arrivalTimeMoment = this.convertToProperMoment(
       arrivalCity,
       arrivalDate,
       arrivalTimeStr
     );
-
-    return { departTimeMoment, arrivalTimeMoment };
+    return arrivalTimeMoment;
   }
 
   /**
@@ -245,7 +283,7 @@ module.exports = class extends Parser {
       $(toCityEl).text()
     ));
     const { aircraft, airline, flightNumber } = this.getFlightDetails($, x);
-    // console.log(` ******  ${airline}${flightNumber} ${departDate}******* `);
+
     let arrivalDate = this.getArrivalDate(defaultArrivalDate, $, row);
     const lagDays = this.calculateLagDays(departDate, arrivalDate);
     let arrivalTimeCalculated, departTimeCalculated;
@@ -290,24 +328,9 @@ module.exports = class extends Parser {
         stops: numberOfLayovers
       });
     } else {
-      // console.log(
-      //   "unable to calculate arrivalTimeCalculated or departTimeCalculated"
-      // );
       segment = undefined;
     }
     return { segment, toCity };
-  }
-
-  getArrivalDate(defaultArrivalDate, $, row) {
-    let arrivalDate = defaultArrivalDate;
-    if ($(row).find(".travelDate").length > 0) {
-      const strArrivalDate = $(row)
-        .find(".travelDate")
-        .text()
-        .trim();
-      arrivalDate = moment(strArrivalDate, "ddd D MMM").format("YYYY-MM-DD");
-    }
-    return arrivalDate;
   }
 
   getArrivalTimeFromExternal(
@@ -384,8 +407,8 @@ module.exports = class extends Parser {
 
   /**
    *
-   * @param {*} departTime
-   * @param {*} arrivalTime
+   * @param {moment} departTime
+   * @param {moment} arrivalTime
    */
   calculateLagDays(departDate, arrivalDate) {
     const lag = moment(arrivalDate).diff(moment(departDate), "days");
