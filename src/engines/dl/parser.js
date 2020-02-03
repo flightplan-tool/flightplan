@@ -198,7 +198,7 @@ module.exports = class extends Parser {
     const segments = [];
     let index = 0;
 
-    const { numberOfLayovers } = this.getFlightTime($, row);
+    const numberOfLayovers = this.calculateNumberOfLayovers($, row);
 
     const withinRow = $(row).find(".upsellpopupanchor.ng-star-inserted");
 
@@ -370,22 +370,6 @@ module.exports = class extends Parser {
     return { arrivalTimeMoment, departureTimeMoment };
   }
 
-  getFlightTime($, row) {
-    const totalJourneyDurationStr = $(row)
-      .find(".totalTime")
-      .text();
-    const totalJourneyDuration = this.totalJourneyDuration(
-      totalJourneyDurationStr
-    );
-    const totalLayoverTime = this.totalLayoverTime();
-    const numberOfLayovers = calculateNumberOfLayovers($, row);
-    // TODO: Hack! It's not easy to get individual flight times so
-    // we are going to use an average. I know it's bad, but whatcha gonna do
-    const averageFlightTime =
-      (totalJourneyDuration - totalLayoverTime) / numberOfLayovers;
-    return { numberOfLayovers, averageFlightTime };
-  }
-
   getFlightDetails($, x) {
     const airlineAndFlight = $(x)
       .text()
@@ -410,7 +394,7 @@ module.exports = class extends Parser {
 
   /**
    *
-   * @param {*} toCityString "arrival airport code LHR" or "layover airport code AMS layover duration1h  25m"
+   * @param {String} toCityString "arrival airport code LHR" or "layover airport code AMS layover duration1h  25m"
    */
   extractConnectionDetails(toCityString) {
     let toCity, nextConnectionMinutes;
@@ -439,56 +423,6 @@ module.exports = class extends Parser {
     return { toCity, nextConnectionMinutes };
   }
 
-  /**
-   *
-   * Return time in minutes
-   */
-  totalLayoverTime() {
-    return 206;
-  }
-
-  /**
-   * Total time spent on the trip
-   *
-   * @param {String} durationString
-   */
-  totalJourneyDuration(durationString) {
-    let timeStr;
-    const matching = durationString.match(/journey duration(.*)/);
-    timeStr = matching[1].trim();
-    let timeMoment = moment(timeStr, "hh:mm a");
-    if (!timeMoment.isValid()) {
-      timeMoment = moment(timeStr, "mm a");
-    }
-    const time = timeMoment.format("HH:mm");
-    return moment.duration(time).asMinutes();
-  }
-
-  parseDate(str, query, outbound) {
-    let m = moment.utc(str, "D MMM", true);
-
-    if (m.isValid()) {
-      return outbound ? query.closestDeparture(m) : query.closestReturn(m);
-    }
-    return null;
-  }
-
-  parseTime(str) {
-    //TODO: fix me, man!
-    return "16:00";
-  }
-
-  parseQuantity(ele) {
-    if (ele) {
-      const str = ele.text().trim();
-      const result = reQuantity.exec(str);
-      if (result) {
-        return parseInt(result[1]);
-      }
-    }
-    return null;
-  }
-
   parseCabin(ele) {
     const displayCodes = {
       "coach-fare": cabins.economy,
@@ -502,14 +436,15 @@ module.exports = class extends Parser {
       }
     }
   }
-};
-function calculateNumberOfLayovers($, row) {
-  const isNonStop = $(row)
-    .find(".fareIconBadge")
-    .text()
-    .match("Nonstop");
-  if (isNonStop) {
-    return 0;
+
+  calculateNumberOfLayovers($, row) {
+    const isNonStop = $(row)
+      .find(".fareIconBadge")
+      .text()
+      .match("Nonstop");
+    if (isNonStop) {
+      return 0;
+    }
+    return $(row).find(".flightStopLayover").length - 1;
   }
-  return $(row).find(".flightStopLayover").length - 1;
-}
+};

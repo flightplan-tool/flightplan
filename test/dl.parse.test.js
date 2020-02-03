@@ -4,20 +4,6 @@ const fs = require("fs");
 const compare = require("./playback").compare;
 
 parser = new Parser();
-describe("totalJourneyDuration", () => {
-  test("hours and minutes", () => {
-    const res = parser.totalJourneyDuration("journey duration8h 15m");
-    expect(res).toEqual(495);
-  });
-  test("hours", () => {
-    const res = parser.totalJourneyDuration("journey duration13h");
-    expect(res).toEqual(780);
-  });
-  test("hours", () => {
-    const res = parser.totalJourneyDuration("journey duration59h");
-    expect(res).toEqual(59);
-  });
-});
 describe("extractConnectionDetails", () => {
   test("hours and minutes provided", () => {
     const res = parser.extractConnectionDetails(
@@ -104,6 +90,7 @@ describe("Run parse", () => {
     expect(results.error).toBeNull();
 
     res = results.trimContents().toJSON(true);
+    // console.log(JSON.stringify(res));
 
     let rawdata = fs.readFileSync(
       "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
@@ -112,3 +99,38 @@ describe("Run parse", () => {
     // compare(expected, results);
   });
 });
+
+/**
+ * { engine: 'DL',
+  query: 
+   { partners: true,
+     cabin: 'business',
+     quantity: 1,
+     fromCity: 'BOS',
+     toCity: 'JFK',
+     departDate: '2020-03-10',
+     returnDate: '2020-03-10' },
+  html: 
+   [ { name: 'results',
+       path: './test/__mock__/DL-LHR-JFK-2020-03-10-1580417606309.html' } ],
+  flights: 
+   [ { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] },
+     { awards: [Array], segments: [Array] } ] }
+ */

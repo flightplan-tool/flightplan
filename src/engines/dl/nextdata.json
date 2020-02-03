@@ -1,0 +1,915 @@
+{
+  "props": {
+    "store": {},
+    "isServer": true,
+    "initialState": {
+      "app": { "user": {}, "appHost": "http://www.flightstats.com/v2" },
+      "elasticSearch": {},
+      "flick": {},
+      "flightTracker": {
+        "flight": {
+          "flightId": 1029895928,
+          "flightNote": {
+            "final": true,
+            "canceled": false,
+            "hasDepartedGate": true,
+            "hasDepartedRunway": true,
+            "landed": true,
+            "message": "The flight has landed",
+            "messageCode": "L",
+            "pastExpectedTakeOff": true,
+            "tracking": false,
+            "hasPositions": true,
+            "trackingUnavailable": false,
+            "phase": "Landed",
+            "hasActualRunwayDepartureTime": true,
+            "hasActualGateDepartureTime": true
+          },
+          "isTracking": false,
+          "isLanded": true,
+          "isScheduled": false,
+          "sortTime": "2020-02-02T11:45:00.000Z",
+          "schedule": {
+            "scheduledDeparture": "2020-02-02T11:45:00.000",
+            "scheduledDepartureUTC": "2020-02-02T11:45:00.000Z",
+            "estimatedActualDepartureRunway": false,
+            "estimatedActualDepartureTitle": "Actual",
+            "estimatedActualDeparture": "2020-02-02T11:47:00.000",
+            "estimatedActualDepartureUTC": "2020-02-02T11:47:00.000Z",
+            "scheduledArrival": "2020-02-02T14:05:00.000",
+            "scheduledArrivalUTC": "2020-02-02T13:05:00.000Z",
+            "estimatedActualArrivalRunway": false,
+            "estimatedActualArrivalTitle": "Actual",
+            "estimatedActualArrival": "2020-02-02T13:43:00.000",
+            "estimatedActualArrivalUTC": "2020-02-02T12:43:00.000Z",
+            "graphXAxis": {
+              "dep": "2020-02-02T11:47:00.000",
+              "depUTC": "2020-02-02T11:47:00.000Z",
+              "arr": "2020-02-02T13:43:00.000",
+              "arrUTC": "2020-02-02T12:43:00.000Z"
+            },
+            "tookOff": "2020-02-02T11:47:00.000",
+            "landing": "2020-02-02T13:43:00.000",
+            "isLanded": true
+          },
+          "status": {
+            "statusCode": "L",
+            "status": "Arrived",
+            "color": "green",
+            "statusDescription": "On time",
+            "delay": {
+              "departure": { "minutes": 2 },
+              "arrival": { "minutes": 0 }
+            },
+            "delayStatus": { "wording": "On time", "minutes": 0 },
+            "lastUpdatedText": "Status Last Updated More Than 3 Hours Ago",
+            "finalStatus": "On Time",
+            "diverted": false
+          },
+          "resultHeader": {
+            "statusDescription": "On time",
+            "carrier": { "name": "Delta Air Lines", "fs": "DL" },
+            "flightNumber": "9489",
+            "status": "Arrived",
+            "diverted": false,
+            "color": "green",
+            "departureAirportFS": "LHR",
+            "arrivalAirportFS": "AMS",
+            "divertedAirport": null
+          },
+          "ticketHeader": {
+            "carrier": { "name": "Delta Air Lines", "fs": "DL" },
+            "flightNumber": "9489",
+            "iconURL": "https://d3brl4nqahsb3e.cloudfront.net/logos/png/150x50/dl-logo.png"
+          },
+          "operatedBy": "Operated by KLM 1010",
+          "departureAirport": {
+            "fs": "LHR",
+            "iata": "LHR",
+            "name": "London Heathrow Airport",
+            "city": "London",
+            "state": "EN",
+            "country": "GB",
+            "timeZoneRegionName": "Europe/London",
+            "regionName": "Europe",
+            "gate": "21",
+            "terminal": "4",
+            "times": {
+              "scheduled": {
+                "time": "11:45",
+                "ampm": "AM",
+                "time24": "11:45",
+                "timezone": "GMT"
+              },
+              "estimatedActual": {
+                "title": "Actual",
+                "time": "11:47",
+                "ampm": "AM",
+                "time24": "11:47",
+                "runway": false,
+                "timezone": "GMT"
+              }
+            },
+            "date": "2020-02-02T11:45:00.000"
+          },
+          "arrivalAirport": {
+            "fs": "AMS",
+            "iata": "AMS",
+            "name": "Amsterdam Airport Schiphol",
+            "city": "Amsterdam",
+            "country": "NL",
+            "timeZoneRegionName": "Europe/Amsterdam",
+            "regionName": "Europe",
+            "gate": "D25",
+            "terminal": null,
+            "baggage": "009",
+            "times": {
+              "scheduled": {
+                "time": "2:05",
+                "ampm": "PM",
+                "time24": "14:05",
+                "timezone": "CET"
+              },
+              "estimatedActual": {
+                "title": "Actual",
+                "time": "1:43",
+                "ampm": "PM",
+                "time24": "13:43",
+                "runway": false,
+                "timezone": "CET"
+              }
+            },
+            "date": "2020-02-02T14:05:00.000"
+          },
+          "divertedAirport": null,
+          "additionalFlightInfo": {
+            "equipment": {
+              "iata": "73H",
+              "name": "Boeing 737-800 (winglets) Passenger/BBJ2",
+              "title": "Actual"
+            },
+            "flightDuration": "56m"
+          },
+          "codeshares": [
+            {
+              "fs": "CZ",
+              "name": "China Southern Airlines",
+              "flightNumber": "7645"
+            },
+            { "fs": "GA", "name": "Garuda Indonesia", "flightNumber": "9237" },
+            { "fs": "MF", "name": "Xiamen Airlines", "flightNumber": "9306" },
+            { "fs": "VS", "name": "Virgin Atlantic", "flightNumber": "6917" }
+          ],
+          "positional": {
+            "departureAirportCode": "LHR",
+            "arrivalAirportCode": "AMS",
+            "divertedAirportCode": null,
+            "flexFlightStatus": "L",
+            "flexTrack": {
+              "flightId": 1029895928,
+              "carrierFsCode": "KL",
+              "flightNumber": "1010",
+              "tailNumber": "PH-BXN",
+              "callsign": "KLM1010",
+              "departureAirportFsCode": "LHR",
+              "arrivalAirportFsCode": "AMS",
+              "departureDate": {
+                "dateLocal": "2020-02-02T11:45:00.000",
+                "dateUtc": "2020-02-02T11:45:00.000Z"
+              },
+              "equipment": "73H",
+              "delayMinutes": 2,
+              "bearing": 45.446991187031756,
+              "heading": 217.47640714721686,
+              "positions": [
+                {
+                  "lon": 4.5028,
+                  "lat": 52.1525,
+                  "speedMph": 604,
+                  "altitudeFt": 1224,
+                  "source": "derived",
+                  "date": "2020-02-02T12:36:46.000Z",
+                  "course": -145,
+                  "vrateMps": -2,
+                  "lastObserved": "2020-02-02T12:35:44.000Z"
+                },
+                {
+                  "lon": 4.6989,
+                  "lat": 52.3096,
+                  "speedMph": 420,
+                  "altitudeFt": 1516,
+                  "source": "derived",
+                  "date": "2020-02-02T12:35:46.000Z",
+                  "course": -156,
+                  "vrateMps": -3,
+                  "lastObserved": "2020-02-02T12:35:44.000Z"
+                },
+                {
+                  "lon": 4.7712,
+                  "lat": 52.4058,
+                  "speedMph": 245,
+                  "altitudeFt": 1783,
+                  "source": "derived",
+                  "date": "2020-02-02T12:34:46.000Z",
+                  "course": -176,
+                  "vrateMps": -3,
+                  "lastObserved": "2020-02-02T12:35:44.000Z"
+                },
+                {
+                  "lon": 4.7687,
+                  "lat": 52.4609,
+                  "speedMph": 176,
+                  "altitudeFt": 2225,
+                  "source": "derived",
+                  "date": "2020-02-02T12:33:46.000Z",
+                  "course": 148,
+                  "vrateMps": -4,
+                  "lastObserved": "2020-02-02T12:35:44.000Z"
+                },
+                {
+                  "lon": 4.735,
+                  "lat": 52.4983,
+                  "speedMph": 208,
+                  "altitudeFt": 2777,
+                  "source": "derived",
+                  "date": "2020-02-02T12:32:46.000Z",
+                  "course": 108,
+                  "vrateMps": -4,
+                  "lastObserved": "2020-02-02T12:35:44.000Z"
+                },
+                {
+                  "lon": 4.6673,
+                  "lat": 52.5233,
+                  "speedMph": 290,
+                  "altitudeFt": 3319,
+                  "source": "derived",
+                  "date": "2020-02-02T12:31:46.000Z",
+                  "course": 86,
+                  "vrateMps": -5,
+                  "lastObserved": "2020-02-02T12:35:44.000Z"
+                },
+                {
+                  "lon": 4.5498,
+                  "lat": 52.5208,
+                  "speedMph": 314,
+                  "altitudeFt": 3983,
+                  "source": "derived",
+                  "date": "2020-02-02T12:30:46.000Z",
+                  "course": 82,
+                  "vrateMps": -6,
+                  "lastObserved": "2020-02-02T12:35:22.000Z"
+                },
+                {
+                  "lon": 4.421,
+                  "lat": 52.5109,
+                  "speedMph": 334,
+                  "altitudeFt": 4856,
+                  "source": "derived",
+                  "date": "2020-02-02T12:29:46.000Z",
+                  "course": 83,
+                  "vrateMps": -6,
+                  "lastObserved": "2020-02-02T12:34:19.000Z"
+                },
+                {
+                  "lon": 4.2833,
+                  "lat": 52.5013,
+                  "speedMph": 348,
+                  "altitudeFt": 5958,
+                  "source": "derived",
+                  "date": "2020-02-02T12:28:46.000Z",
+                  "course": 84,
+                  "vrateMps": -6,
+                  "lastObserved": "2020-02-02T12:33:23.000Z"
+                },
+                {
+                  "lon": 4.1384,
+                  "lat": 52.4918,
+                  "speedMph": 375,
+                  "altitudeFt": 7135,
+                  "source": "derived",
+                  "date": "2020-02-02T12:27:46.000Z",
+                  "course": 85,
+                  "vrateMps": -6,
+                  "lastObserved": "2020-02-02T12:32:23.000Z"
+                },
+                {
+                  "lon": 3.9861,
+                  "lat": 52.4817,
+                  "speedMph": 412,
+                  "altitudeFt": 8191,
+                  "source": "derived",
+                  "date": "2020-02-02T12:26:46.000Z",
+                  "course": 85,
+                  "vrateMps": -7,
+                  "lastObserved": "2020-02-02T12:31:23.000Z"
+                },
+                {
+                  "lon": 3.8243,
+                  "lat": 52.4695,
+                  "speedMph": 448,
+                  "altitudeFt": 9197,
+                  "source": "derived",
+                  "date": "2020-02-02T12:25:46.000Z",
+                  "course": 82,
+                  "vrateMps": -8,
+                  "lastObserved": "2020-02-02T12:30:25.000Z"
+                },
+                {
+                  "lon": 3.6477,
+                  "lat": 52.4528,
+                  "speedMph": 461,
+                  "altitudeFt": 10444,
+                  "source": "derived",
+                  "date": "2020-02-02T12:24:46.000Z",
+                  "course": 78,
+                  "vrateMps": -9,
+                  "lastObserved": "2020-02-02T12:29:25.000Z"
+                },
+                {
+                  "lon": 3.4655,
+                  "lat": 52.4299,
+                  "speedMph": 465,
+                  "altitudeFt": 12084,
+                  "source": "derived",
+                  "date": "2020-02-02T12:23:46.000Z",
+                  "course": 73,
+                  "vrateMps": -10,
+                  "lastObserved": "2020-02-02T12:28:24.000Z"
+                },
+                {
+                  "lon": 3.2844,
+                  "lat": 52.3976,
+                  "speedMph": 478,
+                  "altitudeFt": 13615,
+                  "source": "derived",
+                  "date": "2020-02-02T12:22:46.000Z",
+                  "course": 72,
+                  "vrateMps": -10,
+                  "lastObserved": "2020-02-02T12:27:24.000Z"
+                },
+                {
+                  "lon": 3.0992,
+                  "lat": 52.362,
+                  "speedMph": 503,
+                  "altitudeFt": 15594,
+                  "source": "derived",
+                  "date": "2020-02-02T12:21:46.000Z",
+                  "course": 72,
+                  "vrateMps": -11,
+                  "lastObserved": "2020-02-02T12:26:20.000Z"
+                },
+                {
+                  "lon": 2.9073,
+                  "lat": 52.3249,
+                  "speedMph": 526,
+                  "altitudeFt": 17791,
+                  "source": "derived",
+                  "date": "2020-02-02T12:20:46.000Z",
+                  "course": 71,
+                  "vrateMps": -10,
+                  "lastObserved": "2020-02-02T12:25:22.000Z"
+                },
+                {
+                  "lon": 2.7071,
+                  "lat": 52.2858,
+                  "speedMph": 546,
+                  "altitudeFt": 20102,
+                  "source": "derived",
+                  "date": "2020-02-02T12:19:46.000Z",
+                  "course": 71,
+                  "vrateMps": -9,
+                  "lastObserved": "2020-02-02T12:24:24.000Z"
+                },
+                {
+                  "lon": 2.4991,
+                  "lat": 52.2447,
+                  "speedMph": 560,
+                  "altitudeFt": 22487,
+                  "source": "derived",
+                  "date": "2020-02-02T12:18:46.000Z",
+                  "course": 71,
+                  "vrateMps": -6,
+                  "lastObserved": "2020-02-02T12:23:20.000Z"
+                },
+                {
+                  "lon": 2.2853,
+                  "lat": 52.2019,
+                  "speedMph": 579,
+                  "altitudeFt": 24670,
+                  "source": "derived",
+                  "date": "2020-02-02T12:17:46.000Z",
+                  "course": 71,
+                  "vrateMps": -3,
+                  "lastObserved": "2020-02-02T12:22:14.000Z"
+                },
+                {
+                  "lon": 2.0683,
+                  "lat": 52.158,
+                  "speedMph": 604,
+                  "altitudeFt": 26407,
+                  "source": "derived",
+                  "date": "2020-02-02T12:16:46.000Z",
+                  "course": 71,
+                  "vrateMps": 0,
+                  "lastObserved": "2020-02-02T12:21:20.000Z"
+                },
+                {
+                  "lon": 1.8444,
+                  "lat": 52.1125,
+                  "speedMph": 604,
+                  "altitudeFt": 27479,
+                  "source": "derived",
+                  "date": "2020-02-02T12:15:46.000Z",
+                  "course": 71,
+                  "vrateMps": 4,
+                  "lastObserved": "2020-02-02T12:20:20.000Z"
+                },
+                {
+                  "lon": 1.6147,
+                  "lat": 52.0652,
+                  "speedMph": 604,
+                  "altitudeFt": 27803,
+                  "source": "derived",
+                  "date": "2020-02-02T12:14:46.000Z",
+                  "course": 70,
+                  "vrateMps": 6,
+                  "lastObserved": "2020-02-02T12:19:17.000Z"
+                },
+                {
+                  "lon": 1.3849,
+                  "lat": 52.0169,
+                  "speedMph": 604,
+                  "altitudeFt": 27367,
+                  "source": "derived",
+                  "date": "2020-02-02T12:13:46.000Z",
+                  "course": 69,
+                  "vrateMps": 8,
+                  "lastObserved": "2020-02-02T12:18:20.000Z"
+                },
+                {
+                  "lon": 1.1579,
+                  "lat": 51.9685,
+                  "speedMph": 604,
+                  "altitudeFt": 26511,
+                  "source": "derived",
+                  "date": "2020-02-02T12:12:45.000Z",
+                  "course": 69,
+                  "vrateMps": 10,
+                  "lastObserved": "2020-02-02T12:17:20.000Z"
+                },
+                {
+                  "lon": 0.9367,
+                  "lat": 51.9211,
+                  "speedMph": 602,
+                  "altitudeFt": 24977,
+                  "source": "derived",
+                  "date": "2020-02-02T12:11:45.000Z",
+                  "course": 70,
+                  "vrateMps": 11,
+                  "lastObserved": "2020-02-02T12:16:21.000Z"
+                },
+                {
+                  "lon": 0.7206,
+                  "lat": 51.8758,
+                  "speedMph": 578,
+                  "altitudeFt": 22897,
+                  "source": "derived",
+                  "date": "2020-02-02T12:10:45.000Z",
+                  "course": 72,
+                  "vrateMps": 12,
+                  "lastObserved": "2020-02-02T12:15:20.000Z"
+                },
+                {
+                  "lon": 0.5106,
+                  "lat": 51.835,
+                  "speedMph": 552,
+                  "altitudeFt": 20789,
+                  "source": "derived",
+                  "date": "2020-02-02T12:09:45.000Z",
+                  "course": 75,
+                  "vrateMps": 13,
+                  "lastObserved": "2020-02-02T12:14:19.000Z"
+                },
+                {
+                  "lon": 0.3092,
+                  "lat": 51.8015,
+                  "speedMph": 522,
+                  "altitudeFt": 18423,
+                  "source": "derived",
+                  "date": "2020-02-02T12:08:45.000Z",
+                  "course": 77,
+                  "vrateMps": 13,
+                  "lastObserved": "2020-02-02T12:13:20.000Z"
+                },
+                {
+                  "lon": 0.1201,
+                  "lat": 51.7713,
+                  "speedMph": 483,
+                  "altitudeFt": 15659,
+                  "source": "derived",
+                  "date": "2020-02-02T12:07:45.000Z",
+                  "course": 77,
+                  "vrateMps": 12,
+                  "lastObserved": "2020-02-02T12:12:22.000Z"
+                },
+                {
+                  "lon": -0.0557,
+                  "lat": 51.742,
+                  "speedMph": 459,
+                  "altitudeFt": 12653,
+                  "source": "derived",
+                  "date": "2020-02-02T12:06:45.000Z",
+                  "course": 75,
+                  "vrateMps": 9,
+                  "lastObserved": "2020-02-02T12:11:20.000Z"
+                },
+                {
+                  "lon": -0.221,
+                  "lat": 51.7106,
+                  "speedMph": 463,
+                  "altitudeFt": 10016,
+                  "source": "derived",
+                  "date": "2020-02-02T12:05:45.000Z",
+                  "course": 71,
+                  "vrateMps": 7,
+                  "lastObserved": "2020-02-02T12:10:21.000Z"
+                },
+                {
+                  "lon": -0.3712,
+                  "lat": 51.6735,
+                  "speedMph": 458,
+                  "altitudeFt": 7965,
+                  "source": "derived",
+                  "date": "2020-02-02T12:04:45.000Z",
+                  "course": 64,
+                  "vrateMps": 5,
+                  "lastObserved": "2020-02-02T12:09:20.000Z"
+                },
+                {
+                  "lon": -0.4939,
+                  "lat": 51.6276,
+                  "speedMph": 415,
+                  "altitudeFt": 6479,
+                  "source": "derived",
+                  "date": "2020-02-02T12:03:45.000Z",
+                  "course": 56,
+                  "vrateMps": 5,
+                  "lastObserved": "2020-02-02T12:08:16.000Z"
+                },
+                {
+                  "lon": -0.5945,
+                  "lat": 51.5783,
+                  "speedMph": 313,
+                  "altitudeFt": 6042,
+                  "source": "derived",
+                  "date": "2020-02-02T12:02:45.000Z",
+                  "course": 40,
+                  "vrateMps": 6,
+                  "lastObserved": "2020-02-02T12:07:20.000Z"
+                },
+                {
+                  "lon": -0.64,
+                  "lat": 51.5282,
+                  "speedMph": 213,
+                  "altitudeFt": 5326,
+                  "source": "derived",
+                  "date": "2020-02-02T12:01:45.000Z",
+                  "course": -10,
+                  "vrateMps": 8,
+                  "lastObserved": "2020-02-02T12:06:18.000Z"
+                },
+                {
+                  "lon": -0.5883,
+                  "lat": 51.4903,
+                  "speedMph": 234,
+                  "altitudeFt": 3896,
+                  "source": "derived",
+                  "date": "2020-02-02T12:00:45.000Z",
+                  "course": -64,
+                  "vrateMps": 10,
+                  "lastObserved": "2020-02-02T12:05:21.000Z"
+                },
+                {
+                  "lon": -0.5093,
+                  "lat": 51.4767,
+                  "speedMph": 177,
+                  "altitudeFt": 1950,
+                  "source": "derived",
+                  "date": "2020-02-02T11:59:45.000Z",
+                  "course": -87,
+                  "vrateMps": 10,
+                  "lastObserved": "2020-02-02T12:04:20.000Z"
+                },
+                {
+                  "lon": -0.447,
+                  "lat": 51.478,
+                  "speedMph": 121,
+                  "altitudeFt": 80,
+                  "source": "derived",
+                  "date": "2020-02-02T11:58:44.000Z",
+                  "course": 270,
+                  "lastObserved": "2020-02-02T12:02:48.000Z"
+                },
+                {
+                  "lon": -0.447,
+                  "lat": 51.478,
+                  "speedMph": 121,
+                  "altitudeFt": 80,
+                  "source": "derived",
+                  "date": "2020-02-02T11:58:44.000Z",
+                  "course": 270,
+                  "lastObserved": "2020-02-02T12:03:52.000Z"
+                },
+                {
+                  "lon": -0.4375,
+                  "lat": 51.4726,
+                  "speedMph": 167,
+                  "altitudeFt": 182,
+                  "source": "derived",
+                  "date": "2020-02-02T11:57:15.500Z",
+                  "course": 73,
+                  "vrateMps": 2,
+                  "lastObserved": "2020-02-02T12:01:51.000Z"
+                },
+                {
+                  "lon": -0.4536,
+                  "lat": 51.4696,
+                  "speedMph": 168,
+                  "altitudeFt": 80,
+                  "source": "derived",
+                  "date": "2020-02-02T11:57:00.000Z",
+                  "course": 0,
+                  "vrateMps": 0,
+                  "lastObserved": "2020-02-02T11:58:44.000Z"
+                },
+                {
+                  "lon": -0.4536,
+                  "lat": 51.4696,
+                  "speedMph": 168,
+                  "altitudeFt": 80,
+                  "source": "derived",
+                  "date": "2020-02-02T11:57:00.000Z",
+                  "course": 0,
+                  "vrateMps": 0,
+                  "lastObserved": "2020-02-02T11:59:51.000Z"
+                },
+                {
+                  "lon": -0.4536,
+                  "lat": 51.4696,
+                  "speedMph": 168,
+                  "altitudeFt": 80,
+                  "source": "derived",
+                  "date": "2020-02-02T11:57:00.000Z",
+                  "course": 0,
+                  "vrateMps": 0,
+                  "lastObserved": "2020-02-02T12:00:52.000Z"
+                }
+              ],
+              "irregularOperations": []
+            }
+          },
+          "flightState": "currentDateAfterArrival"
+        },
+        "route": { "header": {}, "flights": [], "showCodeshares": null },
+        "flightLoading": false,
+        "otherDays": [
+          {
+            "date1": "30-Jan",
+            "date2": "Jan-30",
+            "day": "Thursday",
+            "year": "2020",
+            "flights": [
+              {
+                "arrivalAirport": {
+                  "city": "Amsterdam",
+                  "fs": "AMS",
+                  "iata": "AMS",
+                  "name": "Amsterdam Airport Schiphol",
+                  "state": "",
+                  "country": "NL"
+                },
+                "arrivalTime": "2:05",
+                "arrivalTimeAmPm": "PM",
+                "arrivalTime24": "14:05",
+                "arrivalTimezone": "CET",
+                "departureAirport": {
+                  "city": "London",
+                  "fs": "LHR",
+                  "iata": "LHR",
+                  "name": "London Heathrow Airport",
+                  "state": "EN",
+                  "country": "GB"
+                },
+                "departureTime": "11:45",
+                "departureTimeAmPm": "AM",
+                "departureTime24": "11:45",
+                "departureTimezone": "GMT",
+                "url": "/flight-tracker/DL/9489?year=2020&month=01&date=30&flightId=1029574147",
+                "sortTime": "2020-01-30T11:45:00.000Z"
+              }
+            ]
+          },
+          {
+            "date1": "31-Jan",
+            "date2": "Jan-31",
+            "day": "Friday",
+            "year": "2020",
+            "flights": [
+              {
+                "arrivalAirport": {
+                  "city": "Amsterdam",
+                  "fs": "AMS",
+                  "iata": "AMS",
+                  "name": "Amsterdam Airport Schiphol",
+                  "state": "",
+                  "country": "NL"
+                },
+                "arrivalTime": "2:05",
+                "arrivalTimeAmPm": "PM",
+                "arrivalTime24": "14:05",
+                "arrivalTimezone": "CET",
+                "departureAirport": {
+                  "city": "London",
+                  "fs": "LHR",
+                  "iata": "LHR",
+                  "name": "London Heathrow Airport",
+                  "state": "EN",
+                  "country": "GB"
+                },
+                "departureTime": "11:45",
+                "departureTimeAmPm": "AM",
+                "departureTime24": "11:45",
+                "departureTimezone": "GMT",
+                "url": "/flight-tracker/DL/9489?year=2020&month=01&date=31&flightId=1029686445",
+                "sortTime": "2020-01-31T11:45:00.000Z"
+              }
+            ]
+          },
+          {
+            "date1": "01-Feb",
+            "date2": "Feb-01",
+            "day": "Saturday",
+            "year": "2020",
+            "flights": []
+          },
+          {
+            "date1": "02-Feb",
+            "date2": "Feb-02",
+            "day": "Sunday",
+            "year": "2020",
+            "flights": [
+              {
+                "arrivalAirport": {
+                  "city": "Amsterdam",
+                  "fs": "AMS",
+                  "iata": "AMS",
+                  "name": "Amsterdam Airport Schiphol",
+                  "state": "",
+                  "country": "NL"
+                },
+                "arrivalTime": "2:05",
+                "arrivalTimeAmPm": "PM",
+                "arrivalTime24": "14:05",
+                "arrivalTimezone": "CET",
+                "departureAirport": {
+                  "city": "London",
+                  "fs": "LHR",
+                  "iata": "LHR",
+                  "name": "London Heathrow Airport",
+                  "state": "EN",
+                  "country": "GB"
+                },
+                "departureTime": "11:45",
+                "departureTimeAmPm": "AM",
+                "departureTime24": "11:45",
+                "departureTimezone": "GMT",
+                "url": "/flight-tracker/DL/9489?year=2020&month=02&date=02&flightId=1029895928",
+                "sortTime": "2020-02-02T11:45:00.000Z"
+              }
+            ]
+          },
+          {
+            "date1": "03-Feb",
+            "date2": "Feb-03",
+            "day": "Monday",
+            "year": "2020",
+            "flights": [
+              {
+                "arrivalAirport": {
+                  "city": "Amsterdam",
+                  "fs": "AMS",
+                  "iata": "AMS",
+                  "name": "Amsterdam Airport Schiphol",
+                  "state": "",
+                  "country": "NL"
+                },
+                "arrivalTime": "2:05",
+                "arrivalTimeAmPm": "PM",
+                "arrivalTime24": "14:05",
+                "arrivalTimezone": "CET",
+                "departureAirport": {
+                  "city": "London",
+                  "fs": "LHR",
+                  "iata": "LHR",
+                  "name": "London Heathrow Airport",
+                  "state": "EN",
+                  "country": "GB"
+                },
+                "departureTime": "11:45",
+                "departureTimeAmPm": "AM",
+                "departureTime24": "11:45",
+                "departureTimezone": "GMT",
+                "url": "/flight-tracker/DL/9489?year=2020&month=02&date=03&flightId=1030003988",
+                "sortTime": "2020-02-03T11:45:00.000Z"
+              }
+            ]
+          },
+          {
+            "date1": "04-Feb",
+            "date2": "Feb-04",
+            "day": "Tuesday",
+            "year": "2020",
+            "flights": [
+              {
+                "arrivalAirport": {
+                  "city": "Amsterdam",
+                  "fs": "AMS",
+                  "iata": "AMS",
+                  "name": "Amsterdam Airport Schiphol",
+                  "state": "",
+                  "country": "NL"
+                },
+                "arrivalTime": "2:05",
+                "arrivalTimeAmPm": "PM",
+                "arrivalTime24": "14:05",
+                "arrivalTimezone": "CET",
+                "departureAirport": {
+                  "city": "London",
+                  "fs": "LHR",
+                  "iata": "LHR",
+                  "name": "London Heathrow Airport",
+                  "state": "EN",
+                  "country": "GB"
+                },
+                "departureTime": "11:45",
+                "departureTimeAmPm": "AM",
+                "departureTime24": "11:45",
+                "departureTimezone": "GMT",
+                "url": "/flight-tracker/DL/9489?year=2020&month=02&date=04&flightId=1030107727",
+                "sortTime": "2020-02-04T11:45:00.000Z"
+              }
+            ]
+          },
+          {
+            "date1": "05-Feb",
+            "date2": "Feb-05",
+            "day": "Wednesday",
+            "year": "2020",
+            "flights": []
+          }
+        ]
+      },
+      "loading": {
+        "LOAD_FLIGHT_TRACKER_FLIGHT": false,
+        "LOAD_FLIGHT_TRACKER_OTHER_DAYS": false
+      },
+      "error": {
+        "LOAD_FLIGHT_TRACKER_FLIGHT": "",
+        "LOAD_FLIGHT_TRACKER_OTHER_DAYS": ""
+      },
+      "euCompliance": {
+        "country": "",
+        "finishedCountryFetch": false,
+        "hasDeterminedPersonalizedAds": false,
+        "showEUOptInBanner": false
+      }
+    },
+    "initialProps": {
+      "user": {},
+      "pageProps": {
+        "params": { "carrierCode": "DL", "flightNumber": "9489" },
+        "isHistoricalFlight": false,
+        "isOutOfDateRange": false,
+        "head": {
+          "title": "DL9489 - Delta Air Lines DL 9489 Flight Tracker",
+          "description": "DL9489 Flight Tracker - Track the real-time flight status of Delta Air Lines DL 9489 live using the FlightStats Global Flight Tracker. See if your flight has been delayed or cancelled and track the live position on a map.",
+          "keywords": "Delta Air Lines 9489 flight tracker, Delta Air Lines 9489 flight status, DL 9489 flight tracker, DL 9489 flight status, Delta Air Lines DL 9489 map, DL 9489, DL9489, Delta Air Lines 9489",
+          "canonical": "/flight-tracker/DL/9489",
+          "noIndex": false
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
+        "hostname": "www.flightstats.com"
+      }
+    }
+  },
+  "page": "/flight-tracker",
+  "pathname": "/flight-tracker",
+  "query": { "carrierCode": "DL", "flightNumber": "9489" },
+  "buildId": "cf6af419-9800-4718-93fb-a13b0347e1d6",
+  "assetPrefix": "https://assets.flightstats.com",
+  "nextExport": false,
+  "err": null,
+  "chunks": [
+    "components_flight_tracker_desktop_flight_tracker_1004a16819e730dabd9dbbe1b808caab"
+  ]
+}
