@@ -77,7 +77,7 @@ describe("Run parse", () => {
     html = [
       {
         name: "results",
-        path: "./test/__mock__/DL-LHR-JFK-2020-03-10-1580417606309.html"
+        path: "./test/__mock__/DL-LHR-JFK-2020-03-10-1580757841916.html"
         // path: "./test/__mock__/DL-LHR-JFK-2020-03-09-1580345532131.html"
       }
     ];
@@ -93,10 +93,10 @@ describe("Run parse", () => {
     res = results.trimContents().toJSON(true);
     // console.log(JSON.stringify(res));
 
-    let rawdata = fs.readFileSync(
-      "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
-    );
-    let expected = JSON.parse(rawdata);
+    // let rawdata = fs.readFileSync(
+    //   "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
+    // );
+    // let expected = JSON.parse(rawdata);
     // compare(expected, results);
   });
 });
