@@ -236,19 +236,16 @@ module.exports = class extends Parser {
     const segments = [];
     let index = 0;
 
-    const numberOfLayovers = this.calculateNumberOfLayovers($, row);
-
     const withinRow = $(row).find(".upsellpopupanchor.ng-star-inserted");
 
-    withinRow.each((_, x) => {
+    withinRow.each((_, segmentDetail) => {
       var { segment, toCity } = this.extractSegment(
         $,
         row,
         index,
-        x,
+        segmentDetail,
         defaultArrivalDate,
         departDate,
-        numberOfLayovers,
         fromCity,
         defaultArrivalTime,
         departTime
@@ -268,12 +265,11 @@ module.exports = class extends Parser {
     $,
     row,
     index,
-    x,
+    segmentDetail,
     defaultArrivalDate,
     departDate,
-    numberOfLayovers,
     fromCity,
-    defaultArrivalTime,
+    finalArrivalTime,
     departTime
   ) {
     const toCityEl = $(row).find(".flightStopLayover")[index];
@@ -282,13 +278,18 @@ module.exports = class extends Parser {
     ({ toCity, nextConnectionMinutes } = this.extractConnectionDetails(
       $(toCityEl).text()
     ));
-    const { aircraft, airline, flightNumber } = this.getFlightDetails($, x);
+    const { aircraft, airline, flightNumber } = this.getFlightDetails(
+      $,
+      segmentDetail
+    );
 
     let arrivalDate = this.getArrivalDate(defaultArrivalDate, $, row);
     const lagDays = this.calculateLagDays(departDate, arrivalDate);
     let arrivalTimeCalculated, departTimeCalculated;
     // Delta makes it difficult to get data about connecting flights
     // So use external data provider for these flights
+    const numberOfLayovers = this.calculateNumberOfLayovers($, row);
+
     if (numberOfLayovers > 0) {
       try {
         const res = this.getArrivalTimeFromExternal(
@@ -306,7 +307,7 @@ module.exports = class extends Parser {
         departTimeCalculated = undefined;
       }
     } else {
-      arrivalTimeCalculated = defaultArrivalTime;
+      arrivalTimeCalculated = finalArrivalTime;
       departTimeCalculated = departTime;
     }
     // Add segment
@@ -393,8 +394,8 @@ module.exports = class extends Parser {
     return { arrivalTimeMoment, departureTimeMoment };
   }
 
-  getFlightDetails($, x) {
-    const airlineAndFlight = $(x)
+  getFlightDetails($, segmentDetail) {
+    const airlineAndFlight = $(segmentDetail)
       .text()
       .trim()
       .split(" ")[0];
