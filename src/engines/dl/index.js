@@ -20,7 +20,7 @@ module.exports = {
      *     https://thepointsguy.co.uk/guide/ba-fare-classes-explained/
      * */
     fares: [
-      { code: "F", cabin: cabins.first, saver: true, name: "First" },
+      { code: "O", cabin: cabins.first, saver: true, name: "First" },
       {
         code: "CS",
         cabin: cabins.business,
@@ -52,7 +52,7 @@ module.exports = {
         saver: true
       },
       {
-        code: "Y1",
+        code: "S",
         cabin: cabins.economy,
         name: "Comfort+",
         saver: true
@@ -70,7 +70,7 @@ module.exports = {
         saver: true
       },
       {
-        code: "Y4",
+        code: "N",
         cabin: cabins.economy,
         name: "Basic Cabin",
         saver: true

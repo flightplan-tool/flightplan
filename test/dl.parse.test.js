@@ -41,7 +41,7 @@ describe("Run parse", () => {
     html = [
       {
         name: "results",
-        path: "./test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.html"
+        path: "./test/__mock__/DL-BOS-JFK-2020-03-10-1580841057916.html"
       }
     ];
     const results = fp.Results.parse({
@@ -57,7 +57,7 @@ describe("Run parse", () => {
     // console.log(JSON.stringify(res));
 
     let rawdata = fs.readFileSync(
-      "test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.results.json"
+      "test/__mock__/DL-BOS-JFK-2020-03-10-1580841057916.results.json"
     );
     let expected = JSON.parse(rawdata);
     compare(expected, results);

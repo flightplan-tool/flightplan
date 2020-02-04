@@ -3,7 +3,7 @@
   "query": {
     "partners": true,
     "cabin": "business",
-    "quantity": 7,
+    "quantity": 1,
     "fromCity": "BOS",
     "toCity": "JFK",
     "departDate": "2020-03-10",
@@ -12,7 +12,7 @@
   "html": [
     {
       "name": "results",
-      "path": "./test/__mock__/DL-BOS-JFK-2020-03-10-1580431148810.html"
+      "path": "./test/__mock__/DL-BOS-JFK-2020-03-10-1580841057916.html"
     }
   ],
   "flights": [
@@ -26,7 +26,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 4500,
           "fees": null
         },
         {
@@ -37,7 +37,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 6000,
           "fees": null
         },
         {
@@ -48,18 +48,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 7000,
           "fees": null
         },
         {
           "engine": "DL",
           "partner": false,
           "cabins": ["first"],
-          "fare": "F",
+          "fare": "O",
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 11000,
           "fees": null
         }
       ],
@@ -89,7 +89,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 4500,
           "fees": null
         },
         {
@@ -100,7 +100,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 6000,
           "fees": null
         },
         {
@@ -111,18 +111,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 7000,
           "fees": null
         },
         {
           "engine": "DL",
           "partner": false,
           "cabins": ["first"],
-          "fare": "F",
-          "quantity": 2,
+          "fare": "O",
+          "quantity": 1,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 36500,
           "fees": null
         }
       ],
@@ -152,7 +152,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 4500,
+          "fees": null
+        },
+        {
+          "engine": "DL",
+          "partner": false,
+          "cabins": ["economy"],
+          "fare": "YS",
+          "quantity": 1,
+          "exact": false,
+          "waitlisted": false,
+          "mileageCost": 6000,
           "fees": null
         },
         {
@@ -163,29 +174,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
-          "fees": null
-        },
-        {
-          "engine": "DL",
-          "partner": false,
-          "cabins": ["economy"],
-          "fare": "YS",
-          "quantity": 7,
-          "exact": false,
-          "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 7500,
           "fees": null
         },
         {
           "engine": "DL",
           "partner": false,
           "cabins": ["first"],
-          "fare": "F",
-          "quantity": 2,
+          "fare": "O",
+          "quantity": 3,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 11000,
           "fees": null
         }
       ],
@@ -215,7 +215,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 4500,
           "fees": null
         },
         {
@@ -226,7 +226,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 6000,
           "fees": null
         },
         {
@@ -237,18 +237,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 7000,
           "fees": null
         },
         {
           "engine": "DL",
           "partner": false,
           "cabins": ["first"],
-          "fare": "F",
+          "fare": "O",
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 11000,
           "fees": null
         }
       ],
@@ -278,7 +278,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 4500,
           "fees": null
         },
         {
@@ -289,7 +289,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 6000,
           "fees": null
         },
         {
@@ -300,18 +300,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 7000,
           "fees": null
         },
         {
           "engine": "DL",
           "partner": false,
           "cabins": ["first"],
-          "fare": "F",
+          "fare": "O",
           "quantity": 3,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 11000,
           "fees": null
         }
       ],
@@ -341,7 +341,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 4500,
           "fees": null
         },
         {
@@ -352,7 +352,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 6000,
           "fees": null
         },
         {
@@ -363,18 +363,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 7000,
           "fees": null
         },
         {
           "engine": "DL",
           "partner": false,
           "cabins": ["first"],
-          "fare": "F",
+          "fare": "O",
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 11000,
           "fees": null
         }
       ],
@@ -404,7 +404,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 4500,
           "fees": null
         },
         {
@@ -415,7 +415,7 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 6000,
           "fees": null
         },
         {
@@ -426,18 +426,18 @@
           "quantity": 7,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 7000,
           "fees": null
         },
         {
           "engine": "DL",
           "partner": false,
           "cabins": ["first"],
-          "fare": "F",
-          "quantity": 7,
+          "fare": "O",
+          "quantity": 4,
           "exact": false,
           "waitlisted": false,
-          "mileageCost": 100000,
+          "mileageCost": 11000,
           "fees": null
         }
       ],

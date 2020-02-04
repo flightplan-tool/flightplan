@@ -224,6 +224,19 @@ module.exports = class extends Parser {
     const fare = this.findFare(cabin);
     const cabins = flight.segments.map(x => cabin);
 
+    let mileageCost = 0;
+    let fees = 0;
+    let mileageCostStr = $(cabinElement)
+      .find(".milesValue")
+      .text();
+    if (mileageCostStr) {
+      let matcher = mileageCostStr.match(/([\d,])+/);
+      mileageCost = parseInt(matcher[0].replace(",", ""));
+
+      // TODO: validCurrency method is too strict so it fails if currency symbol is used
+      // matcher = mileageCostStr.match(/\S(.[\d.])+$/);
+      // fees = matcher[0];
+    }
     if (seatsLeft > 0) {
       const award = new Award(
         {
@@ -231,7 +244,7 @@ module.exports = class extends Parser {
           fare,
           cabins,
           quantity: seatsLeft,
-          mileageCost: 100000
+          mileageCost: mileageCost
         },
         flight
       );
