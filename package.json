@@ -24,7 +24,7 @@
     "chalk": "^2.4.1",
     "cheerio": "^1.0.0-rc.2",
     "commander": "github:jd20/commander.js#master",
-    "csv-parse": "^2.5.0",
+    "csv-parse": "^4.4.6",
     "express": "^4.16.3",
     "external-ip": "^2.1.1",
     "humanize-duration": "^3.15.3",
