@@ -155,25 +155,26 @@ function search (id) {
 
       // Execute each query from the test case
       for (const testCase of cases) {
-        const results = await engine.search(testCase.query)
-        resultsMap.set(testCase.name, results)
+        const results = await engine.search(testCase.query);
+        resultsMap.set(testCase.name, results);
       }
 
       // Cleanup
-      await engine.close()
-      done()
-    })
+      await engine.close();
+      done();
+    });
 
     for (const testCase of cases) {
       test(testCase.name, () => {
-        const results = resultsMap.get(testCase.name)
-        compare(testCase, results, false)
-      })
+        const results = resultsMap.get(testCase.name);
+        compare(testCase, results, false);
+      });
     }
-  })
+  });
 }
 
 module.exports = {
   parse,
-  search
-}
+  search,
+  compare
+};

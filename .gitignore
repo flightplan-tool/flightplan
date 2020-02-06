@@ -70,3 +70,6 @@ Dockerfile.server
 Dockerfile.client
 docker-compose.yml
 .dockerignore
+
+.DS_Store
+.nvmrc
