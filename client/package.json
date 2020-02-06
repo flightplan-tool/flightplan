@@ -11,7 +11,7 @@
     "react": "^16.3.2",
     "react-app-rewire-mobx": "^1.0.8",
     "react-datepicker": "^1.4.1",
-    "react-dom": "^16.3.2",
+    "react-dom": "^16.3.3",
     "react-responsive-modal": "^3.2.0",
     "react-scripts": "1.1.4",
     "react-select": "^2.0.0-beta.2",
