@@ -24,7 +24,7 @@ module.exports = class extends Searcher {
 
     // Enter username and password
     await page.waitFor(".loginContentBody", { timeout: 5000 });
-    await page.waitFor(2500);
+    await page.waitFor(1000);
     await this.enterText("#userId", username);
     await this.enterText("#password", password);
     await page.waitFor(2500);
@@ -53,7 +53,14 @@ module.exports = class extends Searcher {
     this.info(`returnDateStr ${returnDateStr}`);
     this.info(`departDateStr ${departDateStr}`);
     await page.evaluate(
-      (fromCity, toCity, departDateStr, returnDateStr, selectTripType) => {
+      (
+        fromCity,
+        toCity,
+        departDateStr,
+        returnDateStr,
+        selectTripType,
+        quantity
+      ) => {
         request = {
           airports: {
             fromCity: fromCity,
@@ -68,7 +75,7 @@ module.exports = class extends Searcher {
             returnDate: returnDateStr,
             chkFlexDate: false
           },
-          passenger: "1",
+          passenger: quantity.toString(),
           swapedFromCity: null,
           swapedToCity: null,
           schedulePrice: "miles",
@@ -106,7 +113,8 @@ module.exports = class extends Searcher {
       toCity,
       departDateStr,
       returnDateStr,
-      selectTripType
+      selectTripType,
+      quantity
     );
 
     // then go here
@@ -126,7 +134,6 @@ module.exports = class extends Searcher {
     await page.click("#btnSubmit");
     await this.settle();
     // // Save the results
-    console.log("Current URL is " + page.url());
     await results.saveHTML("results");
   }
 
