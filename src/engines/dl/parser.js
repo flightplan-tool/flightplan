@@ -9,15 +9,6 @@ const utils = require("../../utils");
 const request = require("sync-request");
 const findAnd = require("find-and");
 
-// Regex patterns
-const reQuantity = /only\s(\d+)\s+left\sat/i;
-
-const cabinCodes = {
-  E: cabins.economy,
-  P: cabins.premium,
-  B: cabins.business,
-  F: cabins.first
-};
 module.exports = class extends Parser {
   parse(results) {
     const $ = results.$("results");
@@ -331,13 +322,12 @@ module.exports = class extends Parser {
       $,
       segmentDetail
     );
-    let arrivalDate = this.getArrivalDate(defaultArrivalDate, $, row);
     let arrivalTimeCalculated, departTimeCalculated;
-    // Delta makes it difficult to get data about connecting flights
-    // So use external data provider for these flights
     const numberOfLayovers = this.calculateNumberOfLayovers($, row);
 
     if (numberOfLayovers > 0) {
+      // Delta makes it difficult to get data about connecting flights
+      // So use external data provider for these flights
       try {
         const res = this.getArrivalTimeFromExternal(
           airline,

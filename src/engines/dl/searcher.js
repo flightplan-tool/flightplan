@@ -42,52 +42,6 @@ module.exports = class extends Searcher {
     const departDate = query.departDateMoment();
     const returnDate = query.returnDateMoment();
 
-    // const awardReservationCheckbox = await page.$("#shopWithMiles");
-    // if (
-    //   !(await (
-    //     await awardReservationCheckbox.getProperty("checked")
-    //   ).jsonValue())
-    // ) {
-    //   await page.click("#shopWithMiles");
-    // }
-
-    // const awardReservationCheckbox = await page.$("#fromAirportName");
-    // if (
-    //   !(await (
-    //     await awardReservationCheckbox.getProperty("checked")
-    //   ).jsonValue())
-    // ) {
-    //   await page.click("#shopWithMiles");
-    // }
-
-    // const formValues = {};
-    // //formValues["tripType"] = oneWay ? "2" : "ROUND_TRIP";
-    // formValues["selectTripType"] = "ROUND_TRIP";
-    // formValues["fromAirportCode"] = fromCity;
-    // formValues["arrivalCity"] = toCity;
-    // formValues["departureDate"] = departDate.format("YYYY-MM-DD");
-    // formValues["returnDate"] = returnDate
-    //   ? returnDate.format("YYYY-MM-DD")
-    //   : "";
-    // formValues["paxCount"] = quantity.toString();
-    // formValues["shopType"] = "AWARD";
-
-    // await this.fillForm(formValues);
-
-    // Submit the form
-    // console.log("DT: Submitting form");
-    // // await page.click("#btnSubmit");
-    // // debugger;
-    // const form = await page.$("form");
-    // console.log("DT: Form is " + form);
-    // await page.evaluate(form => {
-    //   // debugger;
-    //   // form.submit();
-    //   $("form")[0].submit();
-    // });
-    // console.log("DT form evaluate is done ");
-    // await page.waitFor(3000);
-
     // // Wait for results to load
     this.info("Submitting search form");
     // await this.settle();
@@ -102,8 +56,8 @@ module.exports = class extends Searcher {
       (fromCity, toCity, departDateStr, returnDateStr, selectTripType) => {
         request = {
           airports: {
-            fromCity: "New York-Kennedy, NY",
-            toCity: "Paris-De Gaulle, France",
+            fromCity: fromCity,
+            toCity: toCity,
             fromAirportcode: fromCity,
             toAirportcode: toCity,
             invalidAirportCodes: null
@@ -193,15 +147,6 @@ module.exports = class extends Searcher {
         throw new Searcher.Error(`Stuck waiting for results to appear`);
       }
 
-      // Ensure results exist and there are no errors
-      // if (!(await page.$("#MatrixResultColumn"))) {
-      //   let msgError = await this.textContent(".errorTextSummary");
-      //   if (msgError) {
-      //     throw new Searcher.Error(`Website returned error: ${msgError}`);
-      //   } else {
-      //     throw new Searcher.Error("Unable to locate flight results");
-      //   }
-      // }
       break;
     }
   }
