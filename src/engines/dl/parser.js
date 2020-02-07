@@ -369,7 +369,7 @@ module.exports = class extends Parser {
         lagDays: lagDays,
         nextConnection: nextConnectionMinutes,
         cabin: cabins.business,
-        stops: numberOfLayovers
+        stops: 0
       });
     } else {
       segment = undefined;
