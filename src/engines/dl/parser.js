@@ -9,6 +9,13 @@ const utils = require("../../utils");
 const request = require("sync-request");
 const findAnd = require("find-and");
 
+class TimeUnknownError extends Error {
+  constructor(message, segment) {
+    super(message);
+    this.segment = segment;
+  }
+}
+
 module.exports = class extends Parser {
   parse(results) {
     const $ = results.$("results");
@@ -54,18 +61,26 @@ module.exports = class extends Parser {
 
       const numberOfLayovers = this.calculateNumberOfLayovers($, row);
 
-      const segments = this.createSegmentsForRow(
-        $,
-        row,
-        fromCity,
-        departDate,
-        departTimeMoment,
-        arrivalTimeMoment,
-        numberOfLayovers
-      );
+      try {
+        const segments = this.createSegmentsForRow(
+          $,
+          row,
+          fromCity,
+          departDate,
+          departTimeMoment,
+          arrivalTimeMoment,
+          numberOfLayovers
+        );
 
-      // Get cabins / quantity for award
-      this.generateAwards($, row, segments, engine, awards);
+        // Get cabins / quantity for award
+        this.generateAwards($, row, segments, engine, awards);
+      } catch (error) {
+        if (error instanceof TimeUnknownError) {
+          console.log(error.message);
+        } else {
+          console.log(error.message);
+        }
+      }
     });
 
     return awards;
@@ -324,11 +339,12 @@ module.exports = class extends Parser {
       segmentDetail
     );
     let arrivalTimeCalculated, departTimeCalculated;
+    let segment;
 
-    if (numberOfLayovers > 0) {
-      // Delta makes it difficult to get data about connecting flights
-      // So use external data provider for these flights
-      try {
+    try {
+      if (numberOfLayovers > 0) {
+        // Delta makes it difficult to get data about connecting flights
+        // So use external data provider for these flights
         const res = this.getArrivalTimeFromExternal(
           airline,
           flightNumber,
@@ -339,24 +355,17 @@ module.exports = class extends Parser {
 
         arrivalTimeCalculated = res.arrivalTimeMoment;
         departTimeCalculated = res.departureTimeMoment;
-      } catch (err) {
-        console.log(JSON.stringify(err));
-        arrivalTimeCalculated = undefined;
-        departTimeCalculated = undefined;
+      } else {
+        arrivalTimeCalculated = finalArrivalTime;
+        departTimeCalculated = departTime;
       }
-    } else {
-      arrivalTimeCalculated = finalArrivalTime;
-      departTimeCalculated = departTime;
-    }
 
-    let lagDays = 0;
-    if (arrivalTimeCalculated - departTimeCalculated < 0) {
-      lagDays++;
-      arrivalTimeCalculated = arrivalTimeCalculated.add(1, "days");
-    }
+      let lagDays = 0;
+      if (arrivalTimeCalculated - departTimeCalculated < 0) {
+        lagDays++;
+        arrivalTimeCalculated = arrivalTimeCalculated.add(1, "days");
+      }
 
-    let segment;
-    if (arrivalTimeCalculated && departTimeCalculated) {
       segment = new Segment({
         aircraft: aircraft,
         airline: airline,
@@ -371,8 +380,8 @@ module.exports = class extends Parser {
         cabin: cabins.business,
         stops: 0
       });
-    } else {
-      segment = undefined;
+    } catch (err) {
+      throw err;
     }
     return { segment, toCity };
   }
@@ -421,6 +430,10 @@ module.exports = class extends Parser {
       const arrivalTime = otherDay["flights"][0]["arrivalTime24"];
 
       const departureTime = otherDay["flights"][0]["departureTime24"];
+
+      if (!(arrivalTime && departureTime)) {
+        throw new TimeUnknownError(`Unknown time ${arrivalTime} ${departDate}`);
+      }
 
       scheduledArrival = this.convertToProperMoment(
         toCity,
