@@ -52,6 +52,8 @@ module.exports = class extends Parser {
         toCity
       );
 
+      const numberOfLayovers = this.calculateNumberOfLayovers($, row);
+
       const segments = this.createSegmentsForRow(
         $,
         row,
@@ -59,7 +61,7 @@ module.exports = class extends Parser {
         departDate,
         departTimeMoment,
         arrivalTimeMoment,
-        defaultArrivalDate
+        numberOfLayovers
       );
 
       // Get cabins / quantity for award
@@ -217,7 +219,6 @@ module.exports = class extends Parser {
     const cabins = flight.segments.map(x => cabin);
 
     let mileageCost = 0;
-    let fees = 0;
     let mileageCostStr = $(cabinElement)
       .find(".milesValue")
       .text();
@@ -266,7 +267,7 @@ module.exports = class extends Parser {
     departDate,
     departTime,
     defaultArrivalTime,
-    defaultArrivalDate
+    numberOfLayovers
   ) {
     const segments = [];
     let index = 0;
@@ -279,11 +280,11 @@ module.exports = class extends Parser {
         row,
         index,
         segmentDetail,
-        defaultArrivalDate,
         departDate,
         fromCity,
         defaultArrivalTime,
-        departTime
+        departTime,
+        numberOfLayovers
       );
 
       if (segment && departDate && segment.overnight) {
@@ -306,11 +307,11 @@ module.exports = class extends Parser {
     row,
     index,
     segmentDetail,
-    defaultArrivalDate,
     departDate,
     fromCity,
     finalArrivalTime,
-    departTime
+    departTime,
+    numberOfLayovers
   ) {
     const toCityEl = $(row).find(".flightStopLayover")[index];
     let toCity;
@@ -323,7 +324,6 @@ module.exports = class extends Parser {
       segmentDetail
     );
     let arrivalTimeCalculated, departTimeCalculated;
-    const numberOfLayovers = this.calculateNumberOfLayovers($, row);
 
     if (numberOfLayovers > 0) {
       // Delta makes it difficult to get data about connecting flights
