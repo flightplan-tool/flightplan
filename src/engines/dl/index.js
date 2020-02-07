@@ -4,7 +4,7 @@ module.exports = {
   searcher: require("./searcher"),
   parser: require("./parser"),
   config: {
-    name: "Mileage Plan",
+    name: "Delta SkyMiles",
     homeURL: "https://www.delta.com/",
     searchURL: "https://www.delta.com/flight-search-2/book-a-flight",
     validation: {
@@ -18,6 +18,7 @@ module.exports = {
      * I don't fully understand how these fare codes work,
      * so these are largerly placeholder
      *     https://thepointsguy.co.uk/guide/ba-fare-classes-explained/
+     *     https://pro.delta.com/content/agency/us/en/agent-resources/general-information/new-fare-basis-code-structure.html
      * */
     fares: [
       { code: "O", cabin: cabins.first, saver: true, name: "First" },
@@ -28,7 +29,7 @@ module.exports = {
         saver: true
       },
       {
-        code: "C1",
+        code: "D",
         cabin: cabins.business,
         name: "Delta One",
         saver: true
@@ -40,13 +41,13 @@ module.exports = {
         saver: true
       },
       {
-        code: "WS",
+        code: "P",
         cabin: cabins.premium,
         name: "Premium Select",
         saver: true
       },
       {
-        code: "YS",
+        code: "M",
         cabin: cabins.economy,
         name: "Main",
         saver: true
@@ -76,7 +77,13 @@ module.exports = {
         saver: true
       },
       {
-        code: "Y5",
+        code: "B",
+        cabin: cabins.economy,
+        name: "Basic Economy",
+        saver: true
+      },
+      {
+        code: "B",
         cabin: cabins.economy,
         name: "Economy Classic",
         saver: true

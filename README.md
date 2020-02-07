@@ -264,18 +264,3 @@ yarn install
 ```
 jest
 ```
-
-## Running commands
-
-```
-node bin/cli-search.js -w AS -f CDG -t JFK -c business -s 2020-09-15 -e 2020-09-17
-```
-
-# New parser
-
-1. Go to search page (eg https://www.alaskaair.com/)
-1. Open inspector
-1. Open network tab
-1. CLick "Preserve log"
-1. Search for a ticket
-1. Look at Form Data
