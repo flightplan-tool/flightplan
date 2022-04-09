@@ -7,7 +7,7 @@
     "d3-tip": "^0.9.0",
     "mobx": "^4.2.0",
     "mobx-react": "^5.0.0",
-    "moment": "^2.22.1",
+    "moment": "^2.29.2",
     "react": "^16.3.2",
     "react-app-rewire-mobx": "^1.0.8",
     "react-datepicker": "^1.4.1",
